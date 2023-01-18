@@ -1,0 +1,196 @@
+.testimonial {
+    max-width: 100% !important;
+    overflow: hidden;
+    padding: $quadpadding 0;
+    
+    .container {
+        @include container;
+        max-width: $smallsize;
+    }
+
+    &.single {
+        .container {
+            display: flex;
+            max-width: 900px;
+            gap: $triplepadding;
+            align-items: center;
+
+            .image {
+                width: 33%;
+
+                img {
+                    display: block;
+                }
+            }
+
+            .content {
+                padding: $triplepadding 0;
+                width: 66%;
+
+                blockquote {
+                    font-size: 24px;
+                    font-weight: 300;
+                    font-style: italic;
+                    color: $black;
+                    letter-spacing: 0.48px;
+                    line-height: 38px;
+                    padding: 0;
+                    margin: 0;
+                    display: block;
+
+                    &::before {
+                        content: "";
+                        display: block;
+                        background: url(img/quote.svg) no-repeat center/contain;
+                        width: 50px;
+                        height: 36px;
+                        margin-bottom: $padding;
+                    }
+                }
+
+                .author {
+                    display: inline-block;
+                    margin-top: $padding;
+
+                    p {
+                        margin: 4px 0;
+                    }
+
+                    a {
+                        color: $red;
+                        text-decoration: none;
+
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                    }
+                }
+            }
+
+            @include respond-to('tablet') {
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+
+                .image {
+                    width: 100%;
+                    max-width: 100%;
+                    display: flex;
+                    justify-content: center;
+                    margin-top: $padding;
+                }
+
+                .content {
+                    padding-top: 0;
+                    display: flex;
+                    flex-direction: column;
+                    width: 100%;
+                }
+            }
+        }
+    }
+
+    &.multi {
+        .slide {
+            display: flex !important;
+            align-items: center;
+            gap: 160px;
+
+            .image {
+                width: 255px;
+                
+                img {
+                    max-width: 100%;
+                    height: auto;
+                    display: block;
+                }
+            }
+
+            .content {
+                padding: $triplepadding 0;
+                width: 66%;
+
+                blockquote {
+                    font-size: 24px;
+                    font-weight: 300;
+                    font-style: italic;
+                    color: $black;
+                    letter-spacing: 0.48px;
+                    line-height: 38px;
+                    padding: 0;
+                    margin: 0;
+                    display: block;
+
+                    &::before {
+                        content: "";
+                        display: block;
+                        background: url(img/quote.svg) no-repeat center/contain;
+                        width: 50px;
+                        height: 36px;
+                        margin-bottom: $padding;
+                    }
+                }
+
+                .author {
+                    color: $black;
+                    font-style: italic;
+                    letter-spacing: 0.51px;
+                    line-height: 25px;
+                }
+            }
+
+            @include respond-to('tablet') {
+                flex-direction: column;
+                gap: 0px;
+                align-items: flex-start;
+
+                .image {
+                    margin-top: $padding;
+                    width: calc(50% + 45px);
+                    max-width: calc(50% + 45px);
+                }
+
+                .content {
+                    width: 100%;
+                }
+            }
+        }
+
+        .testimonialSlider {
+            position: relative;
+            
+            .slick-slide {
+                z-index: 900 !important;
+            }
+        }
+
+        .slick-prev, .slick-next {
+            cursor: pointer;
+            background: $red url(img/chevron-white.svg) no-repeat center/7px;
+            text-indent: -9999px;
+            height: 43px;
+            width: 45px;
+            border: none;
+            border-radius: 0px 100px 100px 0px;
+            padding: $padding;
+            position: absolute;
+            bottom: 25%;
+            z-index: 901;
+            left: 209px;
+
+            @include respond-to('tablet') {
+                bottom: unset;
+                top: 25%;
+                left: 50%;
+            }
+        }
+
+        .slick-prev {
+            transform: rotate(180deg);
+        }
+
+        .slick-next {
+            margin-left: 45px;
+        }
+    }
+}

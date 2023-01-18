@@ -1,0 +1,174 @@
+.form {
+    padding: $quadpadding 0;
+
+    .container {
+        @include container;
+        max-width: 600px;
+
+        .intro {
+            width: 100%;
+        }
+    }
+
+    &.withside {
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: $smallsize;
+            gap: $doublepadding 180px;
+
+            .gForm {
+                flex-grow: 1;
+            }
+
+            .sidebar {
+                width: 350px;
+                margin-left: auto;
+
+                .block {
+                    background: $lightgray;
+                    padding: $padding $triplepadding;
+                    margin-bottom: $doublepadding;
+
+                    h1, h2, h3, h4, h5, h6 {
+                        margin: $padding 0;
+                    }
+                }
+            }
+
+            @include respond-to('tablet') {
+                gap: $quadpadding;
+            }
+
+            @include respond-to('med') {
+                flex-direction: column;
+
+                .sidebar {
+                    width: 100%;
+                }
+            }
+        }
+    }
+}
+
+.gform_wrapper.gravity-theme {   
+    input[type=text], input[type=email], input[type=tel], textarea, select {
+        border-radius: 2px;
+        border: $black 1px solid;
+        padding: calc(#{$padding} - 4px) $midpadding !important;
+        font-size: 17px;
+        line-height: 26px;
+        letter-spacing: 0.34px;
+        color: $black;
+        font-family: $font;
+
+        &:focus, &:focus-visible {
+            border-color: $black;
+            outline: none;
+        }
+    }
+
+    input[type=radio], input[type=checkbox] {
+        display: none;
+    }
+
+    .gfield_radio, .gfield_checkbox {
+        .gchoice {
+            
+            label {
+                display: inline-flex !important;
+                align-items: center;
+                cursor: pointer;
+
+                &::before {
+                    content: "";
+                    display: inline-block;
+                    width: 15px;
+                    height: 15px;
+                    border: $red 1px solid;
+                    margin-top: -3px;
+                    margin-right: $halfpadding;
+                }
+            }
+
+            input[type="radio"]:checked + label::before, input[type="checkbox"]:checked + label::before {
+                box-shadow: inset 0px 0px 0px 2px $white;
+                background: $red;
+            }
+        }
+    }
+
+    .gfield_radio .gchoice label::before {
+        border-radius: 100%;
+    }
+
+    .gfield_label {
+        color: $black;
+        font-size: 14px !important;
+        letter-spacing: 1.12px;
+        line-height: 26px;
+        font-weight: 500 !important;
+        text-transform: uppercase;
+    }
+
+    .gfield_required {
+        color: $black;
+        font-size: 14px !important;
+        padding-left: 0px;
+    }
+
+    .gfield:not(:last-child), fieldset:not(:last-child) {
+        margin-bottom: $padding;
+    }
+
+    .button {
+        background: $white;
+        font-size: 16px;
+        line-height: 22px;
+        letter-spacing: 0.48px;
+        border-color: $red;
+        transition: $transition;
+        cursor: pointer;
+
+        &::after {
+            content: "";
+            display: inline-block;
+            width: 6px;
+            height: 11px;
+            background: url(img/chevron.svg) no-repeat center/contain;
+            margin-left: $padding;
+            transition: $transition;
+        }
+
+        &:hover {
+            border-color: $red;
+            color: $red;
+        }
+    }
+
+    .gform_validation_errors {
+        border-color: #E3405F;
+        background-color: $white;
+        border-radius: 2px;
+    }
+    .gform_validation_errors>h2 {
+        color: #E3405F;
+        font-family: $font;
+        text-transform: none;
+        font-size: 16px;
+    }
+
+    .gfield_error {
+        label, .gfield_required, .validation_message {
+            color: #E3405F;
+        }
+        input, textarea {
+            border-color: #E3405F;
+        }
+        .validation_message {
+            border: none;
+            padding: 0;
+            background: transparent;
+        }
+    }
+}

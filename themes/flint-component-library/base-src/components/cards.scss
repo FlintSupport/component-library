@@ -1,0 +1,254 @@
+.cards {
+    padding: $quadpadding 0;
+
+    .container {
+        @include container;
+        display: flex;
+        max-width: $smallsize;
+        gap: $triplepadding;
+        flex-wrap: wrap;
+
+        .intro {
+            width: 100%;
+        }
+
+        h2 {
+            width: 100%;
+            margin: 0;
+        }
+
+        .card {
+            background: $white;
+            box-shadow: 4px 4px 16px rgba(0,0,0,0.1);
+            width: calc(33.33333% - #{$doublepadding});
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: $black;
+            position: relative;
+
+            &.first {
+                background: $red;
+                color: $white;
+                padding: $doublepadding 0 $triplepadding;
+
+                *:not(a.button):not(a.button span) {
+                    margin: 0 0 $padding 0;
+                    padding: 0 $doublepadding;
+                }
+            }
+
+            &.last {
+                background: $lightgray;
+                border-top: $red 6px solid;
+                padding: $doublepadding 0 $triplepadding;
+
+
+                *:not(a.button):not(a.button span) {
+                    margin: 0 0 $padding 0;
+                    padding: 0 $doublepadding;
+                }
+            }
+
+            .featured {
+                position: absolute;
+                bottom: 100%;
+                right: 0;
+                background: $red;
+                color: $white;
+                font-size: 15px;
+                font-weight: 600;
+                font-family: $font;
+                letter-spacing: 1.5px;
+                line-height: 34px;
+                text-transform: uppercase;
+                padding: 0 $padding 0 $midpadding;
+                display: flex;
+                align-items: center;
+
+                &::before {
+                    content: "";
+                    display: inline-block;
+                    width: 14px;
+                    height: 13px;
+                    background: url(img/star.svg) no-repeat center/contain;
+                    margin-right: $halfpadding;
+                }
+            }
+
+            .image {
+                min-height: 80px;
+                max-height: 150px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+                border-bottom: $red 6px solid;
+
+                img {
+                    min-height: 100%;
+                    width: auto;
+                }
+            }
+
+            .content {
+                padding: $doublepadding $doublepadding $triplepadding;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+
+                h4 {
+                    margin: 0;
+                    color: $black;
+                    transition: $transition;
+                }
+
+                p {
+                    margin-bottom: 0;
+                }
+
+                span {
+                    display: inline-block;
+                    margin-top: auto;
+                    padding-top: $doublepadding;
+                    font-size: 14px;
+                    line-height: 18px;
+                    letter-spacing: 1.12px;
+                    font-family: $font;
+                    color: $black;
+                    text-transform: uppercase;
+                    text-decoration: none;
+                    font-weight: 500;
+
+                    &::after {
+                        content: "";
+                        display: inline-block;
+                        background: url(img/long-arrow.svg) no-repeat right/cover;
+                        width: 15px;
+                        height: 10px;
+                        transition: $transition;
+                        margin-left: $halfpadding;
+                    }
+                }
+            }
+
+            @include respond-to('tablet') {
+                width: calc(50% - #{$midpadding});
+                min-width: calc(50% - #{$midpadding});
+            }
+
+            @include respond-to('mobile') {
+                width: 100%;
+            }
+        }
+
+        a:hover {
+            h4 {
+                color: $red !important;
+            }
+
+            span::after {
+                width: 24px !important;
+            }
+        }
+    }
+
+    &.stretch {
+
+        .card {
+            width: calc(50% - #{$midpadding});
+
+            .image {
+                min-height: 117px;
+            }
+
+            &.last {
+                justify-content: center;
+
+                * {
+                    width: 100%;
+                    max-width: 300px;
+                    margin-left: auto !important;
+                    margin-right: auto !important;
+                }
+
+                .button {
+                    margin: $doublepadding 0 0 !important;
+                    width: auto !important;
+                }
+
+                ul, ol {
+                    padding-left: 20px;
+                }
+            }
+
+            &.last {
+                *:not(.button) {
+                    max-width: calc(100% - #{$quadpadding});
+                    padding: 0;
+                }
+            }
+
+            @include respond-to('mobile') {
+                width: calc(100% - #{$midpadding});
+            }
+        }
+    }
+
+    .image.noimage {
+        min-height: 0px !important;
+    }
+
+    &.bg {
+
+        .container {
+            gap: 0;
+
+            h2 {
+                margin-bottom: $doublepadding;
+            }
+
+            .card {
+                background-size: cover;
+                background-position: center;
+                box-shadow: none;
+                width: 33%;
+
+                .content {
+                    background: linear-gradient(0deg, rgba(0,0,0,0.3) 50%, transparent 100%);
+                    min-height: calc(270px - #{$quadpadding});
+                    padding: $doublepadding;
+
+                    h4 {
+                        color: $white;
+                        margin-top: auto;
+                        margin-bottom: $padding;
+
+                        &::after {
+                            content: "";
+                            display: inline-block;
+                            background: url(img/arrow-white.svg) no-repeat right/cover;
+                            width: 21px;
+                            height: 15px;
+                            transition: $transition;
+                            opacity: 0;
+                        }
+                    }
+                }
+
+                .image {
+                    display: none;
+                }
+
+                @include respond-to('tablet') {
+                    width: 100%;
+                }
+            }
+
+            a:hover .content h4::after {
+                margin-left: $padding;
+                opacity: 1;
+            }
+        }
+    }
+}

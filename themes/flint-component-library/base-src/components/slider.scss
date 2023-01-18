@@ -1,0 +1,128 @@
+.slider {
+    padding: $quadpadding 0;
+
+    .container {
+        @include container;
+
+        img {
+            max-width: 100%;
+        }
+
+        .slider-single {
+            .slide {
+                display: flex !important;
+                align-items: center;
+                gap: $triplepadding;
+
+                .button {
+                    margin-top: $doublepadding;
+                }
+
+                img {
+                    width: 33.333%;
+                }
+
+                @include respond-to('tablet') {
+                    flex-direction: column;
+
+                    img {
+                        margin-right: 0;
+                        width: 100%;
+                    }
+
+                    .content {
+                        margin-top: $padding;
+                        text-align: center;
+                    }
+                }
+            }
+
+            @include respond-to('tablet') {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: center;
+
+                .slick-list {
+                    max-width: calc(100% - 92px);
+                }
+            }
+        }
+
+        .slider-multi {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+
+            .slick-list {
+                max-width: calc(100% - 92px);
+            }
+
+            a {
+                text-decoration: none !important;
+            }
+
+            .slide {
+                padding: 0 $halfpadding;
+                width: calc(100% - #{$padding}) !important;
+
+                .content {
+                    margin-top: $padding;
+
+                    p {
+                        font-size: 16px;
+                    }
+                }
+            }
+        }
+    }
+}
+.slick-arrow {
+    background: $red url(img/chevron-white.svg) no-repeat center;
+    border: none;
+    border-radius: 100%;
+    font-size: 0;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.slick-prev {
+    transform: rotate(180deg);
+    margin-right: $padding;
+}
+
+.slick-next {
+    margin-left: $padding;
+}
+
+.slick-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: $doublepadding;
+    padding: 0;
+
+    li {
+        list-style: none;
+        margin: 0 5px;
+
+        button {
+            font-size: 0;
+            display: inline-block;
+            height: 9px;
+            width: 9px;
+            border-radius: 100%;
+            border: none;
+            background-color: $black;
+            padding: 0;
+            cursor: pointer;
+            transition: $transition;
+        }
+
+        &.slick-active button {
+            background-color: $red;
+        }
+    }
+}

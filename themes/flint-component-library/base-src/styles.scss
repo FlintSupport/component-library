@@ -1,0 +1,151 @@
+/* =======================================
+   VARIABLES
+   ======================================= */
+
+$transition: all .2s ease;
+$font: 'Gotham', 'Helvetica', 'Arial', sans-serif;
+
+
+/* =======================================
+   IMPORTS
+   ======================================= */
+
+@import "globals/import.scss";
+@import "components/import.scss";
+@import "templates/import.scss";
+
+
+/* =======================================
+   GLOBAL STYLES
+   ======================================= */
+
+body {
+   font-family: $font;
+   margin: 0;
+   font-size: 16px;
+
+   &.active {
+      overflow-y: hidden;
+   }
+
+
+   /* --------- GLOBAL TEXT STYLES --------- */
+   h1 {
+      font-size: 50px;
+      text-transform: uppercase;
+   }
+   h2 {
+      font-size: 38px;
+   }
+   h3 {
+      font-size: 28px;
+   }
+
+
+   /* --------- LINKS --------- */
+   a {
+      color: $red;
+      transition: $transition;
+   }
+
+   .button {
+      display: inline-block;
+      padding: $halfpadding $padding;
+      text-decoration: none;
+      font-size: 14px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      font-weight: bold;
+      border-radius: 6px;
+      border: 2px solid;
+
+      &.primary {
+         background: $red;
+         color: $white;
+         border-color: $red;
+
+         &:hover {
+            background: $black;
+            border-color: $black;
+         }
+      }
+
+      &.secondary {
+         background: $white;
+         color: $red;
+         border-color: $red;
+
+         &:hover {
+            color: $black;
+            border-color: $black;
+         }
+      }
+   }
+
+
+   /* --------- GLOBAL SECTION STYLES --------- */
+   section {
+      *:first-child {
+         margin-top: 0;
+      }
+
+      *:last-child {
+         margin-bottom: 0;
+      }
+
+      &.gray {
+         background: $lightgray;
+      }
+
+      &.notop {
+         padding-top: 0;
+      }
+
+      &.nobottom {
+         padding-bottom: 0;
+      }
+   }
+
+
+   /* --------- LIST STYLES --------- */
+   .checklist {
+      padding: 0;
+      list-style: none;
+
+      li {
+         display: flex;
+         align-items: flex-start;
+         margin-bottom: $midpadding;
+         font-weight: 500;
+
+         &::before {
+            content: "";
+            display: inline-block;
+            background: url(img/check.svg);
+            min-width: 24px;
+            min-height: 24px;
+            width: 24px;
+            height: 24px;
+            margin-right: $halfpadding;
+            margin-top: -2px;
+         }
+      }
+   }
+
+   ol, ul {
+      padding-left: 20px;
+
+      &.two {
+         columns: 2;
+      }
+      &.three {
+         columns: 3;
+      }
+   }
+
+   
+   /* --------- BREADCRUMBS --------- */
+   .breadcrumbWrapper {
+      @include container;
+   }
+}

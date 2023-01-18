@@ -1,0 +1,387 @@
+header {
+    z-index: 999;
+    box-shadow: 0px 8px 8px -6px rgba(0,0,0,0.1);
+    width: 100%;
+    top: 0;
+    position: relative;
+
+    .top {
+        background: $lightgray;
+
+        .container {
+            @include container;
+            padding: $halfpadding $padding;
+            display: flex;
+            align-items: center;
+
+            .menu-top-menu-container {
+                margin-left: auto;
+
+                .menu {
+                    padding: 0;
+                    margin: 0;
+                    list-style: none;
+                    text-align: right;
+
+                    li {
+                        display: inline-block;
+                        padding: 0 $halfpadding;
+                        line-height: 14px;
+
+                        &:first-of-type {
+                            padding-left: 0;
+                        }
+
+                        &:last-of-type {
+                            padding-right: 0;
+                        }
+                    }
+                }
+            }
+
+            a {
+                color: $black;
+                font-size: 14px;
+                line-height: 14px;
+                letter-spacing: 0.3px;
+                text-transform: uppercase;
+                text-decoration: none;
+                font-family: $font;
+                transition: $transition;
+                font-weight: bold;
+
+                &:hover {
+                    color: $red;
+                }
+            }
+        }
+
+        @include respond-to('tablet') {
+            display: none;
+        }
+    }
+
+    .main {
+        .container {
+            @include container;
+            padding: $padding;
+            display: flex;
+            align-items: center;
+
+            .logo img {
+                display: block;
+            }
+
+            #main-menu {
+                margin-left: auto;
+                display: flex;
+                align-items: center;
+
+                .menu {
+                    padding: 0;
+                    margin: 0;
+                    list-style: none;
+
+                    li {
+                        display: inline-block;
+                        padding: $padding;
+                        position: relative;
+
+                        &:first-of-type {
+                            padding-left: 0;
+                        }
+
+                        &:last-of-type {
+                            padding-right: 0;
+                        }
+
+                        a {
+                            color: $black;
+                            font-size: 16px;
+                            line-height: 16px;
+                            letter-spacing: 0.5px;
+                            text-transform: uppercase;
+                            text-decoration: none;
+                            font-family: $font;
+                            transition: $transition;
+                            font-weight: bold;
+
+                            &:hover {
+                                color: $red;
+                            }
+                        }
+                        
+                        .sub-menu {
+                            display: none;
+                            position: absolute;
+                            top: 100%;
+                            background: $white;
+                            padding: $halfpadding $padding;
+                            width: 100vw;
+                            max-width: 250px;
+                            box-shadow: 0px 6px 10px -2px rgba(0,0,0,0.1);
+                            border-radius: 0 0 6px 6px;
+                            margin-left: calc(0px - #{$padding});
+
+                            a {
+                                text-transform: none;
+                            }
+                        }
+
+                        &:hover {
+                            .sub-menu {
+                                display: block;
+                            }
+                        }
+                    }
+                }
+
+                .search {
+                    position: relative;
+
+                    @include respond-to('tablet') {
+                        display: none;
+                    }
+
+                    #searchButton {
+                        display: block;
+                        transition: $transition;
+                        margin-left: $doublepadding;
+                    }
+
+                    #searchform {
+                        background: $red;
+                        position: absolute;
+                        width: 400px;
+                        right: 0;
+                        top: calc(100% + #{$padding});
+                        padding: $padding $padding;
+                        opacity: 0;
+                        visibility: hidden;
+                        transition: $transition;
+                        border-radius: 6px;
+                        box-shadow: 0px 8px 8px -6px rgba(0,0,0,0.1);
+
+                        div {
+                            @include container;
+                            display: flex;
+
+                            input[type=search] {
+                                width: 100%;
+                                background: $white url(img/search.svg) no-repeat 20px 12px;
+                                border: none;
+                                border-radius: 20px;
+                                padding: $halfpadding $halfpadding $halfpadding 50px;
+                                font-size: 17px;
+                                line-height: 22px;
+                                letter-spacing: 0.34px;
+                                font-family: $font;
+                                font-weight: 400;
+                            }
+
+                            input[type=submit] {
+                                background: $white;
+                                border: none;
+                                margin-left: $halfpadding;
+                                padding: $halfpadding $padding;
+                                border-radius: 20px;
+                                font-weight: bold;
+                                text-transform: uppercase;
+                                cursor: pointer;
+                            }
+                        }
+
+                        &.active {
+                            visibility: visible;
+                            opacity: 1;
+                        }
+                    }
+                }
+
+                @include respond-to('tablet') {
+                    display: none;
+                }
+            }
+        }
+    }
+
+    #mobile-toggle {
+        display: none;
+        z-index: 999;
+        margin-left: auto;
+
+        a {
+            position: relative;
+            display: block;
+            width: 30px;
+            height: 26px;
+
+            span {
+                visibility: hidden;
+                transition: $transition;
+                opacity: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 30px;
+                height: 26px;
+    
+                &.active {
+                    visibility: visible;
+                    opacity: 1;
+                }
+    
+                img {
+                    display: inline-block;
+                }
+            }
+        }
+
+        @include respond-to('tablet') {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+
+    #mobile-menu {
+        visibility: hidden;
+        z-index: -1;
+        position: absolute;
+        left: 0;
+        width: calc(340px - #{$doublepadding});
+        background: $white;
+        padding: $padding;
+        opacity: 0;
+        transition: $transition;
+        height: calc(100vh - 100% - #{$doublepadding});
+        top: 100%;
+        overflow-y: auto;
+
+        .searchform {
+            input[type=submit] {
+                display: none;
+            }
+
+            input[type=search] {
+                width: 100%;
+                background: $white url(img/search.svg) no-repeat;
+                background-position: 20px 10px;
+                border: $red 1px solid;
+                border-radius: 21px;
+                padding: $halfpadding $halfpadding $halfpadding 50px;
+                font-size: 17px;
+                line-height: 22px;
+                letter-spacing: 0.34px;
+                color: $white;
+                font-weight: 400;
+                font-family: $font;
+            }
+        }
+
+        &.active {
+            visibility: visible;
+            opacity: 1;
+            z-index: 900;
+        }
+
+        ul {
+            padding: 0;
+            margin: $padding 0 0;
+
+            li {
+                list-style: none;
+                display: flex;
+                align-items: center;
+
+                .sub-menu {
+                    display: none;
+                }
+
+                &.menu-item-has-children::after {
+                    content: "";
+                    display: inline-block;
+                    width: 8px;
+                    height: 14px;
+                    background: url(img/chevron.svg) no-repeat center/contain;
+                    margin-left: auto;
+                }
+
+                a {
+                    font-weight: bold;
+                    font-size: 20px;
+                    line-height: 20px;
+                    color: $black;
+                    padding: $padding 0;
+                    display: block;
+                    flex-grow: 1;
+                    text-decoration: none;
+                    letter-spacing: 0.4px;
+                }
+
+                &.hidden {
+                    display: none;
+                }
+
+                &.expanded {
+                    flex-wrap: wrap;
+                    border: none;
+
+                    &::after {
+                        display: none;
+                    }
+
+                    a {
+                        padding: $padding;
+                        margin: 0 calc(0px - #{$padding}) calc(0px - #{$padding});
+
+                        &::after {
+                            display: none;
+                        }
+
+                        &::before {
+                            content: "";
+                            display: inline-block;
+                            width: 8px;
+                            height: 14px;
+                            background: url(img/chevron.svg) no-repeat center/contain;
+                            margin-right: $padding;
+                            transform: rotate(180deg);
+                        }
+                    }
+
+                    .sub-menu {
+                        display: block;
+                        width: 100%;
+
+                        li {
+                            border-top: none;
+
+                            &::after {
+                                display: none;
+                            }
+
+                            a {
+                                text-transform: none !important;
+                                font-weight: 400;
+                                display: flex;
+                                align-items: center;
+                                padding: $padding 0;
+                                background: transparent;
+                                margin: 0;
+                                border-bottom: none;
+
+                                &::before {
+                                    display: none;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
