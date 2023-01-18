@@ -29,7 +29,7 @@
                     &::before {
                         content: "";
                         display: inline-block;
-                        background: url(img/plus.svg);
+                        background: url(../img/plus.svg);
                         width: 25px;
                         height: 25px;
                         margin-right: $padding;
@@ -37,7 +37,7 @@
                     }
 
                     &.active::before {
-                        background: url(img/minus.svg);
+                        background: url(../img/minus.svg);
                     }
                 }
 

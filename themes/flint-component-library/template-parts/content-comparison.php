@@ -43,9 +43,9 @@ $intro = get_field('intro_content');
 
                             <?php endwhile; endif; ?>
                         </div>
-                        <div class="cta">
+                        <?php if($link) : ?><div class="cta">
                             <a class="button secondary" href="<?php echo esc_url($link['url']); ?>" target="<?php echo esc_attr($link['target']); ?>"><span><?php echo esc_html($link['title']); ?></span></a>
-                        </div>
+                        </div><?php endif; ?>
                     </div>
                 </div>
 

@@ -41,7 +41,7 @@
                     &::before {
                         content: "";
                         display: block;
-                        background: url(img/quote.svg) no-repeat center/contain;
+                        background: url(../img/quote.svg) no-repeat center/contain;
                         width: 50px;
                         height: 36px;
                         margin-bottom: $padding;
@@ -124,7 +124,7 @@
                     &::before {
                         content: "";
                         display: block;
-                        background: url(img/quote.svg) no-repeat center/contain;
+                        background: url(../img/quote.svg) no-repeat center/contain;
                         width: 50px;
                         height: 36px;
                         margin-bottom: $padding;
@@ -166,7 +166,7 @@
 
         .slick-prev, .slick-next {
             cursor: pointer;
-            background: $red url(img/chevron-white.svg) no-repeat center/7px;
+            background: $red url(../img/chevron-white.svg) no-repeat center/7px;
             text-indent: -9999px;
             height: 43px;
             width: 45px;

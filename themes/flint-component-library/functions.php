@@ -15,7 +15,8 @@ function flint_scripts_styles() {
 	wp_register_script( 'jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js', array(), '3.6.3' );
 	wp_enqueue_script( 'slick', $src = get_template_directory_uri().'/js/slick.js', $deps = array('jquery'), $style_ver, $in_footer = true );
     wp_enqueue_script( 'main', $src = get_template_directory_uri().'/js/site.js', $deps = array('jquery'), $style_ver, $in_header = true );
-    wp_enqueue_style( 'style', $src = get_template_directory_uri().'/style.css', $deps = array(), themeversion, $media = 'all' );
+    wp_enqueue_style( 'basestyle', $src = get_template_directory_uri().'/base-src/styles.css', $deps = array(), '1.0', $media = 'all' );
+	wp_enqueue_style( 'style', $src = get_template_directory_uri().'/style.css', $deps = array(), themeversion, $media = 'all' );
 }
 add_action( 'wp_enqueue_scripts', 'flint_scripts_styles' );
 

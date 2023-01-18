@@ -22,7 +22,7 @@ $image = get_field('side_image');
 
 <section <?php if($id) { echo 'id="' . $id . '" '; } ?>class="hero <?php echo $background; if($notop) { echo ' notop'; } if($nobottom) { echo ' nobottom'; }?>">
     <div class="container">
-        <?php if($image) { echo '<div class="left">'; } ?>
+        <?php if($image) { echo '<div class="left">'; } else { echo '<div class="content">'; } ?>
             <h1><?php echo $headline;?></h1>
             <?php if($content) { echo $content; }?>
             <?php if($buttonone || $buttontwo) :?>
@@ -35,8 +35,8 @@ $image = get_field('side_image');
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
+		</div>
         <?php if($image) : ?>
-            </div>
             <div class="right">
                 <img src="<?php echo esc_url($image['url']); ?>" alt="<?php echo esc_attr($image['alt']); ?>">
             </div>

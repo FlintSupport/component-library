@@ -11,7 +11,6 @@ $secondarystyle = get_field('hero_secondary_cta_type'); ?>
             }
         ?>
     </div>
-	<?php include 'inc-hero.php'; ?>
 	<?php the_content(); ?>
 </div>
 

@@ -6,10 +6,6 @@
         @include container;
         max-width: $smallsize;
         padding: 0 0 $doublepadding;
-
-        * {
-            max-width: 600px;
-        }
     }
 
     &.notop {
@@ -74,7 +70,7 @@
                 &::after {
                     content: "";
                     display: inline-block;
-                    background: url(img/long-arrow.svg) no-repeat right/cover;
+                    background: url(../img/long-arrow.svg) no-repeat right/cover;
                     width: 15px;
                     height: 10px;
                     transition: $transition;

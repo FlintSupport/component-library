@@ -28,7 +28,7 @@ section.team {
                     }
 
                     select {
-                        background: $white url(img/down.svg) no-repeat calc(100% - #{$midpadding}) center;
+                        background: $white url(../img/down.svg) no-repeat calc(100% - #{$midpadding}) center;
                         border: $black 1px solid;
                         border-radius: 2px;
                         padding: calc(#{$padding} - 2px) calc(#{$midpadding} - 2px);
