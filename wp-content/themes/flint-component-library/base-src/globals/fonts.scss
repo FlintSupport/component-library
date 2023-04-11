@@ -1,0 +1,12 @@
+/* =======================================
+   FONTS
+======================================= */
+
+ @font-face {
+    font-family: 'Font Name Here';
+    font-weight: 400;
+    font-style: normal;
+    src: url(../fonts/Font.ttf) format("ttf"),
+         url(../fonts/Font.woff) format("woff"),
+         url(../fonts/Font.woff2) format("woff2");
+ }

@@ -1,0 +1,210 @@
+.tabs {
+    padding: $quadpadding 0;
+
+    .container {
+        @include container;
+
+        .tabItems {
+
+            .topTabs {
+                display: flex;
+                justify-content: center;
+
+                @include respond-to('tablet') {
+                    flex-direction: column;
+                }
+
+                .tabTitle {
+                    text-transform: uppercase;
+                    flex-grow: 1;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: $halfpadding;
+                    cursor: pointer;
+                    transition: $transition;
+
+                    &:hover {
+                        color: $black;
+                        font-weight: bold;
+                    }
+
+                    &.active {
+                        color: $darkgray;
+                        font-weight: bold;
+                    }
+                }
+            }
+
+            &.side {
+                display: flex;
+                align-items: center;
+
+                .sideTabs {
+                    width: 50%;
+                    margin-right: $doublepadding;
+                    display: flex;
+                    gap: $padding;
+                    flex-direction: column;
+
+                    @include respond-to('mobile') {
+                        width: 100%;
+                        margin: 0;
+                    }
+
+                    .tabTitle {
+                        display: flex;
+                        cursor: pointer;
+
+                        &:not(:last-of-type) {
+                            margin-bottom: $padding;
+                        }
+
+                        a {
+                            font-weight: 600;
+                            text-decoration: none;
+                            text-transform: uppercase;
+                        }
+
+                        .icon {
+                            background: $white;
+                            overflow: hidden;
+                            width: $doublepadding;
+                            height: $doublepadding;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin-right: $padding;
+                            transition: $transition;
+                            padding: $halfpadding;
+
+                            @include respond-to('mobile') {
+                                width: calc(#{$doublepadding} + #{$halfpadding});
+                                height: calc(#{$doublepadding} + #{$halfpadding});
+                            }
+
+                            img {
+                                max-width: 100%;
+                                max-height: 100%;
+                            }
+                        }
+                        
+                        .tabTitleContent {
+                            width: calc(100% - #{$triplepadding});
+                        }
+
+                        span {
+                            font-size: 24px;
+                            font-weight: 600;
+                            line-height: 22px;
+                            margin-bottom: $halfpadding;
+                            display: block;
+                            transition: $transition;
+                        }
+                    }
+                }
+
+                .tabContent {
+                    width: 50%;
+                    display: flex;
+
+                    @include respond-to('mobile') {
+                        display: none;
+                    }
+
+                    .tabCopy {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+
+                        img {
+                            max-width: 100%;
+                        }
+                    }
+                }
+            }
+
+            &.right {
+                .sideTabs {
+                    order: 2;
+                    margin-right: 0;
+                    margin-left: $doublepadding;
+
+                    @include respond-to('mobile') {
+                        margin-left: 0;
+                        margin-top: $padding;
+                    }
+                }
+
+                .tabContent {
+                    order: 1;
+                }
+            }
+
+            .tabContent {
+                display: flex;
+                overflow: hidden;
+
+                .tabCopy {
+                    width: 100%;
+                    margin-top: $padding;
+                    padding-bottom: $padding;
+                    margin-right: -100%;
+                    visibility: hidden;
+                    opacity: 0;
+                    transition: $transition;
+
+                    &.active {
+                        opacity: 1;
+                        visibility: visible;
+                    }
+                }
+
+                &.top {
+
+                    .flex {
+                        display: flex;
+                        align-items: center;
+                        gap: $triplepadding;
+
+                        @include respond-to('tablet') {
+                            flex-wrap: wrap;
+                        }
+
+                        img.left {
+                            order: 1;
+                        }
+
+                        .content {
+                            order: 2;
+                            width: 50%;
+
+                            @include respond-to('tablet') {
+                                width: 100%;
+                            }
+                        }
+
+                        img.right {
+                            order: 3;
+                            margin-left: $padding;
+                        }
+
+                        img {
+                            width: 50%;
+
+                            @include respond-to('tablet') {
+                                width: 100%;
+                                order: 3 !important;
+                                margin: $padding 0 0;
+                            }
+                        }
+                    }
+
+                    .tabCopy.full .content {
+                        width: 100% !important;
+                    }
+                }
+            }
+        }
+    }
+}

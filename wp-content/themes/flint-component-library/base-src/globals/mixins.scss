@@ -1,0 +1,8 @@
+@mixin container {
+    max-width: $defaultsize;
+    margin: 0 auto;
+
+    @include respond-to('tablet') {
+        padding: 0 $padding;
+    }
+}

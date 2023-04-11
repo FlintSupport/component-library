@@ -1,0 +1,144 @@
+footer {
+    background: $white;
+
+    a {
+        color: $black;
+        text-decoration: none;
+        
+        &:hover {
+            text-decoration: underline;
+            color: $darkgray;
+        }
+    }
+
+    .container {
+        @include container;
+
+        h3 {
+            font-size: 20px;
+            line-height: 22px;
+            margin: 0 0 $halfpadding;
+        }
+
+        .top {
+            display: flex;
+            flex-wrap: wrap;
+            padding: $quadpadding 0;
+            gap: calc(#{$quadpadding});
+
+            @include respond-to('tablet') {
+                gap: $quadpadding;
+            }
+
+            .column {
+                width: calc(25% - #{$triplepadding});
+
+                @include respond-to('tablet') {
+                    width: 100%;
+                }
+            }
+
+            p {
+                margin: 0;
+                line-height: 28px;
+            }
+
+            .menu {
+                padding: 0;
+                margin: $padding 0;
+                list-style: none;
+
+                li {
+                    margin: $halfpadding 0;
+                }
+
+                a {
+                    line-height: 28px;
+                    color: $black;
+
+                    &:hover {
+                        color: $darkgray;
+                    }
+                }
+            }
+
+            .social {
+
+                a {
+                    display: inline-block;
+                    transition: $transition;
+
+                    &:hover {
+                        transform: translateY(-3px);
+                    }
+
+                    svg path {
+                        transition: $transition;
+                        fill: $darkgray;
+                    }
+                }
+
+                @include respond-to('tablet') {
+                    text-align: center;
+
+                    a img {
+                        width: 30px;
+                        height: 30px;
+                    }
+                }
+            }
+        }
+    }
+
+    .bottom {
+        background: $lightgray;
+
+        .container {
+            @include container;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+
+            .menu-policy-menu-container {
+                margin-left: auto;
+
+                .menu {
+                    padding: 0;
+                    margin: 0;
+                    list-style: none;
+                    display: flex;
+                    align-items: center;
+                    gap: $triplepadding;
+                    flex-wrap: wrap;
+
+                    @include respond-to('tablet') {
+                        gap: $doublepadding;
+                        margin: $doublepadding 0;
+                    }
+
+                    li {
+                        display: inline-block;
+
+                        a {
+                            color: $black;
+
+                            &:hover {
+                                color: $darkgray;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .copy-disclaimer {
+                font-size: 14px;
+                line-height: 20px;
+                letter-spacing: 0.7px;
+
+                @include respond-to('tablet') {
+                    margin-bottom: $doublepadding;
+                }
+            }
+        }
+    }
+}

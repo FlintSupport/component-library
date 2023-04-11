@@ -1,0 +1,77 @@
+.general {
+    padding: $quadpadding 0;
+
+    .container {
+        @include container;
+        display: flex;
+        flex-wrap: wrap;
+        gap: $doublepadding; 
+
+        .column {
+            width: 100%;
+
+            .module:not(:last-of-type) {
+                margin-bottom: $padding;
+            }
+
+            img, iframe {
+                max-width: 100%;
+            }
+        }
+        
+        &.halves .column {
+            width: calc(50% - #{$padding});
+
+            @include respond-to('mobile') {
+                width: 100% !important;
+            }
+        }
+        &.smallleft .column {
+            &:first-of-type {
+                width: calc(40% - #{$padding});
+            }
+            &:last-of-type {
+                width: calc(60% - #{$padding});
+            }
+
+            @include respond-to('mobile') {
+                width: 100% !important;
+            }
+        }
+        &.smallright .column {
+            &:first-of-type {
+                width: calc(60% - #{$padding});
+            }
+            &:last-of-type {
+                width: calc(40% - #{$padding});
+            }
+
+            @include respond-to('mobile') {
+                width: 100% !important;
+            }
+        }
+        &.thirds .column {
+            width: calc(33.3333% - (#{$padding} * 1.3333));
+
+            @include respond-to('mobile') {
+                width: 100%;
+            }
+        }
+        &.fourths .column {
+            width: calc(25% - #{$padding} - #{$halfpadding});
+
+            @include respond-to('tablet') {
+                width: calc(50% - #{$padding});
+            }
+            @include respond-to('mobile') {
+                width: 100%;
+            }
+        }
+    }
+
+    &.small {
+        .container {
+            max-width: $smallsize;
+        }
+    }
+}

@@ -1,0 +1,313 @@
+footer {
+    background: $white;
+
+    a {
+        color: $black;
+        text-decoration: none;
+        
+        &:hover {
+            text-decoration: underline;
+            color: $darkgray;
+        }
+    }
+
+    .container {
+        @include container;
+
+        h3 {
+            font-size: 20px;
+            line-height: 22px;
+            margin: 0 0 $halfpadding;
+        }
+
+        .top {
+            padding: 0 $padding;
+            width: 100%;
+            margin-left: calc(0px - #{$padding});
+            display: flex;
+
+            @include respond-to('tablet') {
+                flex-direction: column;
+            }
+
+            .left {
+                width: calc(30% - #{$doublepadding});
+                padding: $triplepadding 0;
+                display: flex;
+                flex-direction: column;
+                background: transparent;
+        
+                @include respond-to('tablet') {
+                    width: 100%;
+                    text-align: center;
+                    margin: 0 auto;
+                }
+        
+                h5 {
+                    color: $darkgray;
+                    margin-bottom: $padding;
+                    font-weight: 700;
+                }
+        
+                img {
+                    max-width: 450px;
+                    margin-bottom: $padding;
+        
+                    @include respond-to('mobile') {
+                        max-width: 100%;
+                    }
+                }
+        
+                a {
+                    display: inline-block;
+                    text-decoration: none;
+                    color: $darkgray;
+                    font-weight: 600;
+                    font-size: 16px;
+        
+                    &::after {
+                        content: "";
+                        width: 13px;
+                        height: 9px;
+                        background: url(../img/chevron.svg);
+                        background-size: cover;
+                        background-position: center;
+                        display: inline-block;
+                        margin-left: 6px;
+                        transition: $transition;
+                    }
+        
+                    &:hover::after {
+                        margin-left: $halfpadding;
+                    }
+                }
+        
+                .container {
+                    width: 100%;
+                    max-width: 450px;
+                    height: calc(100% - #{$doublepadding});
+                    margin-left: auto;
+                    display: flex;
+                    justify-content: center;
+                    flex-direction: column;
+        
+                    @include respond-to('tablet') {
+                        width: 100%;
+                        max-width: 900px;
+                        margin: 0 auto;
+                        align-items: center;
+                        padding: 0;
+                    }
+                }
+            }
+            
+            .right {
+                width: 70%;
+                max-width: 1000px;
+                padding: $doublepadding $triplepadding;
+        
+                @include respond-to('tablet') {
+                    width: calc(100% - #{$triplepadding} - #{$triplepadding});
+                    max-width: 900px;
+                    margin: 0 auto;
+                }
+                @include respond-to('mobile') {
+                    width: calc(100% - #{$doublepadding});
+                    padding: $doublepadding $padding;
+                }
+        
+                .container {
+                    display: flex;
+                    flex-wrap: wrap;
+
+                    @include respond-to('tablet') {
+                        flex-direction: column;
+                    }
+        
+                    .menus {
+                        width: 100%;
+                        display: flex;
+                        margin-top: 78px;
+                        flex-wrap: wrap;
+                        gap: $padding;
+        
+                        @include respond-to('tablet') {
+                            display: none;
+                        }
+        
+                        .column {
+                            flex-grow: 1;
+                            width: calc(25% - (#{$halfpadding} * 1.5));
+                            margin-bottom: $doublepadding;
+        
+                            h4 {
+                                font-size: 18px;
+                                line-height: 24px;
+                                text-transform: uppercase;
+                                color: $gray;
+                                letter-spacing: 0.12px;
+                            }
+        
+                            ul {
+                                padding: 0;
+                                list-style: none;
+                                margin-top: $doublepadding;
+        
+                                li {
+                                    margin-bottom: $halfpadding;
+                                    
+                                    a {
+                                        color: $black;
+                                        text-decoration: none;
+                                        transition: $transition;
+                                        font-weight: 400;
+        
+                                        &:hover {
+                                            color: $darkgray;
+                                            font-weight: bold;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+        
+                    .social {
+                        margin-right: $padding;
+        
+                        a {
+                            display: inline-block;
+                            transition: $transition;
+                            margin: 0 calc(#{$halfpadding} / 2);
+        
+                            &:hover {
+                                transform: translateY(-3px);
+                            }
+                        }
+        
+                        @include respond-to('tablet') {
+                            text-align: center;
+        
+                            a img {
+                                width: 30px;
+                                height: 30px;
+                            }
+                        }
+                    }
+        
+                    .copyright {
+                        display: flex;
+                        font-size: 16px;
+                        margin-left: auto;
+        
+                        @include respond-to('small') {
+                            flex-direction: column;
+                            margin-left: 0;
+                        }
+                        @include respond-to('tablet') {
+                            margin-top: $doublepadding;
+                        }
+        
+                        .left {
+                            background: transparent;
+                            padding: 0;
+                            width: auto;
+                            margin-right: $triplepadding;
+        
+                            @include respond-to('tablet') {
+                                margin: 0 0 $halfpadding 0;
+                            }
+                        }
+        
+                        .right {
+                            padding: 0;
+                            width: auto;
+        
+                            ul {
+                                padding: 0;
+                                margin: 0;
+                                
+                                li {
+                                    list-style: none;
+                                    display: inline-block;
+        
+                                    &:not(:last-of-type) {
+                                        margin-right: $padding;
+                                    }
+        
+                                    a {
+                                        color: $black;
+                                        text-decoration: none;
+                                        font-weight: 400;
+        
+                                        &:hover {
+                                            text-decoration: underline;
+                                        }
+                                    }
+        
+                                    @include respond-to('tablet') {
+                                        display: block;
+                                        text-align: center;
+                                        margin-right: 0 !important;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .bottom {
+        background: $lightgray;
+
+        .container {
+            @include container;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+
+            .menu-policy-menu-container {
+                margin-left: auto;
+
+                .menu {
+                    padding: 0;
+                    margin: 0;
+                    list-style: none;
+                    display: flex;
+                    align-items: center;
+                    gap: $triplepadding;
+                    flex-wrap: wrap;
+
+                    @include respond-to('tablet') {
+                        gap: $doublepadding;
+                        margin: $doublepadding 0;
+                    }
+
+                    li {
+                        display: inline-block;
+
+                        a {
+                            color: $black;
+
+                            &:hover {
+                                color: $darkgray;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .copy-disclaimer {
+                font-size: 14px;
+                line-height: 20px;
+                letter-spacing: 0.7px;
+
+                @include respond-to('tablet') {
+                    margin-bottom: $doublepadding;
+                }
+            }
+        }
+    }
+}

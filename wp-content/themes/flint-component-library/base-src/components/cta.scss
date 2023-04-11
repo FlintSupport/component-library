@@ -1,0 +1,85 @@
+section.cta:not(.hero) {
+    padding: $quadpadding 0;
+
+    .container {
+        @include container;
+        display: flex;
+        gap: calc(#{$quadpadding} * 2);
+        align-items: center;
+
+        .left, .right {
+            width: 50%;
+        }
+
+        .left {
+            max-width: 470px;
+
+            h2 {
+                margin-top: 0;
+            }
+
+            p {
+                line-height: 26px;
+            }
+
+            .buttons {
+                display: flex;
+                margin-top: $doublepadding;
+                gap: $midpadding;
+            }
+
+            &.noimage {
+                max-width: 100%;
+                text-align: center;
+                width: 100%;
+
+                .buttons {
+                    justify-content: center;
+                }
+            }
+        }
+
+        .right {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            max-width: 50%;
+            margin-left: auto;
+
+            img {
+                width: 100%;
+                height: auto;
+            }
+        }
+
+        @include respond-to('tablet') {
+            flex-direction: column;
+            gap: 0px;
+
+            .left {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .right {
+                max-width: calc(100% + #{$doublepadding});
+                width: calc(100% + #{$doublepadding});
+                margin-left: 0;
+                padding-bottom: $quadpadding;
+
+                &::before {
+                    display: none;
+                }
+            }
+        }
+    }
+
+    &.notop .left {
+        padding-top: 0;
+    }
+
+    &.nobottom .left {
+        padding-bottom: 0;
+    }
+}

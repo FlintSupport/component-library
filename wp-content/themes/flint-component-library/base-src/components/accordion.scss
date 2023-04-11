@@ -1,0 +1,61 @@
+.accordion {
+    padding: $quadpadding 0;
+    
+    .container {
+        @include container;
+
+        .accordionItems {
+
+            .accordionItem {
+                background: $white;
+                margin-bottom: $midpadding;
+
+                .accordionTitle {
+                    font-size: 20px;
+                    font-weight: 500;
+                    line-height: 28px;
+                    padding: $padding;
+                    display: flex;
+                    align-items: center;
+                    cursor: pointer;
+                    transition: $transition;
+
+                    &:hover {
+                        color: $darkgray;
+                    }
+
+                    &::before {
+                        content: "";
+                        display: inline-block;
+                        background: url(../img/plus.svg) no-repeat center/contain;
+                        width: 32px;
+                        height: 32px;
+                        margin-right: $padding;
+                        transition: $transition;
+                    }
+
+                    &.active {
+                        display: flex;
+                        
+                        &::before {
+                            background: url(../img/minus.svg) no-repeat center/contain;
+                        }
+                    }
+                }
+
+                .accordionCopy {
+                    display: none;
+                    padding: $padding $padding $padding calc(#{$doublepadding} + 25px);
+
+                    p:first-of-type {
+                        margin-top: 0;
+                    }
+
+                    ::marker {
+                        color: $darkgray;
+                    }
+                }
+            }
+        }
+    }
+}

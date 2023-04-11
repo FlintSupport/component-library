@@ -1,0 +1,190 @@
+.testimonial {
+    max-width: 100% !important;
+    overflow: hidden;
+    padding: $quadpadding 0;
+    
+    .container {
+        @include container;
+        max-width: $smallsize;
+    }
+
+    &.single {
+        .container {
+            display: flex;
+            max-width: 900px;
+            gap: $triplepadding;
+            align-items: center;
+
+            .image {
+                width: 33%;
+
+                img {
+                    display: block;
+                }
+            }
+
+            .content {
+                padding: $triplepadding 0;
+                width: 66%;
+
+                blockquote {
+                    font-size: 24px;
+                    font-weight: 300;
+                    font-style: italic;
+                    color: $black;
+                    letter-spacing: 0.48px;
+                    line-height: 38px;
+                    padding: 0;
+                    margin: 0;
+                    display: block;
+
+                    &::before {
+                        content: "";
+                        display: block;
+                        background: url(../img/quote.svg) no-repeat center/contain;
+                        width: 50px;
+                        height: 36px;
+                        margin-bottom: $padding;
+                    }
+                }
+
+                .author {
+                    display: inline-block;
+                    margin-top: $padding;
+
+                    p {
+                        margin: 4px 0;
+                    }
+
+                    a {
+                        color: $darkgray;
+                        text-decoration: none;
+
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                    }
+                }
+            }
+
+            @include respond-to('tablet') {
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+
+                .image {
+                    width: 100%;
+                    max-width: 100%;
+                    display: flex;
+                    justify-content: center;
+                    margin-top: $padding;
+                }
+
+                .content {
+                    padding-top: 0;
+                    display: flex;
+                    flex-direction: column;
+                    width: 100%;
+                }
+            }
+        }
+    }
+
+    &.multi {
+        .slide {
+            display: flex !important;
+            max-width: 900px;
+            gap: calc(16px * 3);
+            align-items: center;
+            margin: 0 auto;
+
+            .image {
+                width: 33%;
+                
+                img {
+                    max-width: 100%;
+                    height: auto;
+                    display: block;
+                }
+            }
+
+            .content {
+                padding: $triplepadding 0;
+                width: 66%;
+
+                blockquote {
+                    font-size: 24px;
+                    font-weight: 300;
+                    font-style: italic;
+                    color: $black;
+                    letter-spacing: 0.48px;
+                    line-height: 38px;
+                    padding: 0;
+                    margin: 0;
+                    display: block;
+
+                    &::before {
+                        content: "";
+                        display: block;
+                        background: url(../img/quote.svg) no-repeat center/contain;
+                        width: 50px;
+                        height: 36px;
+                        margin-bottom: $padding;
+                    }
+                }
+
+                .author {
+                    display: inline-block;
+                    margin-top: $padding;
+
+                    p {
+                        margin: 4px 0;
+                    }
+
+                    a {
+                        color: $darkgray;
+                        text-decoration: none;
+
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                    }
+                }
+            }
+
+            @include respond-to('tablet') {
+                flex-direction: column;
+                gap: 0px;
+                align-items: flex-start;
+
+                .image {
+                    width: 100%;
+
+                    img {
+                        margin: 0 auto;
+                    }
+                }
+
+                .content {
+                    width: 100%;
+                }
+            }
+        }
+
+        .testimonialSlider {
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+
+            .slick-list {
+                max-width: calc(100% - 92px);
+            }
+            
+            .slick-slide {
+                z-index: 900 !important;
+            }
+        }
+    }
+}

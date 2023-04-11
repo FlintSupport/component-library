@@ -1,0 +1,174 @@
+.form {
+    padding: $quadpadding 0;
+
+    .container {
+        @include container;
+        max-width: 600px;
+
+        .intro {
+            width: 100%;
+            margin-bottom: $triplepadding;
+        }
+    }
+
+    &.withside {
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: $smallsize;
+            gap: $doublepadding 180px;
+
+            .gForm {
+                flex-grow: 1;
+            }
+
+            .sidebar {
+                width: 350px;
+                margin-left: auto;
+
+                .block {
+                    background: $darkgray;
+                    color: $white;
+                    padding: $padding $triplepadding;
+                    margin-bottom: $doublepadding;
+
+                    h1, h2, h3, h4, h5, h6 {
+                        margin: $padding 0;
+                    }
+                }
+            }
+
+            @include respond-to('tablet') {
+                gap: $quadpadding;
+            }
+
+            @include respond-to('med') {
+                flex-direction: column;
+
+                .sidebar {
+                    width: 100%;
+                }
+            }
+        }
+    }
+}
+
+.gform_wrapper.gravity-theme {
+
+    input[type=radio], input[type=checkbox] {
+        display: none;
+    }
+
+    .gfield_radio, .gfield_checkbox {
+        .gchoice {
+            
+            label {
+                display: inline-flex !important;
+                align-items: center;
+                cursor: pointer;
+
+                &::before {
+                    content: "";
+                    display: inline-block;
+                    width: 15px;
+                    height: 15px;
+                    margin-top: -3px;
+                    margin-right: $halfpadding;
+                }
+            }
+
+            input[type="radio"]:checked + label::before, input[type="checkbox"]:checked + label::before {
+                background: $darkgray;
+            }
+        }
+    }
+
+    .gfield_radio .gchoice label::before {
+        border-radius: 100%;
+    }
+
+    .gfield_label {
+        color: $black;
+        font-size: 18px !important;
+        line-height: 26px;
+        text-transform: uppercase;
+    }
+
+    .gfield_required {
+        color: $black;
+        font-size: 18px !important;
+        padding-left: 0px;
+    }
+
+    .gfield:not(:last-child), fieldset:not(:last-child) {
+        margin-bottom: $padding;
+    }
+
+    .gform_footer {
+        justify-content: flex-end;
+    }
+
+    .button {
+        background: $gray;
+        font-size: 16px;
+        line-height: 22px;
+        letter-spacing: 0.48px;
+        border-color: $darkgray;
+        transition: $transition;
+        cursor: pointer;
+
+        &::after {
+            content: "";
+            display: inline-block;
+            width: 6px;
+            height: 11px;
+            background: url(../img/chevron.svg) no-repeat center/contain;
+            margin-left: $padding;
+            transition: $transition;
+        }
+
+        &:hover {
+            border-color: $darkgray;
+            color: $darkgray;
+        }
+    }
+
+    .gform_validation_errors {
+        border-color: #E3405F;
+        background-color: $white;
+    }
+    .gform_validation_errors>h2 {
+        color: #E3405F;
+        font-family: $fontbody;
+        text-transform: none;
+        font-size: 16px;
+    }
+
+    .gfield_error {
+        label, .gfield_required, .validation_message {
+            color: #E3405F;
+        }
+        input, textarea {
+            border-color: #E3405F;
+        }
+        .validation_message {
+            border: none;
+            padding: 0;
+            background: transparent;
+        }
+    }
+}
+
+input[type=text], input[type=email], input[type=tel], textarea, select {
+    border: $bordergray 1px solid;
+    padding: calc(#{$padding} - 5px) $midpadding !important;
+    font-size: 18px;
+    line-height: 26px;
+    color: $black;
+    font-family: $fontbody;
+
+    &:focus, &:focus-visible {
+        border-color: $black;
+        outline: none;
+    }
+}

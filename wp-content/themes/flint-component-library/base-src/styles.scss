@@ -1,0 +1,160 @@
+/* =======================================
+   VARIABLES
+   ======================================= */
+
+$transition: all .2s ease;
+$fontbody: 'Source Sans Pro', 'Helvetica', 'Arial', sans-serif;
+$fontheader: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+
+
+/* =======================================
+   IMPORTS
+   ======================================= */
+
+@import "globals/import.scss";
+@import "components/import.scss";
+@import "templates/import.scss";
+
+
+/* =======================================
+   GLOBAL STYLES
+   ======================================= */
+
+body {
+   font-family: $fontbody;
+   margin: 0;
+   font-size: 18px;
+   background: #ffffff;
+
+   &.active {
+      overflow-y: hidden;
+   }
+
+
+   /* --------- GLOBAL TEXT STYLES --------- */
+   h1, h2, h3 {
+      font-family: $fontheader;
+   }
+   h1 {
+      font-size: 50px;
+      text-transform: uppercase;
+   }
+   h2 {
+      font-size: 38px;
+   }
+   h3 {
+      font-size: 28px;
+   }
+
+
+   /* --------- LINKS --------- */
+   a {
+      color: $darkgray;
+      transition: $transition;
+   }
+
+   .button {
+      display: inline-block;
+      padding: $halfpadding $doublepadding;
+      text-decoration: none;
+      text-transform: uppercase;
+      border: 1px solid;
+
+      &.primary {
+         background: $gray;
+         color: $black;
+         border-color: $darkgray;
+
+         &:hover {
+            background: $darkgray;
+            border-color: $darkgray;
+            color: $white;
+         }
+      }
+
+      &.secondary {
+         background: $white;
+         color: $darkgray;
+         border-color: $darkgray;
+
+         &:hover {
+            background: $darkgray;
+            border-color: $darkgray;
+            color: $white;
+         }
+      }
+   }
+
+
+   /* --------- GLOBAL SECTION STYLES --------- */
+   section {
+      padding: 0 $padding;
+
+      *:first-child {
+         margin-top: 0;
+      }
+
+      *:last-child {
+         margin-bottom: 0;
+      }
+
+      &.gray {
+         background: $lightgray;
+      }
+
+      &.notop {
+         padding-top: 0;
+      }
+
+      &.nobottom {
+         padding-bottom: 0;
+      }
+
+      img {
+         display: block;
+      }
+   }
+
+
+   /* --------- LIST STYLES --------- */
+   .checklist {
+      padding: 0;
+      list-style: none;
+
+      li {
+         display: flex;
+         align-items: flex-start;
+         margin-bottom: $midpadding;
+         font-weight: 500;
+
+         &::before {
+            content: "";
+            display: inline-block;
+            background: url(../img/check.svg);
+            min-width: 24px;
+            min-height: 24px;
+            width: 24px;
+            height: 24px;
+            margin-right: $halfpadding;
+            margin-top: -2px;
+         }
+      }
+   }
+
+   ol, ul {
+      padding-left: 20px;
+
+      &.two {
+         columns: 2;
+      }
+      &.three {
+         columns: 3;
+      }
+   }
+
+   
+   /* --------- BREADCRUMBS --------- */
+   .breadcrumbWrapper {
+      @include container;
+   }
+}

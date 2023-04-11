@@ -1,0 +1,246 @@
+.cards {
+    padding: $quadpadding 0;
+
+    .container {
+        @include container;
+        display: flex;
+        max-width: $smallsize;
+        gap: $triplepadding;
+        flex-wrap: wrap;
+
+        .intro {
+            width: 100%;
+        }
+
+        h2 {
+            width: 100%;
+            margin: 0;
+        }
+
+        .card {
+            background: $white;
+            width: calc(33.33333% - #{$doublepadding});
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: $black;
+            position: relative;
+
+            &.first {
+                background: $darkgray;
+                color: $white;
+                padding: $doublepadding 0 $triplepadding;
+
+                *:not(a.button):not(a.button span) {
+                    margin: 0 0 $padding 0;
+                    padding: 0 $doublepadding;
+                }
+            }
+
+            &.last {
+                background: $lightgray;
+                padding: $doublepadding 0 $triplepadding;
+
+
+                *:not(a.button):not(a.button span) {
+                    margin: 0 0 $padding 0;
+                    padding: 0 $doublepadding;
+                }
+            }
+
+            .featured {
+                position: absolute;
+                bottom: 100%;
+                right: 0;
+                background: $darkgray;
+                color: $white;
+                font-size: 18px;
+                line-height: 34px;
+                text-transform: uppercase;
+                padding: 0 $padding 0 $midpadding;
+                display: flex;
+                align-items: center;
+
+                &::before {
+                    content: "";
+                    display: inline-block;
+                    width: 14px;
+                    height: 13px;
+                    background: url(../img/star.svg) no-repeat center/contain;
+                    margin-right: $halfpadding;
+                }
+            }
+
+            .image {
+                min-height: 80px;
+                max-height: 150px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+
+                img {
+                    min-height: 100%;
+                    width: auto;
+                }
+            }
+
+            .content {
+                padding: $doublepadding $doublepadding $triplepadding;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+
+                h4 {
+                    margin: 0;
+                    color: $black;
+                    transition: $transition;
+                }
+
+                p {
+                    margin-bottom: 0;
+                }
+
+                span {
+                    display: inline-block;
+                    margin-top: auto;
+                    padding-top: $doublepadding;
+                    font-size: 18px;
+                    line-height: 24px;
+                    color: $black;
+                    text-transform: uppercase;
+                    text-decoration: none;
+                    font-weight: bold;
+
+                    &::after {
+                        content: "";
+                        display: inline-block;
+                        background: url(../img/arrow-right.svg) no-repeat right/cover;
+                        width: 20px;
+                        height: 15px;
+                        transition: $transition;
+                        margin-left: $halfpadding;
+                    }
+                }
+            }
+
+            @include respond-to('tablet') {
+                width: calc(50% - #{$midpadding});
+                min-width: calc(50% - #{$midpadding});
+            }
+
+            @include respond-to('mobile') {
+                width: 100%;
+            }
+        }
+
+        a:hover {
+            h4 {
+                color: $darkgray !important;
+            }
+
+            span::after {
+                width: 31px !important;
+            }
+        }
+    }
+
+    &.stretch {
+
+        .card {
+            width: calc(50% - #{$midpadding});
+
+            .image {
+                min-height: 117px;
+            }
+
+            &.last {
+                justify-content: center;
+
+                * {
+                    width: 100%;
+                    max-width: 300px;
+                    margin-left: auto !important;
+                    margin-right: auto !important;
+                }
+
+                .button {
+                    margin: $doublepadding 0 0 !important;
+                    width: auto !important;
+                }
+
+                ul, ol {
+                    padding-left: 20px;
+                }
+            }
+
+            &.last {
+                *:not(.button) {
+                    max-width: calc(100% - #{$quadpadding});
+                    padding: 0;
+                }
+            }
+
+            @include respond-to('mobile') {
+                width: calc(100% - #{$midpadding});
+            }
+        }
+    }
+
+    .image.noimage {
+        min-height: 0px !important;
+    }
+
+    &.bg {
+
+        .container {
+            gap: $triplepadding 0;
+
+            h2 {
+                margin-bottom: $doublepadding;
+            }
+
+            .card {
+                background-size: cover;
+                background-position: center;
+                width: 33.3333%;
+
+                .content {
+                    background: linear-gradient(0deg, rgba(0,0,0,0.3) 50%, transparent 100%);
+                    min-height: calc(270px - #{$quadpadding});
+                    padding: $doublepadding;
+
+                    h4 {
+                        color: $white;
+                        margin-top: auto;
+                        margin-bottom: $padding;
+
+                        &::after {
+                            opacity: 0;
+                            content: "";
+                            display: inline-block;
+                            background: url(../img/arrow-right.svg) no-repeat right/cover;
+                            width: 20px;
+                            height: 15px;
+                            transition: $transition;
+                            margin-left: $halfpadding;
+                        }
+                    }
+                }
+
+                .image {
+                    display: none;
+                }
+
+                @include respond-to('tablet') {
+                    width: 100%;
+                }
+            }
+
+            a:hover .content h4::after {
+                margin-left: $padding;
+                opacity: 1;
+            }
+        }
+    }
+}
