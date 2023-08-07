@@ -1843,6 +1843,41 @@ section.cta:not(.hero) {
       .tabs .container .tabItems .tabContent.top .tabCopy.full .content {
         width: 100% !important; }
 
+.gallery {
+  padding: calc(16px * 4) 0; }
+  .gallery .container {
+    max-width: 1200px;
+    margin: 0 auto; }
+    @media (max-width: 1120px) {
+      .gallery .container {
+        padding: 0 16px; } }
+    .gallery .container .images {
+      margin-top: calc(16px * 3);
+      display: flex;
+      flex-wrap: wrap;
+      gap: calc(16px * 2); }
+      .gallery .container .images .image {
+        width: calc(33.3333% - (16px * 1.3333)); }
+        .gallery .container .images .image img {
+          max-width: 100%;
+          min-width: 50%;
+          height: auto;
+          margin: 0 auto; }
+        .gallery .container .images .image figcaption {
+          margin-top: 16px;
+          font-size: 16px;
+          font-style: italic; }
+      .gallery .container .images.four .image {
+        width: calc(25% - calc(16px * 1.5)); }
+      .gallery .container .images.five .image {
+        width: calc(20% - (16px * 1.6)); }
+      @media (max-width: 1120px) {
+        .gallery .container .images.four .image, .gallery .container .images.five .image {
+          width: calc(33.3333% - (16px * 1.3333)); } }
+      @media (max-width: 600px) {
+        .gallery .container .images .image {
+          width: 100% !important; } }
+
 section.team {
   padding: calc(16px * 3) 0 calc(16px * 4); }
   section.team .container {

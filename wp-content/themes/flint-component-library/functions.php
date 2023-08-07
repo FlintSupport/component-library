@@ -49,6 +49,7 @@ add_filter( 'wp_check_filetype_and_ext', function($data, $file, $filename, $mime
   }
   add_filter( 'upload_mimes', 'cc_mime_types' );
   
+  
   function fix_svg() {
 	echo '<style type="text/css">
 		  .attachment-266x266, .thumbnail img {
@@ -189,12 +190,21 @@ function flint_acf_init() {
 		));
 		acf_register_block(array(
 			'name'				=> 'image-highlight',
-			'title'				=> __('Image Highlight Block Block'),
+			'title'				=> __('Image Highlight Block'),
 			'description'		=> __('Image on the left with content on the right with a link.'),
 			'render_callback'	=> 'flint_acf_block_render_callback',
 			'category'			=> 'flint',
 			'icon'				=> 'align-full-width',
 			'keywords'			=> array( 'tab', 'content', 'media', 'toggle'),
+		));
+		acf_register_block(array(
+			'name'				=> 'gallery',
+			'title'				=> __('Image Gallery Block'),
+			'description'		=> __('Image gallery in a tiled layout with optional captions.'),
+			'render_callback'	=> 'flint_acf_block_render_callback',
+			'category'			=> 'flint',
+			'icon'				=> 'align-full-width',
+			'keywords'			=> array( 'image', 'gallery', 'media', 'content'),
 		));
 		acf_register_block(array(
 			'name'				=> 'newsletter',
@@ -281,6 +291,7 @@ function wpse_allowed_block_types($allowed_block_types, $post) {
 			'acf/testimonials',
 			'acf/cards',
 			'acf/image-highlight',
+			'acf/gallery',
 			'acf/newsletter',
 			'acf/form',
 			'acf/comparison',

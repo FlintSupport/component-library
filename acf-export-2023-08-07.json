@@ -369,8 +369,8 @@
                 "relevanssi_exclude": 0,
                 "layout": "table",
                 "pagination": 0,
-                "min": 0,
-                "max": 0,
+                "min": 1,
+                "max": 4,
                 "collapsed": "",
                 "button_label": "Add Column",
                 "rows_per_page": 20,
@@ -580,8 +580,8 @@
                                 "max": ""
                             }
                         },
-                        "min": 1,
-                        "max": 4,
+                        "min": "",
+                        "max": "",
                         "button_label": "Add Module",
                         "parent_repeater": "field_64063970dc1fe"
                     }
@@ -594,6 +594,147 @@
                     "param": "block",
                     "operator": "==",
                     "value": "acf\/defaultcontent"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "normal",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "hide_on_screen": "",
+        "active": true,
+        "description": "",
+        "show_in_rest": 0
+    },
+    {
+        "key": "group_64d1317228fbe",
+        "title": "[BLOCK] Image Gallery",
+        "fields": [
+            {
+                "key": "field_64d13172d089a",
+                "label": "Gallery",
+                "name": "",
+                "aria-label": "",
+                "type": "tab",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "relevanssi_exclude": 0,
+                "placement": "top",
+                "endpoint": 0
+            },
+            {
+                "key": "field_64d1357ba81ed",
+                "label": "Intro Content",
+                "name": "intro_content",
+                "aria-label": "",
+                "type": "wysiwyg",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "relevanssi_exclude": 0,
+                "default_value": "",
+                "tabs": "all",
+                "toolbar": "full",
+                "media_upload": 1,
+                "delay": 0
+            },
+            {
+                "key": "field_64d13199d089c",
+                "label": "Layout",
+                "name": "layout",
+                "aria-label": "",
+                "type": "select",
+                "instructions": "",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "50",
+                    "class": "",
+                    "id": ""
+                },
+                "relevanssi_exclude": 0,
+                "choices": {
+                    "three": "Three Column",
+                    "four": "Four Column",
+                    "five": "Five Column"
+                },
+                "default_value": false,
+                "return_format": "value",
+                "multiple": 0,
+                "allow_null": 0,
+                "ui": 0,
+                "ajax": 0,
+                "placeholder": ""
+            },
+            {
+                "key": "field_64d1362e471a1",
+                "label": "Show Captions?",
+                "name": "captions",
+                "aria-label": "",
+                "type": "true_false",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "50",
+                    "class": "",
+                    "id": ""
+                },
+                "relevanssi_exclude": 0,
+                "message": "",
+                "default_value": 0,
+                "ui": 0,
+                "ui_on_text": "",
+                "ui_off_text": ""
+            },
+            {
+                "key": "field_64d1318bd089b",
+                "label": "Images",
+                "name": "images",
+                "aria-label": "",
+                "type": "gallery",
+                "instructions": "",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "relevanssi_exclude": 0,
+                "return_format": "array",
+                "library": "all",
+                "min": "",
+                "max": "",
+                "min_width": "",
+                "min_height": "",
+                "min_size": "",
+                "max_width": "",
+                "max_height": "",
+                "max_size": "",
+                "mime_types": "",
+                "insert": "append",
+                "preview_size": "medium"
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "block",
+                    "operator": "==",
+                    "value": "acf\/gallery"
                 }
             ]
         ],

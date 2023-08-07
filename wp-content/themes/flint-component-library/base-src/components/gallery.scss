@@ -1,0 +1,50 @@
+.gallery {
+    padding: $quadpadding 0;
+
+    .container {
+        @include container;
+
+        .images {
+            margin-top: $triplepadding;
+            display: flex;
+            flex-wrap: wrap;
+            gap: $doublepadding;
+
+            .image {
+                width: calc(33.3333% - (#{$padding} * 1.3333));
+
+                img {
+                    max-width: 100%;
+                    min-width: 50%;
+                    height: auto;
+                    margin: 0 auto;
+                }
+
+                figcaption {
+                    margin-top: $padding;
+                    font-size: 16px;
+                    font-style: italic;
+                }
+            }
+
+            &.four .image {
+                width: calc(25% - #{$midpadding});
+            }
+
+            &.five .image {
+                width: calc(20% - (#{$padding} * 1.6));
+            }
+
+            @include respond-to('tablet') {
+                &.four .image, &.five .image {
+                    width: calc(33.3333% - (#{$padding} * 1.3333));
+                }
+            }
+            @include respond-to('mobile') {
+                .image {
+                    width: 100% !important;
+                }
+            }
+        }
+    }
+}
