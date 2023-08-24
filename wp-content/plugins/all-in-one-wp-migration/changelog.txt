@@ -1,3 +1,18 @@
+= 7.73 =
+* Better support for PHP 8.1
+
+= 7.72 =
+* Backups time based on selected WordPress time zone
+
+= 7.71 =
+* Removed the AI1WM_MAX_FILE_SIZE constant. This constant is no longer necessary
+
+= 7.70 =
+* Hooks that allow excluding specific database tables on export
+
+= 7.69 =
+* Improved support for custom backups location
+
 = 7.68 =
 * Better support for PHP 8.1
 

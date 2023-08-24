@@ -1,5 +1,18 @@
 $(document).ready(function() {
 
+	//HEADER FOOTER SWITCHER
+	$("#header2, #header3, #footer2, #footer3, #footer4").hide();
+	$(document).on('change','#switcher #header',function(e){
+		$header = $(this).val();
+		$('header').hide();
+		$('#' + $header).show();
+	});
+	$(document).on('change','#switcher #footer',function(e){
+		$footer = $(this).val();
+		$('footer').hide();
+		$('#' + $footer).show();
+	});
+
 	//MOBILE MENU FUNCTIONS
 	$(document).on('click','#mobile-toggle',function(e){
 		$('#mobile-toggle, #menuOpen, #menuClose, #mobile-menu, body').toggleClass('active');

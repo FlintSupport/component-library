@@ -1699,6 +1699,10 @@ function ai1wm_is_scheduled_backup() {
 		return false;
 	}
 
+	if ( isset( $_GET['ai1wm_manual_reset'] ) || isset( $_POST['ai1wm_manual_reset'] ) ) {
+		return false;
+	}
+
 	return true;
 }
 
@@ -1963,6 +1967,22 @@ function ai1wm_disk_free_space( $path ) {
 }
 
 /**
+ * Set response header to json end echo data
+ *
+ * @param array $data
+ * @param int $options
+ * @param int $depth
+ * @return void
+ */
+function ai1wm_json_response( $data, $options = 0 ) {
+	if ( ! headers_sent() ) {
+		header( 'Content-Type: application/json; charset=' . get_option( 'blog_charset', 'utf-8' ) );
+	}
+
+	echo json_encode( $data, $options );
+}
+
+/**
  * Determines if the server can encrypt backups
  *
  * @return boolean
@@ -2097,20 +2117,4 @@ function ai1wm_is_decryption_password_valid( $encrypted_signature, $password ) {
 	} catch ( Ai1wm_Not_Decryptable_Exception $exception ) {
 		return false;
 	}
-}
-
-/**
- * Set response header to json end echo data
- *
- * @param array $data
- * @param int $options
- * @param int $depth
- * @return void
- */
-function ai1wm_json_response( $data, $options = 0 ) {
-	if ( ! headers_sent() ) {
-		header( 'Content-Type: application/json; charset=' . get_option( 'blog_charset', 'utf-8' ) );
-	}
-
-	echo json_encode( $data, $options );
 }

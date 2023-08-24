@@ -23,7 +23,7 @@ add_filter( 'manage_pages_columns', 'relevanssi_manage_columns', 10, 2 );
 add_action( 'admin_print_footer_scripts-edit.php', 'relevanssi_quick_edit_js' );
 add_filter( 'default_hidden_columns', 'relevanssi_hide_columns' );
 add_action( 'save_post', 'relevanssi_quick_edit_save' );
-add_filter( 'quick_edit_custom_box', 'relevanssi_quick_edit_custom_box', 10, 2 );
+add_filter( 'quick_edit_custom_box', 'relevanssi_quick_edit_custom_box', 10 );
 add_filter( 'manage_posts_custom_column', 'relevanssi_manage_custom_column', 10, 2 );
 add_filter( 'manage_pages_custom_column', 'relevanssi_manage_custom_column', 10, 2 );
 
@@ -130,7 +130,7 @@ function relevanssi_form_update_translations() {
 				<input type='checkbox' name='relevanssi_update_translations' id='relevanssi_update_translations' <?php echo esc_attr( $update_translations ); ?> />
 				<?php esc_html_e( 'Check for plugin translation updates', 'relevanssi' ); ?>
 			</label>
-		<p class="description"><?php esc_html_e( 'If you check this box, Relevanssi will check for updates to the plugin translations. At the moment, translations are available for: ', 'relevanssi' ); ?>
+		<p class="description"><?php esc_html_e( 'If you check this box, Relevanssi will check for updates to the plugin translations. At the moment, translations are available for:', 'relevanssi' ); ?>
 		Deutsch (de_DE), español (es_ES), français (fr_FR), suomi (fi)</p>
 		</td>
 		</td>
@@ -1407,9 +1407,8 @@ function relevanssi_manage_custom_column( $column, $post_id ) {
  * Adds the Relevanssi custom fields to the quick edit box.
  *
  * @param string $column    The column name.
- * @param string $post_type The post type.
  */
-function relevanssi_quick_edit_custom_box( $column, $post_type ) {
+function relevanssi_quick_edit_custom_box( $column ) {
 	switch ( $column ) {
 		case 'pinned_keywords':
 			?>

@@ -27,7 +27,7 @@
 		</div>
 	</div>
 <?php endif; ?>
-<header id="header">
+<header id="header1">
 	<nav class="top">
 		<div class="container">
 			<div class="left"><a href="tel:<?php the_field('primary_contact_number', 'options'); ?>" title="Call Flint Group"><?php the_field('primary_contact_number', 'options'); ?></a></div>
@@ -65,6 +65,86 @@
 			</div>
 			<div id="main-menu">
 				<?php wp_nav_menu( array( 'theme_location' => 'main-menu' ) ); ?>
+				<div class="search">
+					<div id="searchform"><?php get_search_form(); ?></div>
+					<a href="javascript:void(0);" id="searchButton"><img src="<?php echo get_template_directory_uri(); ?>/img/search.svg" alt="Search"></a>
+				</div>
+			</div>
+		</div>
+	</nav>
+</header>
+<header id="header2">
+	<nav class="top">
+		<div class="container">
+			<div class="left"><a href="tel:<?php the_field('primary_contact_number', 'options'); ?>" title="Call Flint Group"><?php the_field('primary_contact_number', 'options'); ?></a></div>
+			<?php wp_nav_menu( array( 'theme_location' => 'top-menu' ) ); ?>
+		</div>
+	</nav>
+	<nav class="main">
+		<div class="container">
+			<div id="mobile-toggle"><a href="javascript:void(0);" class="mobileMenu"><span id="menuOpen" class="active"><img src="<?php echo get_template_directory_uri(); ?>/img/hamburger.svg" alt="Open Menu" ></span><span id="menuClose"><img src="<?php echo get_template_directory_uri(); ?>/img/close.svg" alt="Close Menu" ></span></a></div>
+			<div id="mobile-menu">
+				<?php get_search_form(); ?>
+				<ul id="mobile-menu-links">
+					<?php
+					wp_nav_menu( array(
+						'menu' => 'main-menu-two',
+						'menu_id' => '',
+						'container' => '',
+						'items_wrap'     => '%3$s'
+					) );
+					?>
+				</ul>
+				<?php if(get_field('customer_service_hours', 'options')) { echo '<div class="hours"><h4>Customer Service Hours</h4>'; the_field('customer_service_hours', 'options'); echo '</div>'; } ?>
+				<?php if(get_field('routing_number', 'options')) { echo '<div class="routing"><h4>Routing Number</h4><p>'; the_field('routing_number', 'options'); echo '</p></div>'; } ?>
+			</div>
+			<div class="logo">
+				<a href="<?php echo home_url(); ?>">
+					<img src="<?php echo get_template_directory_uri(); ?>/img/logo.svg" alt="First National Bank of Bemidji Logo" width="203px" height="42px">
+				</a>
+			</div>
+			<div id="main-menu">
+				<?php wp_nav_menu( array( 'theme_location' => 'main-menu-two' ) ); ?>
+				<div class="search">
+					<div id="searchform"><?php get_search_form(); ?></div>
+					<a href="javascript:void(0);" id="searchButton"><img src="<?php echo get_template_directory_uri(); ?>/img/search.svg" alt="Search"></a>
+				</div>
+			</div>
+		</div>
+	</nav>
+</header>
+<header id="header3">
+	<nav class="top">
+		<div class="container">
+			<div class="left"><a href="tel:<?php the_field('primary_contact_number', 'options'); ?>" title="Call Flint Group"><?php the_field('primary_contact_number', 'options'); ?></a></div>
+			<?php wp_nav_menu( array( 'theme_location' => 'top-menu' ) ); ?>
+		</div>
+	</nav>	
+	<nav class="main">
+		<div class="container">
+			<div id="mobile-toggle"><a href="javascript:void(0);" class="mobileMenu"><span id="menuOpen" class="active"><img src="<?php echo get_template_directory_uri(); ?>/img/hamburger.svg" alt="Open Menu" ></span><span id="menuClose"><img src="<?php echo get_template_directory_uri(); ?>/img/close.svg" alt="Close Menu" ></span></a></div>
+			<div id="mobile-menu">
+				<?php get_search_form(); ?>
+				<ul id="mobile-menu-links">
+					<?php
+					wp_nav_menu( array(
+						'menu' => 'main-menu-two',
+						'menu_id' => '',
+						'container' => '',
+						'items_wrap'     => '%3$s'
+					) );
+					?>
+				</ul>
+				<?php if(get_field('customer_service_hours', 'options')) { echo '<div class="hours"><h4>Customer Service Hours</h4>'; the_field('customer_service_hours', 'options'); echo '</div>'; } ?>
+				<?php if(get_field('routing_number', 'options')) { echo '<div class="routing"><h4>Routing Number</h4><p>'; the_field('routing_number', 'options'); echo '</p></div>'; } ?>
+			</div>
+			<div class="logo">
+				<a href="<?php echo home_url(); ?>">
+					<img src="<?php echo get_template_directory_uri(); ?>/img/logo.svg" alt="First National Bank of Bemidji Logo" width="203px" height="42px">
+				</a>
+			</div>
+			<div id="main-menu">
+				<?php wp_nav_menu( array( 'theme_location' => 'main-menu-three' ) ); ?>
 				<div class="search">
 					<div id="searchform"><?php get_search_form(); ?></div>
 					<a href="javascript:void(0);" id="searchButton"><img src="<?php echo get_template_directory_uri(); ?>/img/search.svg" alt="Search"></a>

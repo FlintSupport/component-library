@@ -80,7 +80,8 @@ class UploadViewController extends \EnableMediaReplace\ViewController
 		if (false === $check)
 		{
 			 $error = $replaceController->returnLastError();
-			 $this->viewError($error);
+			 $data = $replaceController->returnLastErrorData();
+			 $this->viewError($error, $data);
 		}
 
 		$result = $replaceController->run();
@@ -96,22 +97,22 @@ class UploadViewController extends \EnableMediaReplace\ViewController
 	 {
 		 $ID = intval($_POST["ID"]); // legacy
 		 $replace_type = isset($_POST["replace_type"]) ? sanitize_text_field($_POST["replace_type"]) : false;
-		 $timestamp_replace = isset($_POST['timestamp_replace']) ? intval($_POST['timestamp_replace']) : Replacer::TIME_UPDATEMODIFIED;
+		 $timestamp_replace = isset($_POST['timestamp_replace']) ? intval($_POST['timestamp_replace']) : ReplaceController::TIME_UPDATEMODIFIED;
 
 		 $remove_background = ( isset( $_POST['remove_after_progress'] ) ) ? true : false;
 
 		 $do_new_location  = isset($_POST['new_location']) ? true : false;
-		 $do_new_location = apply_filters('emr/replace/file_is_movable', true, $ID);
+		 $do_new_location = apply_filters('emr/replace/file_is_movable', $do_new_location, $ID);
  		 $new_location_dir = isset($_POST['location_dir']) ? sanitize_text_field($_POST['location_dir']) : null;
 
 		 $is_custom_date = false;
 
 		 switch ($timestamp_replace) {
-		     case \EnableMediaReplace\Replacer::TIME_UPDATEALL:
-		     case \EnableMediaReplace\Replacer::TIME_UPDATEMODIFIED:
+		     case ReplaceController::TIME_UPDATEALL:
+		     case ReplaceController::TIME_UPDATEMODIFIED:
 		         $datetime = current_time('mysql');
 		         break;
-		     case \EnableMediaReplace\Replacer::TIME_CUSTOM:
+		     case ReplaceController::TIME_CUSTOM:
 		         $custom_date = $_POST['custom_date_formatted'];
 		         $custom_hour = str_pad($_POST['custom_hour'], 2, 0, STR_PAD_LEFT);
 		         $custom_minute = str_pad($_POST['custom_minute'], 2, 0, STR_PAD_LEFT);
@@ -120,15 +121,7 @@ class UploadViewController extends \EnableMediaReplace\ViewController
 		         Log::addDebug('Custom Date - ' . $custom_date . ' ' . $custom_hour . ':' . $custom_minute);
 		         $custom_date = \DateTime::createFromFormat('Y-m-d G:i', $custom_date . ' ' . $custom_hour . ':' . $custom_minute);
 		         if ($custom_date === false) {
-		             /*wp_safe_redirect($redirect_error);
-		             $errors = \DateTime::getLastErrors();
-		             $error = '';
-		             if (isset($errors['errors'])) {
-		                 $error = implode(',', $errors['errors']);
-		             } */
-		             //Notices::addError(sprintf(__('Invalid Custom Date. Please check the custom date values: (%s)', 'enable-media-replace'), $error));
 								 $this->viewError(self::ERROR_TIME);
-		             //exit();
 		         }
 		         $datetime  =  $custom_date->format("Y-m-d H:i:s");
 						 $is_custom_date = true;
@@ -201,7 +194,6 @@ class UploadViewController extends \EnableMediaReplace\ViewController
 				 }
 
 				 if ($filedata["ext"] == false && ! current_user_can('unfiltered_upload')) {
-//						 Log::addWarn('Uploaded File type does not meet security guidelines, aborting');
 						  $this->viewError(self::ERROR_SECURITY);
 				 }
 

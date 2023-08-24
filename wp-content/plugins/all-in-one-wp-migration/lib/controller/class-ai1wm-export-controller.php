@@ -80,6 +80,12 @@ class Ai1wm_Export_Controller {
 								ai1wm_json_response( array( 'errors' => array( array( 'code' => $e->getCode(), 'message' => $e->getMessage() ) ) ) );
 							}
 							Ai1wm_Directory::delete( ai1wm_storage_path( $params ) );
+
+							// Check if export is performed from scheduled event
+							if ( isset( $params['event_id'] ) ) {
+								$params['error_message'] = $e->getMessage();
+								do_action( 'ai1wm_status_export_fail', $params );
+							}
 							exit;
 						} catch ( Exception $e ) {
 							if ( defined( 'WP_CLI' ) ) {
@@ -89,6 +95,12 @@ class Ai1wm_Export_Controller {
 								Ai1wm_Notification::error( __( 'Unable to export', AI1WM_PLUGIN_NAME ), $e->getMessage() );
 							}
 							Ai1wm_Directory::delete( ai1wm_storage_path( $params ) );
+
+							// Check if export is performed from scheduled event
+							if ( isset( $params['event_id'] ) ) {
+								$params['error_message'] = $e->getMessage();
+								do_action( 'ai1wm_status_export_fail', $params );
+							}
 							exit;
 						}
 					}

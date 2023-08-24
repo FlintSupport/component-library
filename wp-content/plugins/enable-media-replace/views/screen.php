@@ -8,6 +8,8 @@ if (! defined('ABSPATH')) {
 //use \EnableMediaReplace\UIHelper;
 use EnableMediaReplace\ShortPixelLogger\ShortPixelLogger as Log;
 use EnableMediaReplace\Notices\NoticeController as Notices;
+use EnableMediaReplace\Controller\ReplaceController as ReplaceController;
+
 
 /**
  * Uploadscreen for selecting and uploading new media file
@@ -64,7 +66,7 @@ $uiHelper = emr()->uiHelper();
 		<input type="hidden" name="ID" value="<?php echo $attachment_id ?>" />
 
 		<p class='explainer'>
-			<?php printf(esc_html__('			You are about to replace %s  in your media library. This will be %spermanent%s . %s You can click on the new image panel and select a file from your computer.  You can also drag and drop a file into this window', 'enable-media-replace'), '<b class="underline" title="' . $sourceFile->getFullPath() . '">' . $sourceFile->getFileName()  . '</b>', '<b>','</b>', '<br>' );
+			<?php printf(esc_html__('			You are about to replace %s in your media library. This will be %spermanent%s. %s You can click on the new image panel and select a file from your computer. You can also drag and drop a file into this window', 'enable-media-replace'), '<b class="underline" title="' . $sourceFile->getFullPath() . '">' . $sourceFile->getFileName()  . '</b>', '<b>','</b>', '<br>' );
 			?>
 		</p>
 
@@ -179,7 +181,7 @@ $uiHelper = emr()->uiHelper();
 					$attachmentDate = new \dateTime($view->attachment->post_date);
 
 
-          if ($settings['timestamp_replace'] == \EnableMediaReplace\Replacer::TIME_CUSTOM)
+          if ($settings['timestamp_replace'] == ReplaceController::TIME_CUSTOM)
           {
              $date = new \dateTime($settings['custom_date']);
           }
@@ -214,10 +216,11 @@ $uiHelper = emr()->uiHelper();
                $subdir = $settings['new_location_dir'];
           ?>
 
+<!--
 				<div class='title_option'>
 						<input type="text" name="new_title" value="">
 				</div>
-
+-->
          <div class='location_option'>
 					 <?php
 					 if (true === $view->is_movable): ?>

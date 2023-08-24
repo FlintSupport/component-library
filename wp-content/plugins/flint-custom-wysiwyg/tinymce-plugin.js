@@ -102,6 +102,25 @@
 				    });
                     }
                 },
+				{
+                    text: 'Add In-Content Anchor',
+                    onclick: function() {
+                        editor.windowManager.open( {
+				        title: 'Add In-Content Anchor',
+				        icon: 'plus',
+				        body: [
+							{
+								type: 'textbox',
+								name: 'anchor',
+								label: 'Anchor ID'
+							}
+						],
+				        onsubmit: function( e ) {
+                            editor.insertContent( '<hr class="anchor" id="' + e.data.anchor + '">');
+                        }
+				    });
+                    }
+                },
         	]
         });
     });
