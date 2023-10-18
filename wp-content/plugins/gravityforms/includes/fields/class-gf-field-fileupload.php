@@ -346,7 +346,7 @@ class GF_Field_FileUpload extends GF_Field {
 			$upload             = "<div id='{$container_id}' data-settings='{$plupload_init_json}' class='gform_fileupload_multifile'>
 										<div id='{$drag_drop_id}' class='gform_drop_area gform-theme-field-control'>
 											<span class='gform_drop_instructions'>{$drop_files_here_text} </span>
-											<button type='button' id='{$browse_button_id}' class='button gform_button_select_files' {$describedby} {$tabindex} >{$select_files_text}</button>
+											<button type='button' id='{$browse_button_id}' class='button gform_button_select_files gform-theme-button gform-theme-button--control' {$describedby} {$tabindex} >{$select_files_text}</button>
 										</div>
 									</div>";
 
@@ -482,17 +482,37 @@ class GF_Field_FileUpload extends GF_Field {
 			}
 
 			foreach ( $file_info as $key => $file ) {
-				$exists = false;
-				if ( ! empty( $file['temp_filename'] ) ) {
-					$tmp_file = $tmp_path . wp_basename( $file['temp_filename'] );
-					if ( file_exists( $tmp_file ) ) {
-						$exists = true;
-					}
+				if ( empty( $file['uploaded_filename'] ) ) {
+					$this->unset_uploaded_file( $input_name, $key );
+					continue;
 				}
 
-				if ( ! $exists ) {
-					GFCommon::log_debug( __METHOD__ . "(): Removing invalid file for {$input_name} key {$key}." );
-					unset( GFFormsModel::$uploaded_files[ $form_id ][ $input_name ][ $key ] );
+				/*
+				 * Allow add-ons and custom code to skip the file validation.
+				 *
+				 * @since 2.7.4
+				 *
+				 * @param bool   $skip_validation Whether to skip the file validation.
+				 * @param array  $file            The file information.
+				 * @param object $field           The current field object.
+				*/
+				if ( ! gf_apply_filters( array(
+					'gform_validate_required_file_exists',
+					$form_id,
+					$this->id,
+				), isset( $file['temp_filename'] ), $file, $this ) ) {
+					// Skipping existing file populated by an add-on or custom code.
+					continue;
+				}
+
+				if ( empty( $file['temp_filename'] ) ) {
+					$this->unset_uploaded_file( $input_name, $key );
+					continue;
+				}
+
+				$tmp_file = $tmp_path . wp_basename( $file['temp_filename'] );
+				if ( ! file_exists( $tmp_file ) ) {
+					$this->unset_uploaded_file( $input_name, $key );
 				}
 			}
 
@@ -502,6 +522,21 @@ class GF_Field_FileUpload extends GF_Field {
 
 			return ! $file_info && empty( $_FILES[ $input_name ]['name'] );
 		}
+	}
+
+	/**
+	 * Remove invalid file from the uploaded files array.
+	 *
+	 * @since 2.7.4
+	 *
+	 * @param $input_name
+	 * @param $key
+	 *
+	 * @return void
+	 */
+	public function unset_uploaded_file( $input_name, $key ) {
+		GFCommon::log_debug( __METHOD__ . "(): Removing invalid file for {$input_name} key {$key}." );
+		unset( GFFormsModel::$uploaded_files[ $this->formId ][ $input_name ][ $key ] );
 	}
 
 	public function get_value_save_entry( $value, $form, $input_name, $lead_id, $lead ) {
@@ -547,8 +582,12 @@ class GF_Field_FileUpload extends GF_Field {
 					if ( ! isset( $file_info['temp_filename'] ) ) {
 						$existing_file = $this->check_existing_entry( $entry_id, $input_name, $file_info );
 
-						$uploaded_path        = GFFormsModel::get_file_upload_path( $form_id, $file_info['uploaded_filename'], false );
-						$uploaded_files[ $i ] = $existing_file ? : $uploaded_path['url'];
+						// We already have the file path in $existing_file, however it's good to check that the file path in the entry meta matches.
+						$uploaded_path = gform_get_meta( $entry_id, self::get_file_upload_path_meta_key_hash( $existing_file ) );
+
+						if ( $uploaded_path ) {
+							$uploaded_files[ $i ] = $uploaded_path['url'] . $uploaded_path['file_name'];
+						}
 						continue;
 					}
 
@@ -603,6 +642,10 @@ class GF_Field_FileUpload extends GF_Field {
 		$input_id          = str_replace( 'input_', '', $input_name );
 		$existing_files    = GFCommon::maybe_decode_json( rgar( $existing_entry, $input_id ) );
 		$existing_file_url = null;
+
+		if ( ! is_array( $existing_files ) ) {
+			return $file_info;
+		}
 
 		foreach ( $existing_files as $existing_file ) {
 			$existing_file_pathinfo = pathinfo( $existing_file );
@@ -983,6 +1026,10 @@ class GF_Field_FileUpload extends GF_Field {
 		}
 
 		foreach ( $file_values as $file_value ) {
+
+			if ( is_array( $file_value ) ) {
+				continue;
+			}
 
 			// If file already has a stored path, skip it.
 			$stored_path_info = gform_get_meta( rgar( $entry, 'id' ), self::get_file_upload_path_meta_key_hash( $file_value ) );

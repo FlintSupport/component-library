@@ -56,13 +56,7 @@ if ( ! class_exists( 'Ai1wmve_Export_Controller' ) ) {
 		}
 
 		public static function exclude_db_tables() {
-			global $wpdb;
-
-			if ( empty( $wpdb->use_mysqli ) ) {
-				$mysql = new Ai1wm_Database_Mysql( $wpdb );
-			} else {
-				$mysql = new Ai1wm_Database_Mysqli( $wpdb );
-			}
+			$mysql = Ai1wm_Database_Utility::create_client();
 
 			// Include table prefixes
 			if ( ai1wm_table_prefix() ) {

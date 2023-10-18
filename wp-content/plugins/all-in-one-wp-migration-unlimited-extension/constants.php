@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // ==================
 // = Plugin Version =
 // ==================
-define( 'AI1WMUE_VERSION', '2.53' );
+define( 'AI1WMUE_VERSION', '2.54' );
 
 // ===============
 // = Plugin Name =
@@ -76,6 +76,11 @@ define( 'AI1WMUE_VENDOR_PATH', AI1WMUE_LIB_PATH . DIRECTORY_SEPARATOR . 'vendor'
 // = Retention Path =
 // ==================
 define( 'AI1WMUE_RETENTION_NAME', 'retention.json' );
+
+// ===============================
+// = Minimal Base Plugin Version =
+// ===============================
+define( 'AI1WMUE_MIN_AI1WM_VERSION', '7.79' );
 
 // ===============
 // = Purchase ID =

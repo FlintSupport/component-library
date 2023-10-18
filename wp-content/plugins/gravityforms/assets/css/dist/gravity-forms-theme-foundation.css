@@ -31,27 +31,126 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
  *
  * ----------------------------------------------------------------------------- */
 
-/* Gravity Forms Foundation Theme | Global CSS API: Layout */
+/**
+# Global CSS API: Layout
 
-.gform-theme--foundation {
+The core layout engine for forms on the frontend. Control grid gaps and global properties here.<br /><br />
+
+## CSS Custom Properties
+ */
+
+.gform-theme--foundation, .gform-theme--api {
+
+	/**
+	@cssprop
+	Name: --gform-theme-form-row-gap
+	Description: Row gap for the form grid.
+	Default: --gform-theme-spacer-10
+	*/
 	--gform-theme-form-row-gap: 40px;
+
+	/**
+	@cssprop
+	Name: --gform-theme-form-col-gap
+	Description: Column gap for the form grid.
+	Default: --gform-theme-spacer-4
+	*/
 	--gform-theme-form-col-gap: 16px;
+
+	/**
+	@cssprop
+	Description: Row gap for a field on the grid.
+	Default: --gform-theme-spacer-3
+	Name: --gform-theme-field-row-gap
+	*/
 	--gform-theme-field-row-gap: 12px;
+
+	/**
+	@cssprop
+	Name: --gform-theme-field-col-gap
+	Default: --gform-theme-spacer-3
+	Description: Column gap for a field.
+	*/
 	--gform-theme-field-col-gap: 12px;
 
+	/**
+	@cssprop
+	Name: --gform-theme-label-horizontal-layout-width
+	Description: Width of the label in a horizontal layout.
+	Default: 30%
+	 */
 	--gform-theme-label-horizontal-layout-width: 30%;
+
+	/**
+	@cssprop
+	Name: --gform-theme-label-required-gap
+	Description: Gap between the label and the required indicator.
+	Default: 6px
+	 */
 	--gform-theme-label-required-gap: 6px;
 
+	/**
+	@cssprop
+	Name: --gform-theme-form-footer-margin-block-start
+	Description: Margin top for the form footer.
+	Default: --gform-theme-spacer-6
+	 */
 	--gform-theme-form-footer-margin-block-start: 24px;
+
+	/**
+	@cssprop
+	Name: --gform-theme-form-footer-gap
+	Description: Gap between the form footer and the form.
+	Default: --gform-theme-spacer-2
+	 */
 	--gform-theme-form-footer-gap: 8px;
 
+	/**
+	@cssprop
+	Name: --gform-theme-field-date-inline-size
+	Description: Width of the date field in an inline layout.
+	Default: 168px
+	 */
 	--gform-theme-field-date-inline-size: 168px;
+
+	/**
+	@cssprop
+	Name: --gform-theme-field-time-inline-size
+	Description: Width of the time field in an inline layout.
+	Default: 110px
+	 */
 	--gform-theme-field-time-inline-size: 110px;
 
+	/**
+	@cssprop
+	Name: --gform-theme-field-list-buttons-gap
+	Description: Gap between the buttons in a list field.
+	Default: --gform-theme-spacer-2
+	 */
 	--gform-theme-field-list-buttons-gap: 8px;
+
+	/**
+	@cssprop
+	Name: --gform-theme-field-list-buttons-inline-size
+	Description: Width of the buttons in a list field in an inline layout.
+	Default: calc(32px + var(--gform-theme-field-list-buttons-gap) + var(--gform-theme-field-col-gap))
+	 */
 	--gform-theme-field-list-buttons-inline-size: calc(32px + var(--gform-theme-field-list-buttons-gap) + var(--gform-theme-field-col-gap));
 
+	/**
+	@cssprop
+	Name: --gform-theme-field-page-steps-row-gap
+	Description: Row gap for the page steps.
+	Default: --gform-theme-spacer-2
+	 */
 	--gform-theme-field-page-steps-row-gap: 8px;
+
+	/**
+	@cssprop
+	Name: --gform-theme-field-page-steps-col-gap
+	Description: Column gap for the page steps.
+	Default: --gform-theme-spacer-6
+	 */
 	--gform-theme-field-page-steps-col-gap: 24px;
 }
 
@@ -122,8 +221,41 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	width: auto;
 }
 
-/*
- * Utility classes to handle styles across various contexts.
+/**
+# Base: Utility Classes
+
+Utility classes to handle styles across various contexts.
+
+## Selectors
+
+Apply these with enough specificity to override the default styles.
+
+@cssselector .gform-ul-reset
+A list of items with no bullets or padding.
+
+@cssselector div #yes [class*="gform-test"] > .gform-ul-reset
+
+@cssselector [class*="gform-test"]
+
+@cssselector #pound-it
+
+Example usage (this seems to work for the JS based readme.md files for the code highlighting too):
+
+@cssexample
+	.gform-ul-reset {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+	}
  */
 
 .gform-theme--foundation .gform-ul-reset {
@@ -132,7 +264,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 	padding: 0;
 }
 
-/* readonly form controls */
+/**
+@cssselector .gform-text-input-reset
+A reset for text inputs.
+ */
 
 .gform-theme--foundation .gform-text-input-reset {
 	background-color: transparent;
@@ -183,8 +318,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 					}
 
 			.gform-theme--foundation .left_label .gfield_html_formatted, .gform-theme--foundation .right_label .gfield_html_formatted {
-				-webkit-margin-start: var(--gform-theme-label-horizontal-layout-width);
-				        margin-inline-start: var(--gform-theme-label-horizontal-layout-width);
+				margin-inline-start: var(--gform-theme-label-horizontal-layout-width);
 			}
 	}
 
@@ -271,8 +405,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 		display: flex;
 		flex-wrap: wrap;
 		gap: var(--gform-theme-form-footer-gap);
-		-webkit-margin-before: var(--gform-theme-form-footer-margin-block-start);
-		        margin-block-start: var(--gform-theme-form-footer-margin-block-start);
+		margin-block-start: var(--gform-theme-form-footer-margin-block-start);
 	}
 
 .gform-theme--foundation .gform_footer input[type="submit"][id*="gform_submit_button_"].button.gform-button--width-full, .gform-theme--foundation #field_submit input[type="submit"][id*="gform_submit_button_"].button.gform-button--width-full {
@@ -382,8 +515,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 		}
 
 			.gform-theme--foundation .gform_footer.left_label, .gform-theme--foundation .gform_footer.right_label {
-				-webkit-padding-start: var(--gform-theme-label-horizontal-layout-width);
-				        padding-inline-start: var(--gform-theme-label-horizontal-layout-width);
+				padding-inline-start: var(--gform-theme-label-horizontal-layout-width);
 			}
 	}
 
@@ -500,6 +632,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
  *
  * ----------------------------------------------------------------------------- */
 
+/**
+@navlabel File Upload
+ */
+
 .gform-theme--foundation .gform_drop_area {
 		background-color: #fff;
 		border: 1px dashed #686e77;
@@ -511,6 +647,10 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 .gform-theme--foundation .gform_drop_instructions, .gform-theme--foundation .gform_fileupload_rules {
 		display: block;
 	}
+
+/**
+@navsection Controls
+ */
 
 .gform-theme--foundation.ui-datepicker {
 	background-color: #fff;
@@ -524,8 +664,7 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 		display: block;
 		inset-block-start: 0.3em;
 		inset-inline-start: 0.5em;
-		-webkit-margin-before: -0.25em;
-		        margin-block-start: -0.25em;
+		margin-block-start: -0.25em;
 		overflow: hidden;
 		position: relative;
 		text-indent: -99999px;
@@ -563,10 +702,8 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 			display: block;
 			inset-block-start: 50%;
 			inset-inline-start: 50%;
-			-webkit-margin-before: -8px;
-			        margin-block-start: -8px;
-			-webkit-margin-start: -8px;
-			        margin-inline-start: -8px;
+			margin-block-start: -8px;
+			margin-inline-start: -8px;
 			position: absolute;
 		}
 
@@ -611,16 +748,14 @@ AND ANY CHANGES MADE HERE WILL BE OVERWRITTEN.
 		background-position: 100% 50%;
 		background-repeat: no-repeat;
 		background-size: 24px;
-		-webkit-padding-end: 24px;
-		        padding-inline-end: 24px;
+		padding-inline-end: 24px;
 	}
 
 .gform-theme--foundation.ui-datepicker table {
 		border-collapse: collapse;
 		font-size: 0.9em;
 		inline-size: 100%;
-		-webkit-margin-after: 0.4em;
-		        margin-block-end: 0.4em;
+		margin-block-end: 0.4em;
 		table-layout: fixed;
 	}
 
@@ -674,6 +809,11 @@ MIT License, https://github.com/harvesthq/chosen/blob/master/LICENSE.md
 This file is generated by `grunt build`, do not edit it by hand.
 */
 
+/**
+@navsection Controls
+@navlabel Select
+ */
+
 /* Base */
 
 .gform-theme--foundation .chosen-container {
@@ -698,8 +838,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 .gform-theme--foundation .chosen-container .chosen-drop {
 			background: #fff;
 			border: 1px solid #aaa;
-			-webkit-border-before: 0;
-			        border-block-start: 0;
+			border-block-start: 0;
 			box-shadow: 0 4px 5px rgba(0, 0, 0, 0.15);
 			clip: rect(0, 0, 0, 0);
 			-webkit-clip-path: inset(100% 100%);
@@ -719,8 +858,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 .gform-theme--foundation .chosen-container .search-choice .group-name, .gform-theme--foundation .chosen-container .chosen-single .group-name {
 			color: #999;
 			font-weight: normal;
-			-webkit-margin-end: 4px;
-			        margin-inline-end: 4px;
+			margin-inline-end: 4px;
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
@@ -728,8 +866,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 
 .gform-theme--foundation .chosen-container .search-choice .group-name::after, .gform-theme--foundation .chosen-container .chosen-single .group-name::after {
 				content: ":";
-				-webkit-padding-start: 2px;
-				        padding-inline-start: 2px;
+				padding-inline-start: 2px;
 				vertical-align: top;
 			}
 
@@ -755,8 +892,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 
 .gform-theme--foundation .chosen-container-single .chosen-single span {
 				display: block;
-				-webkit-margin-end: 26px;
-				        margin-inline-end: 26px;
+				margin-inline-end: 26px;
 				overflow: hidden;
 				text-overflow: ellipsis;
 				white-space: nowrap;
@@ -798,8 +934,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 		}
 
 .gform-theme--foundation .chosen-container-single .chosen-single-with-deselect span {
-			-webkit-margin-end: 38px;
-			        margin-inline-end: 38px;
+			margin-inline-end: 38px;
 		}
 
 .gform-theme--foundation .chosen-container-single.chosen-disabled .chosen-single abbr:hover {
@@ -845,8 +980,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 			border-end-start-radius: 4px;
 			border-start-end-radius: 0;
 			border-start-start-radius: 0;
-			-webkit-margin-before: -1px;
-			        margin-block-start: -1px;
+			margin-block-start: -1px;
 		}
 
 /* Results */
@@ -906,8 +1040,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 			}
 
 .gform-theme--foundation .chosen-container .chosen-results li.group-option {
-				-webkit-padding-start: 15px;
-				        padding-inline-start: 15px;
+				padding-inline-start: 15px;
 			}
 
 .gform-theme--foundation .chosen-container .chosen-results li em {
@@ -1007,8 +1140,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 					background-image: linear-gradient(#f4f4f4 20%, #f0f0f0 50%, #e8e8e8 52%, #eee 100%);
 					border: 1px solid #ccc;
 					color: #666;
-					-webkit-padding-end: 5px;
-					        padding-inline-end: 5px;
+					padding-inline-end: 5px;
 				}
 
 .gform-theme--foundation .chosen-container-multi .chosen-choices li.search-choice-focus {
@@ -1049,8 +1181,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 
 .gform-theme--foundation .chosen-container-active.chosen-with-drop .chosen-single div {
 				background: transparent;
-				-webkit-border-start: none;
-				        border-inline-start: none;
+				border-inline-start: none;
 			}
 
 .gform-theme--foundation .chosen-container-active.chosen-with-drop .chosen-single div b {
@@ -1147,12 +1278,16 @@ This file is generated by `grunt build`, do not edit it by hand.
 	}
 
 .gform-theme--foundation .ginput_counter_tinymce {
-		-webkit-border-before: 1px solid #dcdcde;
-		        border-block-start: 1px solid #dcdcde;
+		border-block-start: 1px solid #dcdcde;
 		font-size: 12px;
 		padding-block: 2px;
 		padding-inline: 10px;
 	}
+
+/**
+@navsection Fields
+@navlabel Address
+ */
 
 @media (min-width: 640px) {
 
@@ -1161,11 +1296,15 @@ This file is generated by `grunt build`, do not edit it by hand.
 		}
 	}
 
+/**
+@navsection Fields
+@navlabel Credit Card
+ */
+
 .gform-theme--foundation .gform_card_icon_container {
 		block-size: 32px;
 		display: flex;
-		-webkit-margin-after: 8px;
-		        margin-block-end: 8px;
+		margin-block-end: 8px;
 	}
 
 .gform-theme--foundation .gform_card_icon_container .gform_card_icon {
@@ -1173,8 +1312,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 			background-repeat: no-repeat;
 			block-size: 32px;
 			inline-size: 40px;
-			-webkit-margin-end: 0.3rem;
-			        margin-inline-end: 0.3rem;
+			margin-inline-end: 0.3rem;
 			text-indent: -9000px;
 		}
 
@@ -1254,8 +1392,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 		display: block;
 		flex: none;
 		inline-size: 40px;
-		-webkit-margin-start: 0.3em;
-		        margin-inline-start: 0.3em;
+		margin-inline-start: 0.3em;
 	}
 
 @media (min-width: 640px) {
@@ -1299,18 +1436,15 @@ This file is generated by `grunt build`, do not edit it by hand.
 	}
 
 .gform-theme--foundation .gfield_list_group {
-		-webkit-margin-after: var(--gform-theme-field-row-gap);
-		        margin-block-end: var(--gform-theme-field-row-gap);
+		margin-block-end: var(--gform-theme-field-row-gap);
 	}
 
 .gform-theme--foundation .gfield_list_group:last-child {
-			-webkit-margin-after: 0;
-			        margin-block-end: 0;
+			margin-block-end: 0;
 		}
 
 .gform-theme--foundation .gfield_list_group_item + .gfield_list_group_item {
-			-webkit-margin-before: 4px;
-			        margin-block-start: 4px;
+			margin-block-start: 4px;
 		}
 
 .gform-theme--foundation .gfield_list_group_item input, .gform-theme--foundation .gfield_list_group_item textarea, .gform-theme--foundation .gfield_list_group_item select {
@@ -1351,8 +1485,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 		}
 
 			.gform-theme--foundation .gfield_list_group_item + .gfield_list_group_item {
-				-webkit-margin-before: 0;
-				        margin-block-start: 0;
+				margin-block-start: 0;
 			}
 
 		.gform-theme--foundation .gfield_header_item--icons, .gform-theme--foundation .gfield_list_icons {
@@ -1496,10 +1629,8 @@ This file is generated by `grunt build`, do not edit it by hand.
 
 				.gform-theme--foundation .gfield.gf_list_inline .gfield_checkbox .gchoice, .gform-theme--foundation .gfield.gf_list_inline .gfield_radio .gchoice {
 					display: inline-grid;
-					-webkit-padding-after: var(--gform-theme-field-choice-spacing);
-					        padding-block-end: var(--gform-theme-field-choice-spacing);
-					-webkit-padding-end: 1rem;
-					        padding-inline-end: 1rem;
+					padding-block-end: var(--gform-theme-field-choice-spacing);
+					padding-inline-end: 1rem;
 				}
 
 					.gform-theme--foundation .gfield.gf_list_inline .gfield_checkbox .gchoice label, .gform-theme--foundation .gfield.gf_list_inline .gfield_radio .gchoice label {
@@ -1519,8 +1650,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 
 				.gform-theme--foundation .gf_list_2col_vertical .ginput_container .gfield_checkbox .gchoice, .gform-theme--foundation .gf_list_2col_vertical .ginput_container .gfield_radio .gchoice {
 					display: grid;
-					-webkit-margin-after: var(--gform-theme-field-choice-spacing);
-					        margin-block-end: var(--gform-theme-field-choice-spacing);
+					margin-block-end: var(--gform-theme-field-choice-spacing);
 				}
 
 			.gform-theme--foundation .gf_list_3col_vertical .gfield_checkbox, .gform-theme--foundation .gf_list_3col_vertical .gfield_radio {
@@ -1600,8 +1730,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 	}
 
 .gform-theme--foundation .gsection.gf_scroll_text .gsection_title {
-			-webkit-margin-before: 0;
-			        margin-block-start: 0;
+			margin-block-start: 0;
 		}
 
 /* html field colors */
@@ -1678,8 +1807,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 .gform-theme--foundation .gf_simple_horizontal .gform_body .top_label .gfield {
 					block-size: auto;
 					display: table-cell;
-					-webkit-padding-end: 1em;
-					        padding-inline-end: 1em;
+					padding-inline-end: 1em;
 				}
 
 .gform-theme--foundation .gf_simple_horizontal .gform_body .top_label .gfield .small, .gform-theme--foundation .gf_simple_horizontal .gform_body .top_label .gfield .medium, .gform-theme--foundation .gf_simple_horizontal .gform_body .top_label .gfield .large {
@@ -1688,8 +1816,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 
 .gform-theme--foundation .gf_simple_horizontal .gform_body .top_label .gfield .ginput_container_checkbox .gchoice, .gform-theme--foundation .gf_simple_horizontal .gform_body .top_label .gfield .ginput_container_radio .gchoice {
 						display: inline-block;
-						-webkit-margin-end: 0.5em;
-						        margin-inline-end: 0.5em;
+						margin-inline-end: 0.5em;
 					}
 
 .gform-theme--foundation .gf_simple_horizontal .gform_body .top_label.form_sublabel_below .gfield, .gform-theme--foundation .gf_simple_horizontal .gform_body .top_label.form_sublabel_above .gfield {
@@ -1697,8 +1824,7 @@ This file is generated by `grunt build`, do not edit it by hand.
 				}
 
 .gform-theme--foundation .gf_simple_horizontal .ginput_container, .gform-theme--foundation .gf_simple_horizontal .gfield {
-			-webkit-margin-before: 0 !important;
-			        margin-block-start: 0 !important;
+			margin-block-start: 0 !important;
 		}
 
 .gform-theme--foundation .gf_simple_horizontal .gform_footer.top_label {
@@ -1758,10 +1884,8 @@ This file is generated by `grunt build`, do not edit it by hand.
 			background: #fffce5;
 			background: linear-gradient(to bottom, #fffce5 0%, #fff9bf 100%);
 			background-color: #fffbcc;
-			-webkit-border-after: 1px solid #e6db55;
-			        border-block-end: 1px solid #e6db55;
-			-webkit-border-before: 2px solid #fff;
-			        border-block-start: 2px solid #fff;
+			border-block-end: 1px solid #e6db55;
+			border-block-start: 2px solid #fff;
 			color: #424242;
 			font-size: 28px;
 			margin: 0;
@@ -1782,10 +1906,8 @@ This file is generated by `grunt build`, do not edit it by hand.
 			background: rgb(219, 242, 183);
 			background: linear-gradient(to bottom, rgba(219, 242, 183, 1) 0%, rgba(180, 208, 136, 1) 100%);
 			background-color: #fffbcc;
-			-webkit-border-after: 1px solid #a7c37c;
-			        border-block-end: 1px solid #a7c37c;
-			-webkit-border-before: 2px solid #effade;
-			        border-block-start: 2px solid #effade;
+			border-block-end: 1px solid #a7c37c;
+			border-block-start: 2px solid #effade;
 			color: #030;
 			font-size: 28px;
 			margin: 0;
@@ -1820,14 +1942,10 @@ This file is generated by `grunt build`, do not edit it by hand.
 		align-self: center;
 		animation: gformLoader 1.1s infinite linear;
 		block-size: 10em;
-		-webkit-border-after: 1.1em solid #000;
-		        border-block-end: 1.1em solid #000;
-		-webkit-border-before: 1.1em solid #fff;
-		        border-block-start: 1.1em solid #fff;
-		-webkit-border-end: 1.1em solid #fff;
-		        border-inline-end: 1.1em solid #fff;
-		-webkit-border-start: 1.1em solid #000;
-		        border-inline-start: 1.1em solid #000;
+		border-block-end: 1.1em solid #000;
+		border-block-start: 1.1em solid #fff;
+		border-inline-end: 1.1em solid #fff;
+		border-inline-start: 1.1em solid #000;
 		border-radius: 50%;
 		display: inline-block;
 		font-size: 2px;

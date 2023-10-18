@@ -143,13 +143,7 @@ if ( defined( 'WP_CLI' ) && ! class_exists( 'Ai1wm_Backup_WP_CLI_Base' ) ) {
 			if ( isset( $assoc_args['exclude-database'] ) ) {
 				$params['options']['no_database'] = true;
 			} elseif ( isset( $assoc_args['exclude-tables'] ) ) {
-				global $wpdb;
-
-				if ( empty( $wpdb->use_mysqli ) ) {
-					$mysql = new Ai1wm_Database_Mysql( $wpdb );
-				} else {
-					$mysql = new Ai1wm_Database_Mysqli( $wpdb );
-				}
+				$mysql = Ai1wm_Database_Utility::create_client();
 
 				// Include table prefixes
 				if ( ai1wm_table_prefix() ) {

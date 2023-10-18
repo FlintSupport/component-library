@@ -58,9 +58,6 @@ if ( ! class_exists( 'Ai1wmve_Schedule_Events' ) ) {
 		}
 
 		public function save( $data ) {
-			if ( empty( $data['event_id'] ) ) {
-				$data['event_id'] = time();
-			}
 			$event = new Ai1wmve_Schedule_Event( $data );
 			$event->clear_schedule()
 				->create_schedule();

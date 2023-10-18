@@ -1,9 +1,9 @@
 === Force Regenerate Thumbnails ===
 Contributors: pedro-elsner, nosilver4u
-Requires at least: 4.9
-Tested up to: 6.2
-Requires PHP: 7.2
-Stable tag: 2.1.2
+Requires at least: 6.0
+Tested up to: 6.3
+Requires PHP: 7.3
+Stable tag: 2.1.3
 License: GPLv2
 Tags: force, regenerate thumbnails, thumbnail, thumbnails
 
@@ -16,6 +16,8 @@ Force Regenerate Thumbnails allows you to delete all old images sizes and REALLY
 Regenerate all thumbnails from the Tools admin menu. Regenerate batches of images via the Media Library list mode. Select the images to regenerate and then use the Bulk Actions drop-down menu to Force Regenerate Thumbnails. Use attachment actions to regenerate thumbnails for a single image.
 
 Several filters exist for advanced usage. See more via [this gist](https://gist.github.com/nosilver4u/eb858df10521aece2044a3a15ccdd17b).
+
+You may report security issues through our Patchstack Vulnerability Disclosure Program. The Patchstack team helps validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/vdp/force-regenerate-thumbnails)
 
 == Installation ==
 
@@ -31,6 +33,10 @@ Several filters exist for advanced usage. See more via [this gist](https://gist.
 2. You can resize specific multiples images using the checkboxes and the "Bulk Actions" dropdown
 
 == ChangeLog ==
+
+= 2.1.3 =
+* changed: use updated coding standards
+* fixed: WP image edits lost if pre-scaled original is used for thumbnail generation
 
 = 2.1.2 =
 * changed: improved i18n for page headings and menu entries, props @alexclassroom

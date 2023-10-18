@@ -374,7 +374,6 @@ class ReplaceController
 					else
 					{
 							$unique = wp_unique_filename($path, $this->new_filename);
-							Log::addTemp('Unique FIleName', $unique);
 					}
 					$new_filename = apply_filters( 'emr_unique_filename', $unique, $path, $this->post_id );
 					$targetFile = trailingslashit($path) . $new_filename;
@@ -438,7 +437,7 @@ class ReplaceController
 		 return $excerpt;
 		}
 
-		protected function getSourceUrl()
+		public function getSourceUrl()
 		{
 			if (function_exists('wp_get_original_image_url')) // WP 5.3+
 			{

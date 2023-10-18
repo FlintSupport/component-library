@@ -2219,8 +2219,8 @@ class GFCommon {
 		$entry_id = rgar( $entry, 'id' );
 
 		$to    = str_replace( ' ', '', $to );
-		$bcc   = str_replace( ' ', '', $bcc );
-		$cc    = str_replace( ' ', '', $cc );
+		$bcc   = $bcc ? str_replace( ' ', '', $bcc ) : '';
+		$cc    = $cc ? str_replace( ' ', '', $cc ) : '';
 
 		if ( ! GFCommon::is_valid_email( $from ) ) {
 			$from = get_bloginfo( 'admin_email' );
@@ -2849,7 +2849,9 @@ Content-Type: text/html;
 	 * @return string Returns the support URL.
 	 */
 	public static function get_support_url() {
-		return self::get_environment_setting( 'support_url' );
+		$env_handler = GFForms::get_service_container()->get( Gravity_Forms\Gravity_Forms\Environment_Config\GF_Environment_Config_Service_Provider::GF_ENVIRONMENT_CONFIG_HANDLER );
+
+		return $env_handler->get_support_url();
 	}
 
 	/**
@@ -2859,7 +2861,7 @@ Content-Type: text/html;
 	 *
 	 * @param string $name The env variable name (without the "gf_env_" prefix. i.e. support_url).
 	 *
-	 * @return string Returns the environmentment variable.
+	 * @return string Returns the environment variable.
 	 */
 	public static function get_environment_setting( $name ) {
 		$env_handler = GFForms::get_service_container()->get( Gravity_Forms\Gravity_Forms\Environment_Config\GF_Environment_Config_Service_Provider::GF_ENVIRONMENT_CONFIG_HANDLER );
@@ -5737,7 +5739,7 @@ Content-Type: text/html;
 	 *
 	 * @since 2.5
 	 *
-	 * @return bool
+	 * @return void
 	 */
 	public static function find_admin_notices() {
 		if ( ! GFForms::is_gravity_page() ) {
@@ -5745,30 +5747,35 @@ Content-Type: text/html;
 		}
 
 		global $wp_filter;
-		$notices         = $wp_filter['admin_notices']->callbacks;
-		$network_notices = array();
-		if ( rgar( $wp_filter, 'network_admin_notices' ) ) {
-			$network_notices = $wp_filter['network_admin_notices']->callbacks;
-		}
 
-		$all_notices = array_replace( $notices, $network_notices );
+		$hooks = array(
+			'admin_notices',
+			'network_admin_notices',
+		);
 
-		$has_non_gf_notices = false;
-		foreach ( $all_notices as $priority => $notice ) {
-			foreach ( $notice as $name => $callback ) {
-				if ( ! is_callable( $callback['function'] ) ) {
-					continue;
-				}
+		foreach ( $hooks as $hook ) {
+			if ( empty( $wp_filter[ $hook ] ) || ! is_array( $wp_filter[ $hook ]->callbacks ) ) {
+				continue;
+			}
 
-				ob_start();
-				call_user_func( $callback['function'] );
-				$content = ob_get_clean();
+			$callbacks = $wp_filter[ $hook ]->callbacks;
 
-				if ( strpos( $content, 'gf-notice' ) == false ) {
-					remove_action( 'admin_notices', $name, $priority );
-					remove_action( 'network_admin_notices', $name, $priority );
+			foreach ( $callbacks as $priority => $notice ) {
+				foreach ( $notice as $name => $callback ) {
+					if ( ! is_callable( $callback['function'] ) ) {
+						continue;
+					}
+
+					ob_start();
+					call_user_func( $callback['function'] );
+					$content = ob_get_clean();
+
+					if ( strpos( $content, 'gf-notice' ) == false ) {
+						remove_action( $hook, $name, $priority );
+					}
 				}
 			}
+
 		}
 	}
 
@@ -7566,8 +7573,12 @@ Content-Type: text/html;
 		$default_settings = \GFForms::get_service_container()->get( \Gravity_Forms\Gravity_Forms\Form_Display\GF_Form_Display_Service_Provider::BLOCK_STYLES_DEFAULTS );
 		$applied_settings = wp_parse_args( $block_settings, $default_settings );
 
+		// Set up the inside control primary color used by default to be user-friendly
+		// for forms which have not been updated or saved by users.
+		$inside_control_primary_value = $applied_settings['inputPrimaryColor'] === '' ? $applied_settings['buttonPrimaryBackgroundColor'] : $applied_settings['inputPrimaryColor'];
+
 		return array(
-			'primary'               => array(
+			'primary'                => array(
 				'color'              => $applied_settings['buttonPrimaryBackgroundColor'],
 				'color-rgb'          => self::darken_color( $applied_settings['buttonPrimaryBackgroundColor'], 0, 'rgb' ),
 				'color-contrast'     => $applied_settings['buttonPrimaryColor'],
@@ -7575,7 +7586,7 @@ Content-Type: text/html;
 				'color-darker'       => self::darken_color( $applied_settings['buttonPrimaryBackgroundColor'], 10 ),
 				'color-lighter'      => self::lighten_color( $applied_settings['buttonPrimaryBackgroundColor'], 10 ),
 			),
-			'secondary'             => array(
+			'secondary'              => array(
 				'color'              => $applied_settings['inputBackgroundColor'],
 				'color-rgb'          => self::darken_color( $applied_settings['inputBackgroundColor'], 0, 'rgb' ),
 				'color-contrast'     => $applied_settings['inputColor'],
@@ -7583,19 +7594,19 @@ Content-Type: text/html;
 				'color-darker'       => self::darken_color( $applied_settings['inputBackgroundColor'], 2 ),
 				'color-lighter'      => self::lighten_color( $applied_settings['inputBackgroundColor'], 2 ),
 			),
-			'outside-control-light' => array(
+			'outside-control-light'  => array(
 				'color'         => 'rgba(' . implode( ', ', self::darken_color( $applied_settings['labelColor'], 0, 'rgb' ) ) . ', 0.1)',
 				'color-rgb'     => self::darken_color( $applied_settings['labelColor'], 0, 'rgb' ),
 				'color-darker'  => 'rgba(' . implode( ', ', self::darken_color( $applied_settings['inputBorderColor'], 0, 'rgb' ) ) . ', 0.35)',
 				'color-lighter' => self::darken_color( $applied_settings['inputBackgroundColor'], 2 ),
 			),
-			'outside-control-dark'  => array(
+			'outside-control-dark'   => array(
 				'color'         => $applied_settings['descriptionColor'],
 				'color-rgb'     => self::darken_color( $applied_settings['descriptionColor'], 0, 'rgb' ),
 				'color-darker'  => $applied_settings['inputColor'],
 				'color-lighter' => 'rgba(' . implode( ', ', self::darken_color( $applied_settings['inputColor'], 0, 'rgb' ) ) . ', 0.65)',
 			),
-			'inside-control'        => array(
+			'inside-control'         => array(
 				'color'              => $applied_settings['inputBackgroundColor'],
 				'color-rgb'          => self::darken_color( $applied_settings['inputBackgroundColor'], 0, 'rgb' ),
 				'color-contrast'     => $applied_settings['inputColor'],
@@ -7603,13 +7614,21 @@ Content-Type: text/html;
 				'color-darker'       => self::darken_color( $applied_settings['inputBackgroundColor'], 2 ),
 				'color-lighter'      => self::lighten_color( $applied_settings['inputBackgroundColor'], 2 ),
 			),
-			'inside-control-light'  => array(
+			'inside-control-primary' => array(
+				'color'              => $inside_control_primary_value,
+				'color-rgb'          => self::darken_color( $inside_control_primary_value, 0, 'rgb' ),
+				'color-contrast'     => self::is_dark_color( $inside_control_primary_value ) ? '#fff' : '#112337',
+				'color-contrast-rgb' => self::is_dark_color( $inside_control_primary_value ) ? self::darken_color( '#fff', 0, 'rgb' ) : self::darken_color( '#112337', 0, 'rgb' ),
+				'color-darker'       => self::darken_color( $inside_control_primary_value, 10 ),
+				'color-lighter'      => self::lighten_color( $inside_control_primary_value, 10 ),
+			),
+			'inside-control-light'   => array(
 				'color'         => 'rgba(' . implode( ', ', self::darken_color( $applied_settings['labelColor'], 0, 'rgb' ) ) . ', 0.1)',
 				'color-rgb'     => self::darken_color( $applied_settings['labelColor'], 0, 'rgb' ),
 				'color-darker'  => 'rgba(' . implode( ', ', self::darken_color( $applied_settings['inputBorderColor'], 0, 'rgb' ) ) . ', 0.35)',
 				'color-lighter' => self::darken_color( $applied_settings['inputBackgroundColor'], 2 ),
 			),
-			'inside-control-dark'   => array(
+			'inside-control-dark'    => array(
 				'color'         => $applied_settings['descriptionColor'],
 				'color-rgb'     => self::darken_color( $applied_settings['descriptionColor'], 0, 'rgb' ),
 				'color-darker'  => $applied_settings['inputColor'],

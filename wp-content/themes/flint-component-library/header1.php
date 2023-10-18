@@ -47,7 +47,7 @@
 				<ul id="mobile-menu-links">
 				<?php
 					wp_nav_menu( array(
-						'menu' => 'main-menu',
+						'menu' => 'main-menu-1',
 						'menu_id' => '',
 						'container' => '',
 						'items_wrap'     => '%3$s'
