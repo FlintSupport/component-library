@@ -19,8 +19,6 @@ class Form_View extends View {
 	}
 
 	protected function add_wrapper_class( $content, $form ) {
-		require_once( \GFCommon::get_base_path() . '/form_display.php' );
-
 		$theme_slug = GFFormDisplay::get_form_theme_slug( $form );
 		$classes    = '';
 

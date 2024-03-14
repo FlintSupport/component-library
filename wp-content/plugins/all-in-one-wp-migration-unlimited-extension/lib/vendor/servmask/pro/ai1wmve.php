@@ -79,6 +79,10 @@ require_once AI1WMVE_CONTROLLER_PATH .
 	DIRECTORY_SEPARATOR .
 	'class-ai1wmve-schedules-controller.php';
 
+require_once AI1WMVE_CONTROLLER_PATH .
+	DIRECTORY_SEPARATOR .
+	'class-ai1wmve-reset-controller.php';
+
 require_once AI1WMVE_MODEL_PATH .
 	DIRECTORY_SEPARATOR .
 	'schedule' .
@@ -108,3 +112,33 @@ require_once AI1WMVE_MODEL_PATH .
 	'export' .
 	DIRECTORY_SEPARATOR .
 	'class-ai1wmve-export-retention-file.php';
+
+require_once AI1WMVE_MODEL_PATH .
+	DIRECTORY_SEPARATOR .
+	'reset' .
+	DIRECTORY_SEPARATOR .
+	'class-ai1wmve-reset-init.php';
+
+require_once AI1WMVE_MODEL_PATH .
+	DIRECTORY_SEPARATOR .
+	'reset' .
+	DIRECTORY_SEPARATOR .
+	'class-ai1wmve-reset-plugins.php';
+
+require_once AI1WMVE_MODEL_PATH .
+	DIRECTORY_SEPARATOR .
+	'reset' .
+	DIRECTORY_SEPARATOR .
+	'class-ai1wmve-reset-themes.php';
+
+require_once AI1WMVE_MODEL_PATH .
+	DIRECTORY_SEPARATOR .
+	'reset' .
+	DIRECTORY_SEPARATOR .
+	'class-ai1wmve-reset-media.php';
+
+require_once AI1WMVE_MODEL_PATH .
+	DIRECTORY_SEPARATOR .
+	'reset' .
+	DIRECTORY_SEPARATOR .
+	'class-ai1wmve-reset-database.php';

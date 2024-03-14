@@ -50,3 +50,14 @@ if ( ! function_exists( 'ai1wmve_is_running' ) ) {
 		return false;
 	}
 }
+
+if ( ! function_exists( 'ai1wmve_reset_db_backup_path' ) ) {
+	/**
+	 * Get db-options-backup.json absolute path
+	 *
+	 * @return string
+	 */
+	function ai1wmve_reset_db_backup_path() {
+		return AI1WM_STORAGE_PATH . DIRECTORY_SEPARATOR . AI1WMVE_RESET_DB_BACKUP;
+	}
+}

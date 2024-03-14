@@ -31,7 +31,7 @@ class EPS_Redirects_Plugin
   protected $tables = array();
 
   public $name = '301 Redirects';
-
+  public $settings;
 
   protected $resources = array(
     'css' => array(

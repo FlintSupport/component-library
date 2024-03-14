@@ -161,9 +161,7 @@ class Field_Select extends Select {
 		}
 
 		// Convert all auto-population choices to lowercase.
-		foreach( $default_value_choices as $key => $value ) {
-			$default_value_choices[ $key ] = $value ? strtolower( $value ) : $value;
-		}
+		$default_value_choices = array_map( 'strtolower', $default_value_choices );
 
 		// Loop through fields.
 		foreach ( $this->choices as $choice ) {

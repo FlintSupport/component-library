@@ -17,7 +17,7 @@ $(document).ready(function() {
 	$(document).on('click','#mobile-toggle',function(e){
 		$('#mobile-toggle, #menuOpen, #menuClose, #mobile-menu, body').toggleClass('active');
 	});
-	$(document).on('click','#mobile-menu li.menu-item-has-children > a',function(e){
+	$(document).on('click','#mobile-menu li.menu-item-has-children a',function(e){
 		e.preventDefault();
 		$parent = $(this).parent('li');
 		$child = $($parent).find('li');

@@ -29,16 +29,16 @@
         <div class="container">
             <div class="column">
                 <h3>Location</h3>
-                <?php the_field('address', $page); ?>
-                <a href="<?php the_field('directions_link', $page); ?>" target="_blank">Get Directions</a>
+                <?php echo get_field('address', $page); ?>
+                <a href="<?php echo get_field('directions_link', $page); ?>" target="_blank">Get Directions</a>
             </div>
             <div class="column">
                 <h3>Lobby Hours</h3>
-                <?php the_field('hours', $page); ?>
+                <?php echo get_field('hours', $page); ?>
             </div>
             <div class="column">
                 <h3>Drive-Up Hours</h3>
-                <?php the_field('drive_up', $page); ?>
+                <?php echo get_field('drive_up', $page); ?>
             </div>
         </div>
     </section>
@@ -47,7 +47,7 @@
         <div class="container">
             <div class="left">
                 <h2><?php echo $page->name; ?> Services</h2>
-                <?php the_field('services_intro', $page); ?>
+                <?php echo get_field('services_intro', $page); ?>
                 <?php echo '<a class="button primary desktop" href="tel:' . get_field('primary_phone_number', $page) . '"><span>' . get_field('primary_phone_number', $page) . '</span></a>'; ?>
             </div>
             <div class="right">
@@ -71,7 +71,7 @@
             <div class="left copy graybg">
                 <div class="content large">
                     <?php echo '<h2>' . get_field('headline', $page) . '</h2>';
-                    if(get_field('cta_content')) { the_field('cta_content', $page); }?>
+                    if(get_field('cta_content')) { echo get_field('cta_content', $page); }?>
                     <a class="button primary" href="<?php echo esc_url(get_field('cta_button', $page)['url']); ?>" target="<?php echo esc_attr(get_field('cta_button', $page)['target']); ?>"><span><?php echo esc_html(get_field('cta_button', $page)['title']); ?></span></a>
                 </div>
             </div>

@@ -64,8 +64,8 @@
 										<div class="content">
 											<h3><?php the_title(); ?></h3>
 											<div class="date">
-												<?php the_field('event_date', $post); ?><br>
-												<?php the_field('event_start_time', $post); ?> - <?php the_field('event_end_time', $post); ?>
+												<?php echo get_field('event_date', $post); ?><br>
+												<?php echo get_field('event_start_time', $post); ?> - <?php echo get_field('event_end_time', $post); ?>
 											</div>
 											<?php the_excerpt(); ?>
 											<div class="readMore">Read More</div>

@@ -270,6 +270,10 @@ if ( ! class_exists( 'Ai1wmve_Schedule_Event' ) ) {
 			$cron_time = date_create( $time, wp_timezone() );
 			$cron_time->setTime( intval( $this->schedule['hour'] ), intval( $this->schedule['minute'] ) );
 
+			if ( $this->schedule['interval'] === self::INTERVAL_MONTHLY && is_numeric( $this->schedule['day'] ) ) {
+				$cron_time->setDate( $cron_time->format( 'Y' ), $cron_time->format( 'm' ), $this->schedule['day'] );
+			}
+
 			while ( $cron_time < date_create() ) {
 				$cron_time->add( $this->get_interval() );
 			}

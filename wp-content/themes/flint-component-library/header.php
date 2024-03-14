@@ -15,13 +15,13 @@
 		$i = 1;
 	}
 ?>
-<body <?php echo body_class($addClass); ?> data-ajax-url="<?php echo admin_url('admin-ajax.php'); ?>">
+<body <?php echo body_class(); ?> data-ajax-url="<?php echo admin_url('admin-ajax.php'); ?>">
 <?php if(get_field('alert_bar_content', 'options')) : ?>
 	<div id="alert">
 		<div class="container">
 			<img src="<?php echo get_template_directory_uri(); ?>/img/alert.svg" alt="" >
 			<div class="copy">
-				<?php the_field('alert_bar_content', 'options'); ?>
+				<?php echo get_field('alert_bar_content', 'options'); ?>
 			</div>
 			<img id="noticeClose" src="<?php echo get_template_directory_uri(); ?>/img/close.svg" alt="Close Notice" >
 		</div>
@@ -30,7 +30,7 @@
 <header id="header1">
 	<nav class="top">
 		<div class="container">
-			<div class="left"><a href="tel:<?php the_field('primary_contact_number', 'options'); ?>" title="Call Flint Group"><?php the_field('primary_contact_number', 'options'); ?></a></div>
+			<div class="left"><a href="tel:<?php echo get_field('primary_contact_number', 'options'); ?>" title="Call Flint Group"><?php echo get_field('primary_contact_number', 'options'); ?></a></div>
 			<?php wp_nav_menu( array( 'theme_location' => 'top-menu' ) ); ?>
 		</div>
 	</nav>	
@@ -47,7 +47,7 @@
 				<ul id="mobile-menu-links">
 				<?php
 					wp_nav_menu( array(
-						'menu' => 'main-menu-1',
+						'menu' => 'main-menu',
 						'menu_id' => '',
 						'container' => '',
 						'items_wrap'     => '%3$s'
@@ -76,7 +76,7 @@
 <header id="header2">
 	<nav class="top">
 		<div class="container">
-			<div class="left"><a href="tel:<?php the_field('primary_contact_number', 'options'); ?>" title="Call Flint Group"><?php the_field('primary_contact_number', 'options'); ?></a></div>
+			<div class="left"><a href="tel:<?php echo get_field('primary_contact_number', 'options'); ?>" title="Call Flint Group"><?php echo get_field('primary_contact_number', 'options'); ?></a></div>
 			<?php wp_nav_menu( array( 'theme_location' => 'top-menu' ) ); ?>
 		</div>
 	</nav>
@@ -95,8 +95,8 @@
 					) );
 					?>
 				</ul>
-				<?php if(get_field('customer_service_hours', 'options')) { echo '<div class="hours"><h4>Customer Service Hours</h4>'; the_field('customer_service_hours', 'options'); echo '</div>'; } ?>
-				<?php if(get_field('routing_number', 'options')) { echo '<div class="routing"><h4>Routing Number</h4><p>'; the_field('routing_number', 'options'); echo '</p></div>'; } ?>
+				<?php if(get_field('customer_service_hours', 'options')) { echo '<div class="hours"><h4>Customer Service Hours</h4>'; echo get_field('customer_service_hours', 'options'); echo '</div>'; } ?>
+				<?php if(get_field('routing_number', 'options')) { echo '<div class="routing"><h4>Routing Number</h4><p>'; echo get_field('routing_number', 'options'); echo '</p></div>'; } ?>
 			</div>
 			<div class="logo">
 				<a href="<?php echo home_url(); ?>">
@@ -116,7 +116,7 @@
 <header id="header3">
 	<nav class="top">
 		<div class="container">
-			<div class="left"><a href="tel:<?php the_field('primary_contact_number', 'options'); ?>" title="Call Flint Group"><?php the_field('primary_contact_number', 'options'); ?></a></div>
+			<div class="left"><a href="tel:<?php echo get_field('primary_contact_number', 'options'); ?>" title="Call Flint Group"><?php echo get_field('primary_contact_number', 'options'); ?></a></div>
 			<?php wp_nav_menu( array( 'theme_location' => 'top-menu' ) ); ?>
 		</div>
 	</nav>	
@@ -135,8 +135,8 @@
 					) );
 					?>
 				</ul>
-				<?php if(get_field('customer_service_hours', 'options')) { echo '<div class="hours"><h4>Customer Service Hours</h4>'; the_field('customer_service_hours', 'options'); echo '</div>'; } ?>
-				<?php if(get_field('routing_number', 'options')) { echo '<div class="routing"><h4>Routing Number</h4><p>'; the_field('routing_number', 'options'); echo '</p></div>'; } ?>
+				<?php if(get_field('customer_service_hours', 'options')) { echo '<div class="hours"><h4>Customer Service Hours</h4>'; echo get_field('customer_service_hours', 'options'); echo '</div>'; } ?>
+				<?php if(get_field('routing_number', 'options')) { echo '<div class="routing"><h4>Routing Number</h4><p>'; echo get_field('routing_number', 'options'); echo '</p></div>'; } ?>
 			</div>
 			<div class="logo">
 				<a href="<?php echo home_url(); ?>">

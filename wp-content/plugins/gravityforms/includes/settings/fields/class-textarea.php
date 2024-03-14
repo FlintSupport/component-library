@@ -116,8 +116,6 @@ class Textarea extends Base {
 
 		} else {
 
-			$escaped_value = $value !== null ? esc_textarea( $value ) : '';
-
 			// Prepare markup.
 			// Display description.
 			$html = $this->get_description();
@@ -129,7 +127,7 @@ class Textarea extends Base {
 				esc_attr( $this->name ),
 				$this->get_describer() ? sprintf( 'aria-describedby="%s"', $this->get_describer() ) : '',
 				implode( ' ', $this->get_attributes() ),
-				$escaped_value,
+				esc_textarea( $value ),
 				// If field failed validation, add error icon.
 				$this->get_error_icon()
 			);

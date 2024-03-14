@@ -1,11 +1,6 @@
 .gform-admin .gform-setup-wizard--not-fullscreen {
-		block-size: calc(100vh - 46px);
+		block-size: calc(100vh - 32px);
 	}
-
-		@media (min-width: 783px) {.gform-admin .gform-setup-wizard--not-fullscreen {
-			block-size: calc(100vh - 32px)
-	}
-		}
 
 		.gform-admin .gform-setup-wizard--not-fullscreen .gform-setup-wizard.gform-setup-wizard--step-1 .gform-list {
 					display: none;
@@ -64,12 +59,14 @@
 	.gform-admin .gform-setup-wizard.gform-setup-wizard--step-5 .gform-video {
 				border-radius: 10px;
 				box-shadow: 0 0 1px rgba(18, 25, 97, 0.24), 0 24px 24px rgba(18, 25, 97, 0.03), 0 2px 2px rgba(18, 25, 97, 0.03), 0 4px 4px rgba(18, 25, 97, 0.03), 0 8px 8px rgba(18, 25, 97, 0.03), 0 16px 16px rgba(18, 25, 97, 0.03);
-				margin-block-end: 40px;
+				-webkit-margin-after: 40px;
+				        margin-block-end: 40px;
 				overflow: hidden;
 			}
 
 	.gform-admin .gform-setup-wizard .gform-setup-wizard__steps {
-			margin-block-start: 102px;
+			-webkit-margin-before: 102px;
+			        margin-block-start: 102px;
 		}
 
 	.gform-admin .gform-setup-wizard .gform-dialog__close.gform-setup-wizard--exit-button.gform-button {
@@ -91,8 +88,8 @@
 	.gform-admin .gform-setup-wizard .gform-dialog__close.gform-setup-wizard--exit-button.gform-button {
 				background: transparent;
 				block-size: 34px;
-				border: 1px solid #374b6b;
 				border-radius: 3px;
+				border: 1px solid #374b6b;
 				inline-size: 34px;
 				inset-block-start: 105px;
 				inset-inline-start: 24px;
@@ -137,15 +134,16 @@
 
 	.gform-admin .gform-setup-wizard > .gform-dialog__content .gform-setup-wizard__fullscreen-toggle {
 				block-size: 30px;
-				inline-size: 30px;
-				inset-block-start: 25px;
-				inset-inline-end: 25px;
 				position: absolute;
+				inset-inline-end: 25px;
+				inset-block-start: 25px;
+				inline-size: 30px;
 				z-index: 10;
 			}
 
 	.gform-admin .gform-setup-wizard > .gform-dialog__content .gform-setup-wizard__data-button {
-				margin-inline-start: 12px;
+				-webkit-margin-start: 12px;
+				        margin-inline-start: 12px;
 			}
 
 	.gform-admin .gform-setup-wizard, .gform-admin .gform-setup-wizard * {
@@ -169,18 +167,18 @@
 		align-items: center;
 		display: flex;
 		flex-direction: column;
-		inline-size: 100%;
 		justify-content: center;
+		inline-size: 100%;
 	}
 
 	.gform-admin .gform-setup-wizard__content-mask {
 		block-size: 100%;
-		inline-size: 100%;
-		inset-block-start: 0;
 		inset-inline-start: 0;
 		opacity: 1;
 		position: absolute;
+		inset-block-start: 0;
 		transition: opacity 200ms ease-in-out;
+		inline-size: 100%;
 		z-index: 1;
 	}
 
@@ -192,13 +190,16 @@
 		}
 
 	.gform-admin .gform-setup-wizard__footer {
-		border-block-start: 1px solid #ecedf8;
+		-webkit-border-before: 1px solid #ecedf8;
+		        border-block-start: 1px solid #ecedf8;
+		-webkit-padding-before: 2.75rem;
+		        padding-block-start: 2.75rem;
 		inline-size: 100%;
-		padding-block-start: 2.75rem;
 	}
 
 	.gform-admin .gform-setup-wizard__footer .gform-setup-wizard__nav-next-alt {
-			margin-inline-start: auto;
+			-webkit-margin-start: auto;
+			        margin-inline-start: auto;
 		}
 
 	.gform-admin .gform-setup-wizard__footer .gform-button .gform-button__icon, .gform-admin .gform-setup-wizard__nav-footer .gform-button .gform-button__icon {
@@ -208,7 +209,8 @@
 	.gform-admin .gform-setup-wizard__nav-footer {
 		align-items: center;
 		justify-content: space-between;
-		margin-block-start: 2.5rem;
+		-webkit-margin-before: 2.5rem;
+		        margin-block-start: 2.5rem;
 	}
 
 	@media (min-width: 768px) {
@@ -220,8 +222,9 @@
 			inset-block-end: 0;
 			inset-inline-start: 80px;
 			justify-content: flex-start;
-			margin: 0;
-			margin-block-start: 5rem;
+			margin:0;
+			-webkit-margin-before: 5rem;
+			        margin-block-start: 5rem;
 			padding: 1.75rem;
 			position: fixed;
 			z-index: 1
@@ -229,7 +232,8 @@
 		}
 
 	.gform-admin .gform-setup-wizard__nav-footer .gform-setup-wizard__dismiss {
-			margin-inline-end: 0.75rem;
+			-webkit-margin-end: 0.75rem;
+			        margin-inline-end: 0.75rem;
 		}
 
 	.gform-admin .gform-setup-wizard__alert {
@@ -245,7 +249,8 @@
 			}
 
 	.gform-admin .gform-setup-wizard__input-group .gform-input-group__wrapper {
-			margin-block-start: 1rem;
+			-webkit-margin-before: 1rem;
+			        margin-block-start: 1rem;
 		}
 
 	@media (min-width: 768px) {
@@ -292,7 +297,7 @@
 			display: flex;
 			flex-direction: column;
 			inline-size: 100%;
-			padding: 0;
+			padding:0;
 		}
 
 	.gform-admin .gform-dialog.gform-setup-wizard__email-dialog .gform-dialog__close {
@@ -303,12 +308,12 @@
 		}
 
 	.gform-admin .gform-dialog.gform-setup-wizard__email-dialog .gform-dialog__close[focus-within] {
-				box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 0 0 2px #bed8ed;
+				box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 0 0 2px #BED8ED;
 				outline: 1px;
 			}
 
 	.gform-admin .gform-dialog.gform-setup-wizard__email-dialog .gform-dialog__close:focus-within {
-				box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 0 0 2px #bed8ed;
+				box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 0 0 2px #BED8ED;
 				outline: 1px;
 			}
 
@@ -338,11 +343,12 @@
 		background-repeat: no-repeat;
 		background-size: 45px 48px;
 		block-size: 105px;
-		border: 1px solid rgba(18, 25, 97, 0.0417516);
 		border-radius: 100%;
+		border: 1px solid rgba(18, 25, 97, 0.0417516);
 		box-shadow: 0 4px 10px rgba(18, 25, 97, 0.0779552);
 		inline-size: 105px;
-		margin-block-end: 10px;
+		-webkit-margin-after: 10px;
+		        margin-block-end: 10px;
 	}
 
 	.gform-admin .gform-setup-wizard__content {
@@ -362,7 +368,8 @@
 
 	.gform-admin .gform-setup-wizard__content {
 			background: #f6f9fc;
-			border-inline-end: 1px solid #ebebf2;
+			-webkit-border-end: 1px solid #ebebf2;
+			        border-inline-end: 1px solid #ebebf2;
 			max-width: 1030px;
 			min-height: 100%
 	}
@@ -418,29 +425,30 @@
 	@media (min-width: 960px) {
 
 	.gform-admin .gform-setup-wizard__organization-container .gform-setup-wizard__other-container {
-				inline-size: 20rem;
 				margin-block: 0;
-				margin-inline: 1.25rem 0
+				margin-inline: 1.25rem 0;
+				inline-size: 20rem
 		}
 			}
 
 	@media (min-width: 960px) {
 
 	.gform-admin .gform-setup-wizard__organization-container .gform-setup-wizard__other-container .gform-label {
-					block-size: 1px;
 					border: 0;
 					clip: rect(0, 0, 0, 0);
-					inline-size: 1px;
+					block-size: 1px;
 					margin: -1px;
 					overflow: hidden;
-					padding: 0;
+					padding:0;
 					position: absolute;
-					white-space: nowrap
+					white-space: nowrap;
+					inline-size: 1px
 			}
 				}
 
 	.gform-admin .gform-setup-wizard__other-container {
-		margin-block-start: 1.25rem;
+		-webkit-margin-before: 1.25rem;
+		        margin-block-start: 1.25rem;
 	}
 
 	@media (min-width: 640px) {
@@ -451,7 +459,8 @@
 		}
 
 	.gform-admin .gform-setup-wizard__form-types .gform-setup-wizard__other-container, .gform-admin .gform-setup-wizard__services-container .gform-setup-wizard__other-container {
-			margin-block-start: 1rem;
+			-webkit-margin-before: 1rem;
+			        margin-block-start: 1rem;
 		}
 
 	.gform-admin .gform-setup-wizard__validate-license-button--valid:disabled {
@@ -768,7 +777,8 @@
 	@media (min-width: 768px) {
 
 	.gform-admin .gform-setup-wizard--step-1 .gform-setup-wizard__content {
-				padding-block-end: 8.75rem
+				-webkit-padding-after: 8.75rem;
+				        padding-block-end: 8.75rem
 		}
 			}
 

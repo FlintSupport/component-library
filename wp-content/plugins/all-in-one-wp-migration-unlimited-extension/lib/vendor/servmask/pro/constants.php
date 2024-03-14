@@ -66,3 +66,23 @@ define( 'AI1WMVE_MAX_FILE_SIZE', 0 );
 // = Schedules Events Options =
 // ============================
 define( 'AI1WMVE_SCHEDULES_OPTIONS', 'ai1wmve_schedule_events' );
+
+// ====================
+// = Reset Theme Name =
+// ====================
+define( 'AI1WMVE_RESET_THEME_NAME', 'servmask' );
+
+// ==========================
+// = Reset Theme Style Name =
+// ==========================
+define( 'AI1WMVE_RESET_THEME_STYLE_NAME', AI1WMVE_RESET_THEME_NAME . DIRECTORY_SEPARATOR . 'style.css' );
+
+// ==========================
+// = Reset Theme Index Name =
+// ==========================
+define( 'AI1WMVE_RESET_THEME_INDEX_NAME', AI1WMVE_RESET_THEME_NAME . DIRECTORY_SEPARATOR . 'index.php' );
+
+// ========================
+// = Reset DB backup file =
+// ========================
+define( 'AI1WMVE_RESET_DB_BACKUP', 'reset-db-backup.json' );

@@ -4,6 +4,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // disable direct access
 }
 
+use ScssPhp\ScssPhp\Compiler;
+
 if ( ! class_exists( 'Mega_Menu_Style_Manager' ) ) :
 
 	/**
@@ -57,6 +59,22 @@ if ( ! class_exists( 'Mega_Menu_Style_Manager' ) ) :
 			}
 
 			add_filter( 'megamenu_scripts_in_footer', array( $this, 'scripts_in_footer' ) );
+			add_filter( "filesystem_method", array( $this, "use_direct_filesystem_method" ), 10, 4 );
+
+		}
+
+
+		/**
+		 * Always use the 'direct' filesystem method when creating/removing the style.css file
+		 * 
+		 * @since 3.0.1
+		 */
+		public function use_direct_filesystem_method( $method, $args, $context, $allow_relaxed_file_ownership ) { 
+			if ( $method != 'direct' && str_contains( $context, "/maxmegamenu" ) ) {
+				return 'direct';
+			}
+
+		    return $method; 
 		}
 
 
@@ -484,7 +502,7 @@ if ( ! class_exists( 'Mega_Menu_Style_Manager' ) ) :
 			$css = '';
 
 			foreach ( $this->settings as $location => $settings ) {
-				if ( isset( $settings['enabled'] ) && has_nav_menu( $location ) ) {
+				if ( isset( $settings['enabled'] ) && has_nav_menu( $location ) && ! $this->is_polylang_location( $location ) ) {
 					$theme        = $this->get_theme_settings_for_location( $location );
 					$menu_id      = $this->get_menu_id_for_location( $location );
 					$compiled_css = $this->generate_css_for_location( $location, $theme, $menu_id );
@@ -517,6 +535,12 @@ if ( ! class_exists( 'Mega_Menu_Style_Manager' ) ) :
 			return $css;
 		}
 
+		/**
+		 * 
+		 */
+		public function is_polylang_location( $location ) {
+			return strpos( $location, '___' );
+		}
 
 		/**
 		 * Saves the generated CSS to the uploads folder
@@ -535,7 +559,7 @@ if ( ! class_exists( 'Mega_Menu_Style_Manager' ) ) :
 
 			$dir = trailingslashit( $upload_dir['basedir'] ) . 'maxmegamenu/';
 
-			WP_Filesystem( false, $upload_dir['basedir'], true );
+			WP_Filesystem( false, $dir, true );
 
 			if ( ! $wp_filesystem->is_dir( $dir ) ) {
 				$wp_filesystem->mkdir( $dir );
@@ -666,9 +690,27 @@ if ( ! class_exists( 'Mega_Menu_Style_Manager' ) ) :
 		 * @param string $location
 		 */
 		public function generate_css_for_location( $location, $theme, $menu_id ) {
+			if ( ( defined( 'MEGAMENU_PRO_VERSION' ) && version_compare( MEGAMENU_PRO_VERSION, '2.3.1' ) < 0 ) ||  ( defined( 'MEGAMENU_SCSS_COMPILER_COMPAT') && MEGAMENU_SCSS_COMPILER_COMPAT ) ) {
+				// use old compiler when < Pro v2.3.1 is installed
+				return $this->generate_css_for_location_old( $location, $theme, $menu_id );
+			} else {
+				return $this->generate_css_for_location_new( $location, $theme, $menu_id );
+			}
+		}
 
-			if ( is_readable( MEGAMENU_PATH . 'classes/scssc.inc.php' ) && ! class_exists( 'scssc' ) ) {
-				include_once MEGAMENU_PATH . 'classes/scssc.inc.php';
+
+		/**
+		 * Compiles raw SCSS into CSS for a particular menu location.
+		 *
+		 * @since 1.3
+		 * @return mixed
+		 * @param array $settings
+		 * @param string $location
+		 */
+		public function generate_css_for_location_old( $location, $theme, $menu_id ) {
+
+			if ( is_readable( MEGAMENU_PATH . 'classes/scss/0.0.12/scss.inc.php' ) && ! class_exists( 'scssc' ) ) {
+				include_once MEGAMENU_PATH . 'classes/scss/0.0.12/scss.inc.php';
 			}
 
 			$scssc = new scssc();
@@ -691,6 +733,52 @@ if ( ! class_exists( 'Mega_Menu_Style_Manager' ) ) :
 
 			try {
 				return $scssc->compile( $this->get_complete_scss_for_location( $location, $theme, $menu_id ) );
+			} catch ( Exception $e ) {
+				$message = __( 'Warning: CSS compilation failed. Please check your changes or revert the theme.', 'megamenu' );
+
+				return new WP_Error( 'scss_compile_fail', $message . '<br /><br />' . $e->getMessage() );
+			}
+
+		}
+
+
+		/**
+		 * Compiles raw SCSS into CSS for a particular menu location.
+		 *
+		 * @since 3.3
+		 * @return mixed
+		 * @param array $settings
+		 * @param string $location
+		 */
+		public function generate_css_for_location_new( $location, $theme, $menu_id ) {
+
+			if ( is_readable( MEGAMENU_PATH . 'classes/scss/1.11.1/scss.inc.php' ) && ! class_exists( 'scssc' ) ) {
+				require_once MEGAMENU_PATH . 'classes/scss/1.11.1/scss.inc.php';
+			}
+
+			$scssc = new Compiler();
+
+			$import_paths = apply_filters(
+				'megamenu_scss_import_paths',
+				array(
+					trailingslashit( get_stylesheet_directory() ) . trailingslashit( 'megamenu' ),
+					trailingslashit( get_stylesheet_directory() ),
+					trailingslashit( get_template_directory() ) . trailingslashit( 'megamenu' ),
+					trailingslashit( get_template_directory() ),
+					trailingslashit( WP_PLUGIN_DIR ),
+				)
+			);
+
+			foreach ( $import_paths as $path ) {
+				$scssc->addImportPath( $path );
+			}
+
+			try {
+				if ( method_exists( $scssc, "compileString" ) ) {
+					return $scssc->compileString( $this->get_complete_scss_for_location( $location, $theme, $menu_id ) )->getCss();
+				} else if ( method_exists( $scssc, "compile" ) ) { // using an older version of scssphp from a different plugin
+					return $scssc->compile( $this->get_complete_scss_for_location( $location, $theme, $menu_id ) );
+				}
 			} catch ( Exception $e ) {
 				$message = __( 'Warning: CSS compilation failed. Please check your changes or revert the theme.', 'megamenu' );
 
@@ -1038,7 +1126,7 @@ if ( ! class_exists( 'Mega_Menu_Style_Manager' ) ) :
 			$filename   = $this->get_css_filename();
 			$dir        = trailingslashit( $upload_dir['basedir'] ) . 'maxmegamenu/';
 
-			WP_Filesystem( false, $upload_dir['basedir'], true );
+			WP_Filesystem( false, $dir, true );
 			$wp_filesystem->rmdir( $dir, true );
 
 			delete_transient( $this->get_transient_key() );

@@ -56,7 +56,7 @@ class GF_Asset_Processor {
 		foreach( $registered as &$asset ) {
 
 			// Bail if not one of our assets.
-			if ( $asset->src && strpos( $asset->src, 'gravityforms/assets/js/dist' ) === false ) {
+			if ( strpos( $asset->src, 'gravityforms/assets/js/dist' ) === false ) {
 				continue;
 			}
 

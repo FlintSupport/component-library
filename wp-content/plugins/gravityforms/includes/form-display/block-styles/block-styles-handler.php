@@ -17,10 +17,6 @@ class Block_Styles_Handler {
 		$this->defaults_map = $defaults_map;
 	}
 
-	public function defaults_map( $form ) {
-		return call_user_func( $this->defaults_map, $form );
-	}
-
 	public function handle() {
 		$layer = new Theme_Layer_Builder();
 		$layer->set_name( self::NAME )
@@ -30,13 +26,8 @@ class Block_Styles_Handler {
 		      ->register();
 	}
 
-	public function form_css_properties( $form_id, $settings, $block_settings, $form = array() ) {
-
-		if ( $form['styles'] === false ) {
-			return array();
-		}
-
-		$applied_settings = wp_parse_args( $block_settings, $this->defaults_map( $form ) );
+	public function form_css_properties( $form_id, $settings, $block_settings ) {
+		$applied_settings = wp_parse_args( $block_settings, $this->defaults_map );
 
 		// Bail early if orbital isn't applied.
 		if ( $applied_settings['theme'] !== 'orbital' ) {
@@ -77,13 +68,6 @@ class Block_Styles_Handler {
 			'gform-theme-color-inside-control-contrast-rgb' => implode( ', ', $color_palette['inside-control']['color-contrast-rgb'] ),
 			'gform-theme-color-inside-control-darker'       => $color_palette['inside-control']['color-darker'],
 			'gform-theme-color-inside-control-lighter'      => $color_palette['inside-control']['color-lighter'],
-
-			'gform-theme-color-inside-control-primary'              => $color_palette['inside-control-primary']['color'],
-			'gform-theme-color-inside-control-primary-rgb'          => implode( ', ', $color_palette['inside-control-primary']['color-rgb'] ),
-			'gform-theme-color-inside-control-primary-contrast'     => $color_palette['inside-control-primary']['color-contrast'],
-			'gform-theme-color-inside-control-primary-contrast-rgb' => implode( ', ', $color_palette['inside-control-primary']['color-contrast-rgb'] ),
-			'gform-theme-color-inside-control-primary-darker'       => $color_palette['inside-control-primary']['color-darker'],
-			'gform-theme-color-inside-control-primary-lighter'      => $color_palette['inside-control-primary']['color-lighter'],
 
 			'gform-theme-color-inside-control-light'         => $color_palette['inside-control-light']['color'],
 			'gform-theme-color-inside-control-light-rgb'     => implode( ', ', $color_palette['inside-control-light']['color-rgb'] ),
@@ -126,7 +110,7 @@ class Block_Styles_Handler {
 			'gform-theme-control-button-border-color-secondary' => $applied_settings['inputBorderColor'],
 
 			/* Global CSS API: Control - File */
-			'gform-theme-control-file-button-background-color-hover' => GFCommon::darken_color( $color_palette['inside-control']['color-darker'], 2 ),
+			'gform-theme-control-file-button-background-color-hover' => GFCommon::darken_color( $color_palette['secondary']['color-darker'], 2 ),
 
 			/* Global CSS API: Field - Page */
 			'gform-theme-field-page-steps-number-color' => 'rgba(' . implode( ', ', GFCommon::darken_color( $applied_settings['labelColor'], 0, 'rgb' ) ) . ', 0.8)',
@@ -141,7 +125,6 @@ class Block_Styles_Handler {
 	}
 
 	public function styles( $form, $ajax, $settings, $block_settings ) {
-
 		$theme_slug = \GFFormDisplay::get_form_theme_slug( $form );
 
 		if ( $theme_slug !== 'orbital' ) {

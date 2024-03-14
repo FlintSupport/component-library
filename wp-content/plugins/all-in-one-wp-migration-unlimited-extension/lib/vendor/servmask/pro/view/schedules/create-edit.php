@@ -37,7 +37,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<?php _e( 'Create Event', AI1WM_PLUGIN_NAME ); ?>
 				</h1>
 
-				<schedule-event inline-template :event='<?php echo $event->to_json(); ?>' :advanced-options='<?php echo json_encode( $event->advanced_options() ); ?>'>
+				<schedule-event inline-template :event='<?php echo $event->to_json(); ?>' :advanced-options='<?php echo json_encode( $event->advanced_options() ); ?>' :global-increment="<?php echo defined( 'AI1WM_INCREMENTAL_PATH' ) ? 'true' : 'false'; ?>">
 					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php?action=ai1wm_schedule_event_save' ) ); ?>" id="ai1wmve-schedule-event-form" class="ai1wm-clear">
 						<input type="hidden" name="event_id" v-model="form.event_id">
 						<div class="ai1wm-event-fieldset">
@@ -76,16 +76,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 							</div>
 							<input name="options[]" v-for="option in form.options" type="hidden" :value="option" :key="'option_' +  option">
 
-							<?php if ( defined( 'AI1WM_INCREMENTAL_PATH' ) ) : ?>
-								<div class="ai1wm-event-row" v-if="form.type === '<?php echo Ai1wmve_Schedule_Event::TYPE_EXPORT; ?>'">
-									<div class="ai1wm-event-field">
-										<label class="ai1wm-event-label" for="ai1wm-event-incremental">
-											<input type="checkbox" class="ai1wm-event-input" id="ai1wm-event-incremental" name="incremental" v-model="form.incremental"/>
-											<?php _e( 'Incremental backup', AI1WM_PLUGIN_NAME ); ?>
-										</label>
-									</div>
+							<div class="ai1wm-event-row" v-if="hasIncremental">
+								<div class="ai1wm-event-field">
+									<label class="ai1wm-event-label" for="ai1wm-event-incremental">
+										<input type="checkbox" class="ai1wm-event-input" id="ai1wm-event-incremental" name="incremental" v-model="form.incremental"/>
+										<?php _e( 'Incremental backup', AI1WM_PLUGIN_NAME ); ?>
+									</label>
 								</div>
-							<?php endif; ?>
+							</div>
 
 							<div class="ai1wm-event-row" v-if="form.type === '<?php echo Ai1wmve_Schedule_Event::TYPE_EXPORT; ?>'">
 								<div class="ai1wm-event-field ai1wm-encrypt-backups-container">
@@ -156,11 +154,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 									<select class="ai1wm-event-input" id="ai1wm-event-schedule-interval" v-model="form.schedule.interval" name="schedule[interval]" required>
 										<option value="" disabled><?php _e( 'Select interval', AI1WM_PLUGIN_NAME ); ?></option>
 										<option value="<?php echo esc_attr( Ai1wmve_Schedule_Event::INTERVAL_HOURLY ); ?>" v-text="form.incremental ? '<?php _e( 'Continuous', AI1WM_PLUGIN_NAME ); ?>' : '<?php _e( 'Hourly', AI1WM_PLUGIN_NAME ); ?>'"></option>
-										<option value="<?php echo esc_attr( Ai1wmve_Schedule_Event::INTERVAL_DAILY ); ?>" v-text="form.incremental ? '<?php _e( 'Once per day', AI1WM_PLUGIN_NAME ); ?>' : '<?php _e( 'Daily', AI1WM_PLUGIN_NAME ); ?>'"><?php _e( 'Daily', AI1WM_PLUGIN_NAME ); ?></option>
-										<option value="<?php echo esc_attr( Ai1wmve_Schedule_Event::INTERVAL_WEEKLY ); ?>" v-if="! form.incremental"><?php _e( 'Weekly', AI1WM_PLUGIN_NAME ); ?></option>
-										<option value="<?php echo esc_attr( Ai1wmve_Schedule_Event::INTERVAL_MONTHLY ); ?>" v-if="! form.incremental"><?php _e( 'Monthly', AI1WM_PLUGIN_NAME ); ?></option>
-										<option value="<?php echo esc_attr( Ai1wmve_Schedule_Event::INTERVAL_N_HOUR ); ?>" v-if="! form.incremental"><?php _e( 'N Hour', AI1WM_PLUGIN_NAME ); ?></option>
-										<option value="<?php echo esc_attr( Ai1wmve_Schedule_Event::INTERVAL_N_DAYS ); ?>" v-if="! form.incremental"><?php _e( 'N Days', AI1WM_PLUGIN_NAME ); ?></option>
+										<option value="<?php echo esc_attr( Ai1wmve_Schedule_Event::INTERVAL_DAILY ); ?>" v-text="form.incremental ? '<?php _e( 'Once per day', AI1WM_PLUGIN_NAME ); ?>' : '<?php _e( 'Daily', AI1WM_PLUGIN_NAME ); ?>'"></option>
+										<option value="<?php echo esc_attr( Ai1wmve_Schedule_Event::INTERVAL_WEEKLY ); ?>"><?php _e( 'Weekly', AI1WM_PLUGIN_NAME ); ?></option>
+										<option value="<?php echo esc_attr( Ai1wmve_Schedule_Event::INTERVAL_MONTHLY ); ?>"><?php _e( 'Monthly', AI1WM_PLUGIN_NAME ); ?></option>
+										<option value="<?php echo esc_attr( Ai1wmve_Schedule_Event::INTERVAL_N_HOUR ); ?>"><?php _e( 'N Hour', AI1WM_PLUGIN_NAME ); ?></option>
+										<option value="<?php echo esc_attr( Ai1wmve_Schedule_Event::INTERVAL_N_DAYS ); ?>"><?php _e( 'N Days', AI1WM_PLUGIN_NAME ); ?></option>
 									</select>
 								</div>
 

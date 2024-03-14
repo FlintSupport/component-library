@@ -2,8 +2,8 @@
 Contributors: WebFactory
 Tags: 301 redirect, redirects, redirect, 404 error log, redirection, 302, seo, 302 redirect, 404, 404 redirect, 301, 307, 404 log
 Requires at least: 4.0
-Tested up to: 6.2
-Stable tag: 2.73
+Tested up to: 6.4
+Stable tag: 2.74
 Requires PHP: 5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -69,6 +69,10 @@ Install our free <a href="https://wordpress.org/plugins/wp-force-ssl/">WP Force 
 
 
 == Changelog ==
+
+= 2.74 =
+* 2024/02/20
+* PHP v8.2 compatibility fix
 
 = 2.73 =
 * 2023/03/08

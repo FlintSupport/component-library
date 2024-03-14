@@ -24,7 +24,7 @@
 	<div class="bottom">
 		<div class="container">
 			<p>©<?php echo date('Y'); ?> Company Name</p> <?php wp_nav_menu( array( 'theme_location' => 'policy-menu' ) ); ?>
-			<div class="copy-disclaimer"><?php the_field('bottom_disclaimer', 'options'); ?></div>
+			<div class="copy-disclaimer"><?php echo get_field('bottom_disclaimer', 'options'); ?></div>
 		</div>
 	</div>
 <?php wp_footer(); ?>
@@ -62,7 +62,7 @@
 	<div class="bottom">
 		<div class="container">
 			<p>©<?php echo date('Y'); ?> Company Name</p> <?php wp_nav_menu( array( 'theme_location' => 'policy-menu' ) ); ?>
-			<div class="copy-disclaimer"><?php the_field('bottom_disclaimer', 'options'); ?></div>
+			<div class="copy-disclaimer"><?php echo get_field('bottom_disclaimer', 'options'); ?></div>
 		</div>
 	</div>
 <?php wp_footer(); ?>
@@ -122,7 +122,7 @@
 	<div class="bottom">
 		<div class="container">
 			<p>©<?php echo date('Y'); ?> Company Name</p> <?php wp_nav_menu( array( 'theme_location' => 'policy-menu' ) ); ?>
-			<div class="copy-disclaimer"><?php the_field('bottom_disclaimer', 'options'); ?></div>
+			<div class="copy-disclaimer"><?php echo get_field('bottom_disclaimer', 'options'); ?></div>
 		</div>
 	</div>
 <?php wp_footer(); ?>
@@ -153,7 +153,7 @@
 	<div class="bottom">
 		<div class="container">
 			<p>©<?php echo date('Y'); ?> Company Name</p> <?php wp_nav_menu( array( 'theme_location' => 'policy-menu' ) ); ?>
-			<div class="copy-disclaimer"><?php the_field('bottom_disclaimer', 'options'); ?></div>
+			<div class="copy-disclaimer"><?php echo get_field('bottom_disclaimer', 'options'); ?></div>
 		</div>
 	</div>
 <?php wp_footer(); ?>

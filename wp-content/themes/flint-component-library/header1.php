@@ -21,7 +21,7 @@
 		<div class="container">
 			<img src="<?php echo get_template_directory_uri(); ?>/img/alert.svg" alt="" >
 			<div class="copy">
-				<?php the_field('alert_bar_content', 'options'); ?>
+				<?php echo get_field('alert_bar_content', 'options'); ?>
 			</div>
 			<img id="noticeClose" src="<?php echo get_template_directory_uri(); ?>/img/close.svg" alt="Close Notice" >
 		</div>
@@ -30,7 +30,7 @@
 <header id="header">
 	<nav class="top">
 		<div class="container">
-			<div class="left"><a href="tel:<?php the_field('primary_contact_number', 'options'); ?>" title="Call Flint Group"><?php the_field('primary_contact_number', 'options'); ?></a></div>
+			<div class="left"><a href="tel:<?php echo get_field('primary_contact_number', 'options'); ?>" title="Call Flint Group"><?php echo get_field('primary_contact_number', 'options'); ?></a></div>
 			<?php wp_nav_menu( array( 'theme_location' => 'top-menu' ) ); ?>
 		</div>
 	</nav>	
@@ -47,7 +47,7 @@
 				<ul id="mobile-menu-links">
 				<?php
 					wp_nav_menu( array(
-						'menu' => 'main-menu-1',
+						'menu' => 'main-menu',
 						'menu_id' => '',
 						'container' => '',
 						'items_wrap'     => '%3$s'
