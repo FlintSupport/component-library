@@ -31,7 +31,7 @@
 	<nav class="top">
 		<div class="container">
 			<div class="left"><a href="tel:<?php echo get_field('primary_contact_number', 'options'); ?>" title="Call Flint Group"><?php echo get_field('primary_contact_number', 'options'); ?></a></div>
-			<?php wp_nav_menu( array( 'theme_location' => 'top-menu' ) ); ?>
+			<?php wp_nav_menu( array( 'theme_location' => 'utility-menu' ) ); ?>
 		</div>
 	</nav>
 	<nav class="main">

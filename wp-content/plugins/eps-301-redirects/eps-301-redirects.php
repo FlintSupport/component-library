@@ -2,16 +2,16 @@
  /*
 Plugin Name: 301 Redirects
 Description: Easily create and manage redirect rules, and view 404 error log.
-Version: 2.74
+Version: 2.75
 Author: WebFactory Ltd
 Author URI: https://www.webfactoryltd.com/
 Plugin URI: https://wp301redirects.com/
 Text Domain: eps-301-redirects
 Requires at least: 3.6
-Tested up to: 6.4
+Tested up to: 6.5
 Requires PHP: 5.2
 
-  Copyright 2015 - 2023  WebFactory Ltd  (email: 301redirects@webfactoryltd.com)
+  Copyright 2015 - 2024  WebFactory Ltd  (email: 301redirects@webfactoryltd.com)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

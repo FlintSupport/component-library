@@ -16,8 +16,8 @@
 				            name: 'style',
 				            label: 'Style',
 				            'values': [
-				                {text: 'Filled', value: 'primary'},
-				                {text: 'Outline', value: 'secondary'}
+				                {text: 'Primary (Filled)', value: 'primary'},
+				                {text: 'Secondary (Outline)', value: 'secondary'}
 				            ]
                         },
 				        {

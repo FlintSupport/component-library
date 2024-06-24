@@ -286,7 +286,7 @@ class EPS_Redirects_Plugin
       // unset($pointers['welcome']);
       // update_option('eps_pointers', $pointers);
 
-      $notices = get_option('301-redirects-notices');
+      $notices = get_option('301-redirects-notices', array());
 
       wp_enqueue_script('jquery');
 

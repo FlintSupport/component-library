@@ -70,7 +70,7 @@ function form_submit_button($button, $form){
 
 //CUSTOM MENUS
 function register_flint_menu() {
-    register_nav_menu('top-menu',__( 'Top Menu' ));
+    register_nav_menu('utility-menu',__( 'Utility Menu' ));
     register_nav_menu('main-menu',__( 'Main Menu' ));
 	register_nav_menu('main-menu-two',__( 'Main Menu 2' ));
 	register_nav_menu('main-menu-three',__( 'Main Menu 3' ));
@@ -135,9 +135,9 @@ function flint_acf_init() {
 			'keywords'			=> array( 'hero', 'intro', 'header'),
 		));
 		acf_register_block(array(
-			'name'				=> 'defaultcontent',
-			'title'				=> __('Default Content Block'),
-			'description'		=> __('A generic content block with column selection'),
+			'name'				=> 'flexiblecontent',
+			'title'				=> __('Flexible Content Block'),
+			'description'		=> __('A generic, flexible content block with column selection'),
 			'render_callback'	=> 'flint_acf_block_render_callback',
 			'category'			=> 'flint',
 			'icon'				=> 'table-row-before',
@@ -163,12 +163,12 @@ function flint_acf_init() {
 		));
 		acf_register_block(array(
 			'name'				=> 'posts',
-			'title'				=> __('Posts Highlight Block'),
-			'description'		=> __('Showcase upcoming posts.'),
+			'title'				=> __('Posts Feature Block'),
+			'description'		=> __('Showcase posts by newest or custom order.'),
 			'render_callback'	=> 'flint_acf_block_render_callback',
 			'category'			=> 'flint',
 			'icon'				=> 'welcome-write-blog',
-			'keywords'			=> array( 'post', 'highlight', 'news'),
+			'keywords'			=> array( 'post', 'feature', 'highlight', 'news'),
 		));
         acf_register_block(array(
 			'name'				=> 'testimonials',
@@ -186,15 +186,6 @@ function flint_acf_init() {
 			'render_callback'	=> 'flint_acf_block_render_callback',
 			'category'			=> 'flint',
 			'icon'				=> 'columns',
-			'keywords'			=> array( 'tab', 'content', 'media', 'toggle'),
-		));
-		acf_register_block(array(
-			'name'				=> 'image-highlight',
-			'title'				=> __('Image Highlight Block'),
-			'description'		=> __('Image on the left with content on the right with a link.'),
-			'render_callback'	=> 'flint_acf_block_render_callback',
-			'category'			=> 'flint',
-			'icon'				=> 'align-full-width',
 			'keywords'			=> array( 'tab', 'content', 'media', 'toggle'),
 		));
 		acf_register_block(array(
@@ -226,21 +217,12 @@ function flint_acf_init() {
 		));
 		acf_register_block(array(
 			'name'				=> 'comparison',
-			'title'				=> __('Comparison Table Block'),
-			'description'		=> __('Compares up to three items'),
+			'title'				=> __('Comparison Card Block'),
+			'description'		=> __('Compares up to three items in columns'),
 			'render_callback'	=> 'flint_acf_block_render_callback',
 			'category'			=> 'flint',
 			'icon'				=> 'editor-table',
-			'keywords'			=> array( 'table', 'comparison', 'compare'),
-		));
-		acf_register_block(array(
-			'name'				=> 'blurbs',
-			'title'				=> __('Small Blurb Block'),
-			'description'		=> __('Add up to four small column blurbs with optional icons and CTAs'),
-			'render_callback'	=> 'flint_acf_block_render_callback',
-			'category'			=> 'flint',
-			'icon'				=> 'grid-view',
-			'keywords'			=> array( 'blurb', 'column', 'content'),
+			'keywords'			=> array( 'table', 'comparison', 'compare', 'card'),
 		));
 		acf_register_block(array(
 			'name'				=> 'slider',
@@ -284,18 +266,16 @@ function wpse_allowed_block_types($allowed_block_types, $post) {
 	if($post->post_type == 'page') {
 		return array(
 			'acf/hero',
-			'acf/defaultcontent',
+			'acf/flexiblecontent',
 			'acf/accordion',
 			'acf/cta',
 			'acf/posts',
 			'acf/testimonials',
 			'acf/cards',
-			'acf/image-highlight',
 			'acf/gallery',
 			'acf/newsletter',
 			'acf/form',
 			'acf/comparison',
-			'acf/blurbs',
 			'acf/slider',
 			'acf/tabs',
 			'acf/videocarousel',
