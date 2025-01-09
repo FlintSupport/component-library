@@ -2,14 +2,15 @@
  /*
 Plugin Name: 301 Redirects
 Description: Easily create and manage redirect rules, and view 404 error log.
-Version: 2.75
+Version: 2.77
 Author: WebFactory Ltd
 Author URI: https://www.webfactoryltd.com/
 Plugin URI: https://wp301redirects.com/
 Text Domain: eps-301-redirects
 Requires at least: 3.6
-Tested up to: 6.5
+Tested up to: 6.7
 Requires PHP: 5.2
+License: GPLv2 or later
 
   Copyright 2015 - 2024  WebFactory Ltd  (email: 301redirects@webfactoryltd.com)
 
@@ -68,7 +69,8 @@ if (!defined('WF301_PLUGIN_FILE')) {
 
       if (is_admin()) {
 
-        if (isset($_GET['page']) && sanitize_text_field($_GET['page']) == $EPS_Redirects_Plugin->config('page_slug')) {
+        //phpcs:ignore no nonce as page can be opened manually
+        if (isset($_GET['page']) && sanitize_text_field($_GET['page']) == $EPS_Redirects_Plugin->config('page_slug')) { //phpcs:ignore
           add_action('admin_init', array($this, 'clear_cache'));
         }
 
@@ -106,8 +108,12 @@ if (!defined('WF301_PLUGIN_FILE')) {
   function dismiss_pointer_ajax() {
     check_ajax_referer('eps_dismiss_pointer');
 
+    if(!isset($_POST['pointer_name'])){
+      wp_send_json_error();
+    }
+
     $pointers = get_option('eps_pointers');
-    $pointer = trim(sanitize_text_field($_POST['pointer_name']));
+    $pointer = trim(sanitize_text_field(wp_unslash($_POST['pointer_name'])));
 
     if (empty($pointers) || empty($pointers[$pointer])) {
       wp_send_json_error();
@@ -458,7 +464,7 @@ if (!defined('WF301_PLUGIN_FILE')) {
           $agent = '<i>unknown</i>';
         }
         $widget_html .= '<tr>';
-        $widget_html .= '<td nowrap><abbr title="' . date(get_option('date_format'), $l['timestamp']) . ' @ ' . date(get_option('time_format'), $l['timestamp'])  . '">' . human_time_diff(current_time('timestamp'), $l['timestamp']) . ' ago</abbr></td>';
+        $widget_html .= '<td nowrap><abbr title="' . gmdate(get_option('date_format'), $l['timestamp']) . ' @ ' . gmdate(get_option('time_format'), $l['timestamp'])  . '">' . human_time_diff(current_time('timestamp'), $l['timestamp']) . ' ago</abbr></td>';
         $widget_html .= '<td><a title="Open target URL in a new tab" target="_blank" href="' . $l['url'] . '">' . $l['url'] . '</a> <span class="dashicons dashicons-external"></span></td>';
         $widget_html .= '<td>' . $agent . '</td>';
         $widget_html .= '</tr>';
@@ -635,11 +641,11 @@ if (!defined('WF301_PLUGIN_FILE')) {
       }
 
       $update = array(
-        'id'        => ($_POST['id']) ? intval($_POST['id']) : false,
-        'url_from'  => sanitize_text_field($_POST['url_from']), // remove the $root from the url if supplied, and a leading /
-        'url_to'    => sanitize_text_field($_POST['url_to']),
-        'type'      => (is_numeric($_POST['url_to']) ? 'post' : 'url'),
-        'status'    => sanitize_text_field($_POST['status'])
+        'id'        => isset($_POST['id']) ? intval(wp_unslash($_POST['id'])) : false,
+        'url_from'  => isset($_POST['url_from']) ? sanitize_text_field(wp_unslash($_POST['url_from'])) : '', // remove the $root from the url if supplied, and a leading /
+        'url_to'    => isset($_POST['url_to']) ? sanitize_text_field(wp_unslash($_POST['url_to'])) : '',
+        'type'      => (isset($_POST['url_to']) && is_numeric($_POST['url_to']) ? 'post' : 'url'),
+        'status'    => isset($_POST['status']) ? sanitize_text_field(wp_unslash($_POST['status'])) : 'disabled'
       );
 
       $ids = self::_save_redirects(array($update));
@@ -677,9 +683,8 @@ if (!defined('WF301_PLUGIN_FILE')) {
     public static function redirect_exists($redirect)
     {
       global $wpdb;
-      $table_name = $wpdb->prefix . "redirects";
-      $query = $wpdb->prepare("SELECT id FROM $table_name WHERE url_from = %s", $redirect['url_from']);
-      $result = $wpdb->get_row($query);
+      //phpcs:ignore as we're using a custom table
+      $result = $wpdb->get_row($wpdb->prepare('SELECT id FROM '. $wpdb->prefix . 'redirects WHERE url_from = %s', $redirect['url_from'])); //phpcs:ignore
       return ($result) ? $result : false;
     }
 
@@ -714,7 +719,7 @@ if (!defined('WF301_PLUGIN_FILE')) {
 
           // new
           $entry = array(
-            'url_from'      => trim(ltrim(str_replace($root, null, $redirect['url_from']), '/')),
+            'url_from'      => trim(ltrim(str_replace($root, '', $redirect['url_from']), '/')),
             'url_to'        => trim($redirect['url_to']),
             'type'          => trim($redirect['type']),
             'status'        => trim($redirect['status'])
@@ -722,15 +727,13 @@ if (!defined('WF301_PLUGIN_FILE')) {
           // Add count if exists:
           if (isset($redirect['count']) && is_numeric($redirect['count'])) $entry['count'] = $redirect['count'];
 
-          $wpdb->insert(
-            $table_name,
-            $entry
-          );
+          //phpcs:ignore as we're using a custom table
+          $wpdb->insert($table_name,$entry); //phpcs:ignore
           $ids[] = $wpdb->insert_id;
         } else {
           // existing
           $entry = array(
-            'url_from'  => trim(ltrim(str_replace($root, null, $redirect['url_from']), '/')),
+            'url_from'  => trim(ltrim(str_replace($root, '', $redirect['url_from']), '/')),
             'url_to'    => trim($redirect['url_to']),
             'type'      => trim($redirect['type']),
             'status'    => trim($redirect['status'])
@@ -738,11 +741,8 @@ if (!defined('WF301_PLUGIN_FILE')) {
           // Add count if exists:
           if (isset($redirect['count']) && is_numeric($redirect['count'])) $entry['count'] = $redirect['count'];
 
-          $wpdb->update(
-            $table_name,
-            $entry,
-            array('id' => $redirect['id'])
-          );
+          //phpcs:ignore as we're using a custom table
+          $wpdb->update($table_name, $entry, array('id' => $redirect['id'])); //phpcs:ignore
 
           $ids[] = $redirect['id'];
         }
@@ -762,18 +762,19 @@ if (!defined('WF301_PLUGIN_FILE')) {
     public static function get_redirects($active_only = false)
     {
       global $wpdb;
-      $table_name = $wpdb->prefix . "redirects";
-      $orderby = (isset($_GET['orderby']))  ?  esc_sql(sanitize_text_field($_GET['orderby'])) : 'id';
-      $order = (isset($_GET['order']))    ? esc_sql(sanitize_text_field($_GET['order'])) : 'desc';
+
+      //phpcs:ignore as this displays redirects table on page which can be opened manually instead of through a link and can't have a nonce on it
+      $orderby = (isset($_GET['orderby']))  ?  esc_sql(sanitize_text_field(wp_unslash($_GET['orderby']))) : 'id'; //phpcs:ignore
+      $order = (isset($_GET['order']))    ? esc_sql(sanitize_text_field(wp_unslash($_GET['order']))) : 'desc'; //phpcs:ignore
       $orderby = (in_array(strtolower($orderby), array('id', 'url_from', 'url_to', 'count'))) ? $orderby : 'id';
       $order = (in_array(strtolower($order), array('asc', 'desc'))) ? $order : 'desc';
 
-      $query = $wpdb->prepare("SELECT *
-            FROM $table_name
-            WHERE 1 = %d AND status != 404 " . (($active_only) ? "AND status != 'inactive'" : null) . "
-            ORDER BY $orderby $order", 1);
-      //die($query);
-      $results = $wpdb->get_results($query);
+      //phpcs:ignore because we are using a custom table and order parameters are already checked and escaped above
+      if($active_only){
+        $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM " . $wpdb->prefix . "redirects WHERE 1 = %d AND status != 404 AND status != 'inactive' ORDER BY $orderby $order", 1)); //phpcs:ignore
+      } else {
+        $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM " . $wpdb->prefix . "redirects WHERE 1 = %d AND status != 404 ORDER BY $orderby $order", 1)); //phpcs:ignore
+      }
 
       return $results;
     }
@@ -781,21 +782,17 @@ if (!defined('WF301_PLUGIN_FILE')) {
     public static function get_all()
     {
       global $wpdb;
-      $table_name = $wpdb->prefix . "redirects";
 
-      $results = $wpdb->get_results(
-        "SELECT * FROM $table_name ORDER BY id DESC"
-      );
-
+      //phpcs:ignore as we're using a custom table
+      $results = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "redirects ORDER BY id DESC"); //phpcs:ignore
       return $results;
     }
 
     public static function get_redirect($redirect_id)
     {
       global $wpdb;
-      $table_name = $wpdb->prefix . "redirects";
-      $query = $wpdb->prepare("SELECT * FROM $table_name WHERE id = %d LIMIT 1", intval($redirect_id));
-      $results = $wpdb->get_results($query);
+      //phpcs:ignore as we're using a custom table
+      $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM " . $wpdb->prefix . "redirects WHERE id = %d LIMIT 1", intval($redirect_id))); //phpcs:ignore
       return array_shift($results);
     }
 
@@ -812,9 +809,10 @@ if (!defined('WF301_PLUGIN_FILE')) {
     public static function increment_field($id, $field)
     {
       global $wpdb;
-      $table_name = $wpdb->prefix . "redirects";
       $id = intval($id);
-      $results = $wpdb->query("UPDATE $table_name SET count = count + 1 WHERE id = $id");
+
+      //we are using a custom table and $id is always int
+      $results = $wpdb->query("UPDATE " . $wpdb->prefix . "redirects SET count = count + 1 WHERE id = $id"); //phpcs:ignore
       return $results;
     }
 
@@ -868,7 +866,8 @@ if (!defined('WF301_PLUGIN_FILE')) {
 
       global $wpdb;
       $table_name = $wpdb->prefix . "redirects";
-      $results = $wpdb->delete($table_name, array('ID' => intval($_POST['id'])));
+      //phpcs:ignore as we're using a custom table
+      $results = $wpdb->delete($table_name, array('ID' => intval($_POST['id']))); //phpcs:ignore
       echo json_encode(array('id' => intval($_POST['id'])));
       exit();
     }
@@ -876,7 +875,8 @@ if (!defined('WF301_PLUGIN_FILE')) {
     {
       global $wpdb;
       $table_name = $wpdb->prefix . "redirects";
-      $wpdb->delete($table_name, array('ID' => intval($id)));
+      //phpcs:ignore as we're using a custom table
+      $wpdb->delete($table_name, array('ID' => intval($id))); //phpcs:ignore
     }
 
     /**
@@ -965,8 +965,8 @@ public static function check_404()
   }
 
   $last['timestamp'] = current_time('timestamp');
-  $last['url'] = @strip_tags($_SERVER['REQUEST_URI']);
-  $last['user_agent'] = @strip_tags($_SERVER['HTTP_USER_AGENT']);
+  $last['url'] = isset($_SERVER['REQUEST_URI'])?wp_strip_all_tags(wp_unslash($_SERVER['REQUEST_URI'])):'';
+  $last['user_agent'] = isset($_SERVER['HTTP_USER_AGENT'])?wp_strip_all_tags(wp_unslash($_SERVER['HTTP_USER_AGENT'])):'';
   array_unshift($log404, $last);
 
   $max = abs(apply_filters('eps_301_max_404_logs', 50));
@@ -991,15 +991,6 @@ if (!function_exists('eps_prettify')) {
   }
 }
 
-if (!function_exists('eps_view')) {
-  function eps_view($object)
-  {
-    echo '<pre>';
-    print_r($object);
-    echo '</pre>';
-  }
-}
-
 // Run the plugin.
 $EPS_Redirects = new EPS_Redirects();
 } else {
@@ -1010,7 +1001,7 @@ $EPS_Redirects = new EPS_Redirects();
       printf(
         '<div class="%s"><p>%s</p></div>',
         "error",
-        '<b>WARNING</b>: <a href="' . admin_url($deactivate) . '">Deactivate</a> the 301 Redirects free plugin. PRO version is active. You can\'t use both at the same time.'
+        '<b>WARNING</b>: <a href="' . esc_url(admin_url($deactivate)) . '">Deactivate</a> the 301 Redirects free plugin. PRO version is active. You can\'t use both at the same time.'
       );
     }
 }

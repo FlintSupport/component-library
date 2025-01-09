@@ -24,7 +24,22 @@ if ( ! class_exists( 'ACF_Ajax_Query_Users' ) ) :
 				return new WP_Error( 'acf_invalid_args', __( 'Invalid request args.', 'acf' ), array( 'status' => 404 ) );
 			}
 
-			if ( ! acf_verify_ajax( $request['nonce'], $request['field_key'] ) ) {
+			$nonce        = $request['nonce'];
+			$action       = $request['field_key'];
+			$field_action = true;
+
+			if ( isset( $request['conditional_logic'] ) && true === (bool) $request['conditional_logic'] ) {
+				if ( ! acf_current_user_can_admin() ) {
+					return new WP_Error( 'acf_invalid_permissions', __( 'Sorry, you do not have permission to do that.', 'acf' ) );
+				}
+
+				// Use the standard ACF admin nonce.
+				$nonce        = '';
+				$action       = '';
+				$field_action = false;
+			}
+
+			if ( ! acf_verify_ajax( $nonce, $action, $field_action ) ) {
 				return new WP_Error( 'acf_invalid_nonce', __( 'Invalid nonce.', 'acf' ), array( 'status' => 404 ) );
 			}
 

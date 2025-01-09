@@ -24,15 +24,10 @@ if (!function_exists('eps_dropdown_pages')) {
       'category'         => '',
       'orderby'          => 'post_title',
       'order'            => 'DESC',
-      'include'          => '',
-      'exclude'          => '',
-      'meta_key'         => '',
-      'meta_value'       => '',
       'post_type'        => 'post',
       'post_mime_type'   => '',
       'post_parent'      => '',
       'post_status'      => 'publish',
-      'suppress_filters' => true,
       'depth'            => 5
     );
 

@@ -43,7 +43,7 @@ require EPS_REDIRECT_PATH . '/libs/UserAgentParser.php';
         $agent = '<i>unknown</i>';
       }
       echo '<tr>';
-      echo '<td nowrap><abbr title="' . esc_attr(date(get_option('date_format'), $l['timestamp']) . ' @ ' . date(get_option('time_format'), $l['timestamp']))  . '">' . esc_attr(human_time_diff(current_time('timestamp'), $l['timestamp'])) . ' ago</abbr></td>';
+      echo '<td nowrap><abbr title="' . esc_attr(gmdate(get_option('date_format'), $l['timestamp']) . ' @ ' . gmdate(get_option('time_format'), $l['timestamp']))  . '">' . esc_attr(human_time_diff(current_time('timestamp'), $l['timestamp'])) . ' ago</abbr></td>';
       echo '<td><a target="_blank" href="' . esc_attr($l['url']) . '">' . esc_attr($l['url']) . '</a></td>';
       echo '<td nowrap>' . esc_attr($agent) . '</td>';
       echo '<td nowrap><a href="#" class="open-301-pro-dialog pro-feature" data-pro-feature="404-log-user-location">Available in PRO</a></td>';

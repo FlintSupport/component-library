@@ -37,7 +37,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<?php _e( 'Create Event', AI1WM_PLUGIN_NAME ); ?>
 				</h1>
 
-				<schedule-event inline-template :event='<?php echo $event->to_json(); ?>' :advanced-options='<?php echo json_encode( $event->advanced_options() ); ?>' :global-increment="<?php echo defined( 'AI1WM_INCREMENTAL_PATH' ) ? 'true' : 'false'; ?>">
+				<schedule-event inline-template :event='<?php echo $event->to_json(); ?>' :advanced-options='<?php echo json_encode( $event->advanced_options() ); ?>' :incremental-storages='<?php echo json_encode( $incremental_storages ); ?>'>
 					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php?action=ai1wm_schedule_event_save' ) ); ?>" id="ai1wmve-schedule-event-form" class="ai1wm-clear">
 						<input type="hidden" name="event_id" v-model="form.event_id">
 						<div class="ai1wm-event-fieldset">
@@ -182,7 +182,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 										<select class="ai1wm-event-input" id="ai1wm-event-schedule-day" v-model="form.schedule.day" name="schedule[day]" required>
 											<option value="" disabled><?php _e( 'Day', AI1WM_PLUGIN_NAME ); ?></option>
 											<?php foreach ( range( 1, 28 ) as $day ) : ?>
-												<option value="<?php echo $day; ?>"><?php echo date_i18n( 'd', mktime( null, null, null, null, $day ) ); ?></option>
+												<option value="<?php echo $day; ?>"><?php echo date_i18n( 'd', mktime( 0, null, null, null, $day ) ); ?></option>
 											<?php endforeach; ?>
 										</select>
 									</div>
@@ -207,7 +207,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 										<select class="ai1wm-event-input" id="ai1wm-event-schedule-minute" v-model="form.schedule.minute" name="schedule[minute]" required>
 											<option value="" disabled><?php _e( 'Minute', AI1WM_PLUGIN_NAME ); ?></option>
 											<?php foreach ( range( 0, 59 ) as $minute ) : ?>
-												<option value="<?php echo $minute; ?>"><?php echo date_i18n( 'i', mktime( null, $minute ) ); ?></option>
+												<option value="<?php echo $minute; ?>"><?php echo date_i18n( 'i', mktime( 0, $minute ) ); ?></option>
 											<?php endforeach; ?>
 										</select>
 									</div>

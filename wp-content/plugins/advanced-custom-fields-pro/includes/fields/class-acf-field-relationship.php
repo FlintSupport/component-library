@@ -88,10 +88,21 @@ if ( ! class_exists( 'acf_field_relationship' ) ) :
 		 * @return void
 		 */
 		public function ajax_query() {
-			$nonce = acf_request_arg( 'nonce', '' );
-			$key   = acf_request_arg( 'field_key', '' );
+			$nonce             = acf_request_arg( 'nonce', '' );
+			$key               = acf_request_arg( 'field_key', '' );
+			$conditional_logic = (bool) acf_request_arg( 'conditional_logic', false );
 
-			if ( ! acf_verify_ajax( $nonce, $key ) ) {
+			if ( $conditional_logic ) {
+				if ( ! acf_current_user_can_admin() ) {
+					die();
+				}
+
+				// Use the standard ACF admin nonce.
+				$nonce = '';
+				$key   = '';
+			}
+
+			if ( ! acf_verify_ajax( $nonce, $key, ! $conditional_logic ) ) {
 				die();
 			}
 
@@ -406,7 +417,7 @@ if ( ! class_exists( 'acf_field_relationship' ) ) :
 				'data-paged'     => 1,
 				'data-post_type' => '',
 				'data-taxonomy'  => '',
-				'data-nonce'     => wp_create_nonce( $field['key'] ),
+				'data-nonce'     => wp_create_nonce( 'acf_field_' . $this->name . '_' . $field['key'] ),
 			);
 
 			?>

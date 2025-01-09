@@ -245,7 +245,7 @@ if ( ! class_exists( 'Ai1wmve_Main_Controller' ) ) {
 				}
 				// Schedule event log actions
 				add_action( 'ai1wm_status_export_done', 'Ai1wmve_Schedules_Controller::log_success' );
-				add_action( 'ai1wm_status_export_fail', 'Ai1wmve_Schedules_Controller::log_failed' );
+				add_action( 'ai1wm_status_export_error', 'Ai1wmve_Schedules_Controller::log_failed', 10, 2 );
 
 				// Register stats collect actions if URL is defined
 				if ( defined( 'AI1WMVE_STATS_URL' ) ) {
@@ -258,6 +258,9 @@ if ( ! class_exists( 'Ai1wmve_Main_Controller' ) ) {
 
 				// Add import unlimited
 				add_filter( 'ai1wm_max_file_size', array( $this, 'ai1wmve_max_file_size' ) );
+
+				// Add support for incremental backups
+				add_filter( 'ai1wmve_incremental_storages', array( $this, 'ai1wmve_incremental_storages' ) );
 
 				$this->ai1wm_loaded();
 			}
@@ -1167,6 +1170,14 @@ if ( ! class_exists( 'Ai1wmve_Main_Controller' ) ) {
 				} catch ( Ai1wm_Backups_Exception $e ) {
 				}
 			}
+		}
+
+		public function ai1wmve_incremental_storages( $incremental_storages ) {
+			if ( defined( $this->plugin_prefix . '_PRO_INCREMENTAL' ) ) {
+				$incremental_storages[] = $this->plugin_params_key;
+			}
+
+			return $incremental_storages;
 		}
 	}
 }

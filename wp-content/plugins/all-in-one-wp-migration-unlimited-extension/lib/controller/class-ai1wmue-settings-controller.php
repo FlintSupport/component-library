@@ -123,14 +123,16 @@ class Ai1wmue_Settings_Controller {
 		// Iterate over content directory
 		$iterator = new Ai1wm_Recursive_Directory_Iterator( $directory );
 
+		$abs_path = realpath( ABSPATH );
+
 		// Loop over content directory
 		$names = $files = array();
 		foreach ( $iterator as $item ) {
 			if ( $item->isDir() && ! $item->isLink() && $item->isReadable() ) {
 				try {
 					$files[] = array(
-						'name'     => $item->getRealPath(),
-						'writable' => $item->isWritable(),
+						'name'     => $name = $item->getRealPath(),
+						'writable' => $item->isWritable() && realpath( $name ) !== $abs_path,
 						'date'     => human_time_diff( $item->getMTime() ),
 					);
 					$names[] = strtolower( $item->getRealPath() );

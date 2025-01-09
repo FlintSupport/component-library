@@ -43,7 +43,7 @@ namespace epsdonatj\UserAgent {
 	 */
 	function parse_user_agent( $u_agent = null ) {
 		if( $u_agent === null && isset($_SERVER['HTTP_USER_AGENT']) ) {
-			$u_agent = (string)$_SERVER['HTTP_USER_AGENT'];
+			$u_agent = sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT']));
 		}
 
 		if( $u_agent === null ) {

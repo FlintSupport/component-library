@@ -251,7 +251,7 @@ class GFFormList {
 			jQuery( document ).ready( function( $ ) {
 				$( 'body' ).addClass( 'gform_new_form' );
 				// load new form modal on New Form page
-				<?php if ( rgget( 'page' ) == 'gf_new_form' && ! rgget( 'paged' ) ) :    ?>
+				<?php if ( GFForms::get_page_query_arg() == 'gf_new_form' && ! rgget( 'paged' ) ) :    ?>
 					loadNewFormModal();
 				<?php endif; ?>
 
@@ -626,7 +626,7 @@ class GF_Form_List_Table extends WP_List_Table {
 	}
 
 	function column_title( $form ) {
-		echo '<strong><a href="?page=gf_edit_forms&id='. absint( $form->id ) .'">' . esc_html( $form->title ) . '</a></strong>';
+		echo '<strong><a href="?page=gf_edit_forms&id='. absint( $form->id ) .'" aria-label="' . esc_attr( $form->title ) . ' ' . esc_attr( '(Edit)', 'gravityforms' ) . '">' . esc_html( $form->title ) . '</a></strong>';
 	}
 
 	function column_id( $form ) {

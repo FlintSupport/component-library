@@ -5,8 +5,8 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 }
 
 global $wpdb;
-$redirect_table = $wpdb->prefix . "redirects";
-$wpdb->query('DROP TABLE IF EXISTS ' . $redirect_table);
+//phpcs:ignore as we're using a custom table
+$wpdb->query('DROP TABLE IF EXISTS ' . $wpdb->prefix . "redirects"); //phpcs:ignore
 
 delete_option('eps_pointers');
 delete_option('eps_redirects_404_log');
