@@ -37,7 +37,8 @@ function create_team() {
 		'supports' => array( 'title' ),
 		'rewrite' => array('slug' => 'team', 'with_front' => false),
 		'menu_icon' => 'dashicons-businessperson',
-		'show_in_rest' => false
+		'show_in_rest' => true,
+		'taxonomies' => array('team-category', 'location'),
 	); 
     register_post_type( 'team', $args );
 }
@@ -67,6 +68,7 @@ function create_team_category_taxonomy() {
 	  'show_admin_column' => true,
 	  'query_var' => true,
 	  'rewrite' => array( 'slug' => 'team-category' ),
+	  'show_in_rest' => true,
 	));	 
 }
 add_action( 'init', 'create_team_category_taxonomy', 0 );
@@ -92,6 +94,7 @@ function create_location_taxonomy() {
 	  'show_admin_column' => true,
 	  'query_var' => true,
 	  'rewrite' => array( 'slug' => 'location' ),
+	  'show_in_rest' => true,
 	));	 
 }
 add_action( 'init', 'create_location_taxonomy', 0 );
