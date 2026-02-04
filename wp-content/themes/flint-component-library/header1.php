@@ -14,7 +14,7 @@
 	if (has_block('acf/accordion' || 'acf/tabs')) {
 		$i = 1;
 	}
-?>
+?> 
 <body <?php echo body_class($addClass); ?> data-ajax-url="<?php echo admin_url('admin-ajax.php'); ?>">
 <?php if(get_field('alert_bar_content', 'options')) : ?>
 	<div id="alert">
