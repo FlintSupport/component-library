@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var masterToggles = document.querySelectorAll('.wpuc-master-toggle');
   var quickToggles = document.querySelectorAll('.wpuc-select-toggle');
   var startScanButton = document.getElementById('wpuc-start-scan');
+  var scanModeSelect = document.getElementById('wpuc-scan-mode');
   var deleteButton = document.getElementById('wpuc-delete-selected');
   var deleteAllButton = document.getElementById('wpuc-delete-all-filtered');
   var progressWrap = document.getElementById('wpuc-progress');
@@ -229,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function () {
     startScanButton.addEventListener('click', function () {
       startScanButton.disabled = true;
       showNotice(wpucAdmin.strings.working, 'info');
-      postAjax('wpuc_start_scan', {}).then(function (result) {
+      postAjax('wpuc_start_scan', { scan_mode: scanModeSelect ? scanModeSelect.value : 'full' }).then(function (result) {
         if (!result.success) {
           showNotice((result.data && result.data.message) || wpucAdmin.strings.scanFailed, 'error');
           updateDebugPanel(result.data && result.data.debug);

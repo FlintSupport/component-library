@@ -17,7 +17,7 @@ class WP_UC_Scanner {
         return self::$instance;
     }
 
-    public function create_scan_state() {
+    public function create_scan_state($args = []) {
         global $wpdb;
 
         $upload_info = wp_get_upload_dir();
@@ -69,11 +69,24 @@ class WP_UC_Scanner {
             }
         }
 
+
+        $scan_mode = $this->sanitize_scan_mode(isset($args['scan_mode']) ? $args['scan_mode'] : 'full');
+        $scan_options = $this->get_scan_mode_options($scan_mode);
+
+        if (empty($scan_options['check_attachments'])) {
+            $attachment_ids = [];
+        }
+        if (empty($scan_options['check_files'])) {
+            $file_paths = [];
+        }
+
         $termmeta_table = isset($wpdb->termmeta) ? (string) $wpdb->termmeta : '';
         $usermeta_table = isset($wpdb->usermeta) ? (string) $wpdb->usermeta : '';
 
         return [
             'created_at' => time(),
+            'scan_mode'  => $scan_mode,
+            'scan_options' => $scan_options,
             'baseurl'    => $baseurl,
             'basedir'    => $basedir,
             'phase'      => 'posts',
@@ -90,11 +103,11 @@ class WP_UC_Scanner {
                 'post_ids'         => array_map('intval', (array) $post_ids),
                 'attachment_ids'   => array_map('intval', (array) $attachment_ids),
                 'file_paths'       => array_values($file_paths),
-                'options_total'    => (int) $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->options}"), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-                'term_meta_total'  => $this->table_exists($termmeta_table) ? (int) $wpdb->get_var("SELECT COUNT(*) FROM {$termmeta_table}") : 0, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-                'user_meta_total'  => $this->table_exists($usermeta_table) ? (int) $wpdb->get_var("SELECT COUNT(*) FROM {$usermeta_table}") : 0, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-                'has_term_meta'    => $this->table_exists($termmeta_table),
-                'has_user_meta'    => $this->table_exists($usermeta_table),
+                'options_total'    => ! empty($scan_options['scan_options']) ? (int) $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->options}") : 0, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+                'term_meta_total'  => (! empty($scan_options['scan_term_meta']) && $this->table_exists($termmeta_table)) ? (int) $wpdb->get_var("SELECT COUNT(*) FROM {$termmeta_table}") : 0, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+                'user_meta_total'  => (! empty($scan_options['scan_user_meta']) && $this->table_exists($usermeta_table)) ? (int) $wpdb->get_var("SELECT COUNT(*) FROM {$usermeta_table}") : 0, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+                'has_term_meta'    => ! empty($scan_options['scan_term_meta']) && $this->table_exists($termmeta_table),
+                'has_user_meta'    => ! empty($scan_options['scan_user_meta']) && $this->table_exists($usermeta_table),
             ],
             'references' => [
                 'urls'           => [],
@@ -125,6 +138,11 @@ class WP_UC_Scanner {
         try {
             switch ($phase) {
                 case 'posts':
+                    if (empty($state['scan_options']['scan_posts'])) {
+                        $state['phase'] = 'options';
+                        $state['cursor'] = 0;
+                        break;
+                    }
                     $items = (array) ($state['sources']['post_ids'] ?? []);
                     $limit = (int) ($state['batches']['posts'] ?? 40);
                     $slice = array_slice($items, (int) $state['cursor'], $limit);
@@ -139,6 +157,11 @@ class WP_UC_Scanner {
                     break;
 
                 case 'options':
+                    if (empty($state['scan_options']['scan_options'])) {
+                        $state['phase'] = 'term_meta';
+                        $state['cursor'] = 0;
+                        break;
+                    }
                     $limit = (int) ($state['batches']['options'] ?? 50);
                     $rows = $this->safe_get_option_rows($limit, (int) $state['cursor']);
                     foreach ((array) $rows as $row) {
@@ -192,6 +215,11 @@ class WP_UC_Scanner {
                     break;
 
                 case 'attachments':
+                    if (empty($state['scan_options']['check_attachments'])) {
+                        $state['phase'] = 'files';
+                        $state['cursor'] = 0;
+                        break;
+                    }
                     $items = (array) ($state['sources']['attachment_ids'] ?? []);
                     $limit = (int) ($state['batches']['attachments'] ?? 50);
                     $slice = array_slice($items, (int) $state['cursor'], $limit);
@@ -213,6 +241,12 @@ class WP_UC_Scanner {
                     break;
 
                 case 'files':
+                    if (empty($state['scan_options']['check_files'])) {
+                        $state['phase'] = 'done';
+                        $state['cursor'] = 0;
+                        $done = true;
+                        break;
+                    }
                     $items = (array) ($state['sources']['file_paths'] ?? []);
                     $limit = (int) ($state['batches']['files'] ?? 100);
                     $slice = array_slice($items, (int) $state['cursor'], $limit);
@@ -379,7 +413,7 @@ class WP_UC_Scanner {
             return false;
         }
 
-        if (preg_match('/[ --]/', $value)) {
+        if (preg_match('/[\x00-\x08\x0b\x0c\x0e-\x1f]/', $value)) {
             return true;
         }
 
@@ -405,6 +439,43 @@ class WP_UC_Scanner {
         } catch (Throwable $e) {
             // Skip malformed rows without failing the whole scan.
         }
+    }
+
+
+    public function get_scan_modes() {
+        return [
+            'full' => __('Full scan: content, media library, and loose upload files', 'wp-unused-cleaner'),
+            'media_library' => __('Media library only: find unused attachments', 'wp-unused-cleaner'),
+            'loose_files' => __('Loose upload files only: find files not attached to media items', 'wp-unused-cleaner'),
+            'content_fast' => __('Fast scan: posts and post meta only', 'wp-unused-cleaner'),
+        ];
+    }
+
+    private function sanitize_scan_mode($mode) {
+        $mode = sanitize_key((string) $mode);
+        return array_key_exists($mode, $this->get_scan_modes()) ? $mode : 'full';
+    }
+
+    private function get_scan_mode_options($mode) {
+        $mode = $this->sanitize_scan_mode($mode);
+        $options = [
+            'scan_posts' => true,
+            'scan_options' => true,
+            'scan_term_meta' => true,
+            'scan_user_meta' => true,
+            'check_attachments' => true,
+            'check_files' => true,
+        ];
+        if ('media_library' === $mode) {
+            $options['check_files'] = false;
+        } elseif ('loose_files' === $mode) {
+            $options['check_attachments'] = false;
+        } elseif ('content_fast' === $mode) {
+            $options['scan_options'] = false;
+            $options['scan_term_meta'] = false;
+            $options['scan_user_meta'] = false;
+        }
+        return $options;
     }
 
     public function finalize_results($state) {
@@ -492,6 +563,7 @@ class WP_UC_Scanner {
             return;
         }
         $this->extract_references_from_text((string) $post->post_content, $baseurl, $basedir);
+        $this->extract_references_from_blocks((string) $post->post_content, $baseurl, $basedir);
         $this->extract_references_from_text((string) $post->post_excerpt, $baseurl, $basedir);
         $this->extract_references_from_text((string) $post->post_title, $baseurl, $basedir);
         $thumb_id = (int) get_post_thumbnail_id($post_id);
@@ -499,12 +571,52 @@ class WP_UC_Scanner {
             $this->referenced_attachment_ids[$thumb_id] = true;
         }
         $meta = get_post_meta($post_id);
+        if (function_exists('get_fields')) {
+            try {
+                $acf_fields = get_fields($post_id, false);
+                if (! empty($acf_fields)) {
+                    $this->extract_references_from_mixed($acf_fields, $baseurl, $basedir);
+                }
+            } catch (Throwable $e) {
+                // ACF may not be available for all post types.
+            }
+        }
+
         foreach ($meta as $meta_key => $meta_values) {
             if (0 === strpos((string) $meta_key, '_edit_')) {
                 continue;
             }
             foreach ((array) $meta_values as $meta_value) {
                 $this->extract_references_from_mixed(maybe_unserialize($meta_value), $baseurl, $basedir);
+            }
+        }
+    }
+
+
+    private function extract_references_from_blocks($content, $baseurl, $basedir) {
+        if (! function_exists('parse_blocks') || ! is_string($content) || false === strpos($content, '<!-- wp:')) {
+            return;
+        }
+        $blocks = parse_blocks($content);
+        $this->extract_references_from_block_list($blocks, $baseurl, $basedir);
+    }
+
+    private function extract_references_from_block_list($blocks, $baseurl, $basedir) {
+        foreach ((array) $blocks as $block) {
+            if (! is_array($block)) {
+                continue;
+            }
+            if (! empty($block['attrs'])) {
+                $this->extract_references_from_mixed($block['attrs'], $baseurl, $basedir);
+            }
+            if (! empty($block['innerHTML'])) {
+                $this->extract_references_from_text((string) $block['innerHTML'], $baseurl, $basedir);
+            }
+            if (! empty($block['innerContent'])) {
+                $this->extract_references_from_mixed($block['innerContent'], $baseurl, $basedir);
+            }
+            if (! empty($block['innerBlocks'])) {
+                $this->extract_references_from_block_list($block['innerBlocks'], $baseurl, $basedir);
             }
         }
     }
@@ -553,7 +665,7 @@ class WP_UC_Scanner {
                 $this->mark_url_reference($url, $baseurl, $basedir);
             }
         }
-        if (preg_match_all('/(?:^|[,\[{\s])([0-9]{1,8})(?:$|[\]},\s])/', $text, $id_matches)) {
+        if (preg_match_all('/(?:^|[^0-9])([0-9]{1,8})(?:$|[^0-9])/', $text, $id_matches)) {
             foreach ((array) $id_matches[1] as $candidate) {
                 $attachment_id = (int) $candidate;
                 if ($attachment_id > 0 && 'attachment' === get_post_type($attachment_id)) {
@@ -605,7 +717,9 @@ class WP_UC_Scanner {
             'file_path' => $file_path,
             'mime_type' => $mime_type ?: __('Unknown', 'wp-unused-cleaner'),
             'size' => $this->format_file_size($file_path),
+            'size_bytes' => ($file_path && file_exists($file_path)) ? (int) filesize($file_path) : 0,
             'date' => get_the_date(get_option('date_format'), $attachment_id),
+            'date_ts' => (int) get_post_time('U', true, $attachment_id),
             'kind' => $this->get_attachment_kind($mime_type),
         ];
     }
@@ -619,6 +733,17 @@ class WP_UC_Scanner {
         if ($relative === '' || isset($this->referenced_relative_paths[$relative])) {
             return null;
         }
+
+        // WordPress stores generated image sizes as physical files in uploads, but
+        // they are owned by a parent media-library attachment. Do not report those
+        // generated sizes as separate loose unused files. If the parent attachment
+        // is unused, the attachment result is the actionable item; if it is used,
+        // every registered generated size should be protected from the results.
+        $owning_attachment_id = $this->get_attachment_id_for_upload_relative_path($relative);
+        if ($owning_attachment_id > 0) {
+            return null;
+        }
+
         $url = trailingslashit($baseurl) . str_replace(DIRECTORY_SEPARATOR, '/', $relative);
         if (isset($this->reference_urls[$url])) {
             return null;
@@ -627,16 +752,108 @@ class WP_UC_Scanner {
         if ($attachment_id > 0) {
             return null;
         }
+
+        $possible_original = $this->maybe_get_original_relative_from_generated_size($relative);
+        if ($possible_original) {
+            $possible_attachment_id = $this->get_attachment_id_for_upload_relative_path($possible_original);
+            if ($possible_attachment_id > 0 && $this->is_attachment_referenced($possible_attachment_id, wp_get_attachment_url($possible_attachment_id), get_attached_file($possible_attachment_id), $baseurl, $basedir)) {
+                return null;
+            }
+        }
         return [
             'path' => $path,
             'relative' => $relative,
             'url' => $url,
             'size' => size_format((int) @filesize($path), 2),
+            'size_bytes' => (int) @filesize($path),
             'modified' => wp_date(get_option('date_format') . ' ' . get_option('time_format'), (int) @filemtime($path)),
+            'modified_ts' => (int) @filemtime($path),
             'kind' => $this->get_file_kind($relative),
             'ext' => strtolower((string) pathinfo($relative, PATHINFO_EXTENSION)),
             'is_thumbnail' => $this->is_wp_generated_thumbnail($relative),
         ];
+    }
+
+
+    private function get_attachment_id_for_upload_relative_path($relative) {
+        static $map = null;
+
+        $relative = ltrim(wp_normalize_path((string) $relative), '/');
+        if ('' === $relative) {
+            return 0;
+        }
+
+        if (null === $map) {
+            $map = [];
+            $attachment_ids = get_posts([
+                'post_type'              => 'attachment',
+                'post_status'            => 'inherit',
+                'posts_per_page'         => -1,
+                'fields'                 => 'ids',
+                'no_found_rows'          => true,
+                'update_post_term_cache' => false,
+                'update_post_meta_cache' => false,
+            ]);
+
+            foreach ((array) $attachment_ids as $attachment_id) {
+                $attachment_id = (int) $attachment_id;
+                if ($attachment_id <= 0) {
+                    continue;
+                }
+
+                $metadata = wp_get_attachment_metadata($attachment_id, true);
+                if (! is_array($metadata) || empty($metadata['file'])) {
+                    $attached_file = get_attached_file($attachment_id);
+                    if ($attached_file) {
+                        $upload_info = wp_get_upload_dir();
+                        $basedir = wp_normalize_path((string) ($upload_info['basedir'] ?? ''));
+                        $attached_relative = $basedir ? ltrim(wp_normalize_path(str_replace(wp_normalize_path(trailingslashit($basedir)), '', wp_normalize_path((string) $attached_file))), '/') : '';
+                        if ($attached_relative) {
+                            $map[$attached_relative] = $attachment_id;
+                        }
+                    }
+                    continue;
+                }
+
+                $original_relative = ltrim(wp_normalize_path((string) $metadata['file']), '/');
+                if ($original_relative) {
+                    $map[$original_relative] = $attachment_id;
+                }
+
+                if (! empty($metadata['original_image'])) {
+                    $original_dir = trailingslashit(dirname($original_relative));
+                    $map[ltrim(wp_normalize_path($original_dir . (string) $metadata['original_image']), '/')] = $attachment_id;
+                }
+
+                if (! empty($metadata['sizes']) && is_array($metadata['sizes'])) {
+                    $dir = trailingslashit(dirname($original_relative));
+                    foreach ($metadata['sizes'] as $size_data) {
+                        if (empty($size_data['file'])) {
+                            continue;
+                        }
+                        $map[ltrim(wp_normalize_path($dir . (string) $size_data['file']), '/')] = $attachment_id;
+                    }
+                }
+            }
+        }
+
+        return isset($map[$relative]) ? (int) $map[$relative] : 0;
+    }
+
+    private function maybe_get_original_relative_from_generated_size($relative) {
+        $relative = ltrim(wp_normalize_path((string) $relative), '/');
+        if ('' === $relative) {
+            return '';
+        }
+
+        $dirname = dirname($relative);
+        $filename = basename($relative);
+        if (! preg_match('/^(.+)-[0-9]+x[0-9]+(\.[A-Za-z0-9]+)$/', $filename, $matches)) {
+            return '';
+        }
+
+        $original = $matches[1] . $matches[2];
+        return ('.' === $dirname || '' === $dirname) ? $original : ltrim(wp_normalize_path($dirname . '/' . $original), '/');
     }
 
     private function is_attachment_referenced($attachment_id, $url, $file_path, $baseurl, $basedir) {

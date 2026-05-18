@@ -41,7 +41,11 @@ class WP_UC_Admin {
             'attachment_kind' => $this->sanitize_kind_filter(isset($_GET['attachment_kind']) ? wp_unslash($_GET['attachment_kind']) : 'all'),
             'file_kind'       => $this->sanitize_kind_filter(isset($_GET['file_kind']) ? wp_unslash($_GET['file_kind']) : 'all'),
             'attachment_search'=> sanitize_text_field(isset($_GET['attachment_search']) ? wp_unslash($_GET['attachment_search']) : ''),
+            'attachment_year' => $this->sanitize_year_filter(isset($_GET['attachment_year']) ? wp_unslash($_GET['attachment_year']) : ''),
+            'attachment_month'=> $this->sanitize_month_filter(isset($_GET['attachment_month']) ? wp_unslash($_GET['attachment_month']) : ''),
             'file_search'     => sanitize_text_field(isset($_GET['file_search']) ? wp_unslash($_GET['file_search']) : ''),
+            'file_year'       => $this->sanitize_year_filter(isset($_GET['file_year']) ? wp_unslash($_GET['file_year']) : ''),
+            'file_month'      => $this->sanitize_month_filter(isset($_GET['file_month']) ? wp_unslash($_GET['file_month']) : ''),
             'attachment_sort' => $this->sanitize_attachment_sort(isset($_GET['attachment_sort']) ? wp_unslash($_GET['attachment_sort']) : 'title'),
             'attachment_dir'  => $this->sanitize_sort_dir(isset($_GET['attachment_dir']) ? wp_unslash($_GET['attachment_dir']) : 'asc'),
             'file_sort'       => $this->sanitize_file_sort(isset($_GET['file_sort']) ? wp_unslash($_GET['file_sort']) : 'relative'),
@@ -69,11 +73,13 @@ class WP_UC_Admin {
 
     public function ajax_start_scan() {
         $this->authorize_ajax();
-        $state = WP_UC_Scanner::instance()->create_scan_state();
+        $scan_mode = $this->sanitize_scan_mode(isset($_POST['scan_mode']) ? wp_unslash($_POST['scan_mode']) : 'full');
+        $state = WP_UC_Scanner::instance()->create_scan_state(['scan_mode' => $scan_mode]);
         update_option($this->state_key, $state, false);
         update_option($this->debug_key, [
             'status' => 'started',
             'message' => __('Batch scan initialized.', 'wp-unused-cleaner'),
+            'scan_mode' => $scan_mode,
             'phase' => isset($state['phase']) ? (string) $state['phase'] : 'posts',
             'cursor' => isset($state['cursor']) ? (int) $state['cursor'] : 0,
             'updated_at' => current_time('mysql'),
@@ -150,7 +156,11 @@ class WP_UC_Admin {
             'attachment_kind' => $this->sanitize_kind_filter(isset($_POST['attachment_kind']) ? wp_unslash($_POST['attachment_kind']) : 'all'),
             'file_kind'       => $this->sanitize_kind_filter(isset($_POST['file_kind']) ? wp_unslash($_POST['file_kind']) : 'all'),
             'attachment_search'=> sanitize_text_field(isset($_POST['attachment_search']) ? wp_unslash($_POST['attachment_search']) : ''),
+            'attachment_year' => $this->sanitize_year_filter(isset($_POST['attachment_year']) ? wp_unslash($_POST['attachment_year']) : ''),
+            'attachment_month'=> $this->sanitize_month_filter(isset($_POST['attachment_month']) ? wp_unslash($_POST['attachment_month']) : ''),
             'file_search'     => sanitize_text_field(isset($_POST['file_search']) ? wp_unslash($_POST['file_search']) : ''),
+            'file_year'       => $this->sanitize_year_filter(isset($_POST['file_year']) ? wp_unslash($_POST['file_year']) : ''),
+            'file_month'      => $this->sanitize_month_filter(isset($_POST['file_month']) ? wp_unslash($_POST['file_month']) : ''),
             'attachment_sort' => $this->sanitize_attachment_sort(isset($_POST['attachment_sort']) ? wp_unslash($_POST['attachment_sort']) : 'title'),
             'attachment_dir'  => $this->sanitize_sort_dir(isset($_POST['attachment_dir']) ? wp_unslash($_POST['attachment_dir']) : 'asc'),
             'file_sort'       => $this->sanitize_file_sort(isset($_POST['file_sort']) ? wp_unslash($_POST['file_sort']) : 'relative'),
@@ -160,6 +170,8 @@ class WP_UC_Admin {
         $attachment_items = $this->filter_sort_items((array) ($results['attachments'] ?? []), [
             'kind' => $filters['attachment_kind'],
             'search' => $filters['attachment_search'],
+            'year' => $filters['attachment_year'],
+            'month' => $filters['attachment_month'],
             'search_in' => ['title', 'mime_type', 'file_path', 'url'],
             'sort' => $filters['attachment_sort'],
             'dir' => $filters['attachment_dir'],
@@ -168,6 +180,8 @@ class WP_UC_Admin {
         $file_items = $this->filter_sort_items((array) ($results['files'] ?? []), [
             'kind' => $filters['file_kind'],
             'search' => $filters['file_search'],
+            'year' => $filters['file_year'],
+            'month' => $filters['file_month'],
             'search_in' => ['relative', 'path', 'ext'],
             'sort' => $filters['file_sort'],
             'dir' => $filters['file_dir'],
@@ -254,7 +268,11 @@ class WP_UC_Admin {
         $attachment_filter = $this->sanitize_kind_filter(isset($_GET['attachment_kind']) ? wp_unslash($_GET['attachment_kind']) : 'all');
         $file_filter       = $this->sanitize_kind_filter(isset($_GET['file_kind']) ? wp_unslash($_GET['file_kind']) : 'all');
         $attachment_search = sanitize_text_field(isset($_GET['attachment_search']) ? wp_unslash($_GET['attachment_search']) : '');
+        $attachment_year   = $this->sanitize_year_filter(isset($_GET['attachment_year']) ? wp_unslash($_GET['attachment_year']) : '');
+        $attachment_month  = $this->sanitize_month_filter(isset($_GET['attachment_month']) ? wp_unslash($_GET['attachment_month']) : '');
         $file_search       = sanitize_text_field(isset($_GET['file_search']) ? wp_unslash($_GET['file_search']) : '');
+        $file_year         = $this->sanitize_year_filter(isset($_GET['file_year']) ? wp_unslash($_GET['file_year']) : '');
+        $file_month        = $this->sanitize_month_filter(isset($_GET['file_month']) ? wp_unslash($_GET['file_month']) : '');
         $attachment_page   = max(1, (int) (isset($_GET['attachments_paged']) ? $_GET['attachments_paged'] : 1));
         $file_page         = max(1, (int) (isset($_GET['files_paged']) ? $_GET['files_paged'] : 1));
         $attachment_sort   = $this->sanitize_attachment_sort(isset($_GET['attachment_sort']) ? wp_unslash($_GET['attachment_sort']) : 'title');
@@ -266,6 +284,8 @@ class WP_UC_Admin {
         $attachment_view = $this->filter_and_paginate_items((array) ($results['attachments'] ?? []), [
             'kind' => $attachment_filter,
             'search' => $attachment_search,
+            'year' => $attachment_year,
+            'month' => $attachment_month,
             'page' => $attachment_page,
             'per_page' => $per_page,
             'search_in' => ['title', 'mime_type', 'file_path', 'url'],
@@ -276,6 +296,8 @@ class WP_UC_Admin {
         $file_view = $this->filter_and_paginate_items((array) ($results['files'] ?? []), [
             'kind' => $file_filter,
             'search' => $file_search,
+            'year' => $file_year,
+            'month' => $file_month,
             'page' => $file_page,
             'per_page' => $per_page,
             'search_in' => ['relative', 'path', 'ext'],
@@ -300,6 +322,7 @@ class WP_UC_Admin {
                 <div class="wpuc-card wpuc-card-accent">
                     <h2><?php esc_html_e('Run a fresh scan', 'wp-unused-cleaner'); ?></h2>
                     <p><?php esc_html_e('Scanning runs in batches to reduce timeout risk on larger sites. Scans can take a few minutes to complete. For a full log of operations and errors, check the debug log below.', 'wp-unused-cleaner'); ?></p>
+                    <label class="wpuc-scan-mode"><span><?php esc_html_e('Scan option', 'wp-unused-cleaner'); ?></span><select id="wpuc-scan-mode"><?php foreach ($this->get_scan_modes() as $mode_key => $mode_label) : ?><option value="<?php echo esc_attr($mode_key); ?>"><?php echo esc_html($mode_label); ?></option><?php endforeach; ?></select></label>
                     <button type="button" class="button button-primary button-hero" id="wpuc-start-scan"><?php esc_html_e('Start batch scan', 'wp-unused-cleaner'); ?></button>
                     <?php if (! empty($results['scanned_at'])) : ?>
                         <p class="description wpuc-muted"><?php echo esc_html(sprintf(__('Last completed scan: %s', 'wp-unused-cleaner'), (string) $results['scanned_at'])); ?></p>
@@ -336,16 +359,16 @@ class WP_UC_Admin {
             <div class="wpuc-results-form" id="wpuc-results-form">
                 <div class="wpuc-section">
                     <div class="wpuc-section-header"><h3><?php esc_html_e('Unused media library items', 'wp-unused-cleaner'); ?></h3></div>
-                    <?php $this->render_filter_bar('attachment', $attachment_filter, $attachment_search); ?>
+                    <?php $this->render_filter_bar('attachment', $attachment_filter, $attachment_search, $attachment_year, $attachment_month); ?>
                     <?php $this->render_attachments_table($attachment_view, $attachment_sort, $attachment_dir); ?>
-                    <?php $this->render_pagination($attachment_view, 'attachments_paged', ['file_kind', 'file_search', 'files_paged', 'attachment_kind', 'attachment_search', 'attachment_sort', 'attachment_dir', 'file_sort', 'file_dir']); ?>
+                    <?php $this->render_pagination($attachment_view, 'attachments_paged', ['file_kind', 'file_search', 'file_year', 'file_month', 'files_paged', 'attachment_kind', 'attachment_search', 'attachment_year', 'attachment_month', 'attachment_sort', 'attachment_dir', 'file_sort', 'file_dir']); ?>
                 </div>
 
                 <div class="wpuc-section">
                     <div class="wpuc-section-header"><h3><?php esc_html_e('Unused files in uploads', 'wp-unused-cleaner'); ?></h3></div>
-                    <?php $this->render_filter_bar('file', $file_filter, $file_search); ?>
+                    <?php $this->render_filter_bar('file', $file_filter, $file_search, $file_year, $file_month); ?>
                     <?php $this->render_files_table($file_view, $file_sort, $file_dir); ?>
-                    <?php $this->render_pagination($file_view, 'files_paged', ['attachment_kind', 'attachment_search', 'attachments_paged', 'file_kind', 'file_search', 'attachment_sort', 'attachment_dir', 'file_sort', 'file_dir']); ?>
+                    <?php $this->render_pagination($file_view, 'files_paged', ['attachment_kind', 'attachment_search', 'attachment_year', 'attachment_month', 'attachments_paged', 'file_kind', 'file_search', 'file_year', 'file_month', 'attachment_sort', 'attachment_dir', 'file_sort', 'file_dir']); ?>
                 </div>
             </div>
         </div>
@@ -384,9 +407,11 @@ class WP_UC_Admin {
         <?php
     }
 
-    private function render_filter_bar($prefix, $kind, $search) {
+    private function render_filter_bar($prefix, $kind, $search, $year, $month) {
         $kind_name   = 'attachment' === $prefix ? 'attachment_kind' : 'file_kind';
         $search_name = 'attachment' === $prefix ? 'attachment_search' : 'file_search';
+        $year_name   = 'attachment' === $prefix ? 'attachment_year' : 'file_year';
+        $month_name  = 'attachment' === $prefix ? 'attachment_month' : 'file_month';
         ?>
         <form method="get" class="wpuc-filter-bar">
             <input type="hidden" name="page" value="wp-unused-cleaner" />
@@ -397,12 +422,18 @@ class WP_UC_Admin {
             <?php if ('attachment' === $prefix) : ?>
                 <input type="hidden" name="file_kind" value="<?php echo esc_attr($this->sanitize_kind_filter(isset($_GET['file_kind']) ? wp_unslash($_GET['file_kind']) : 'all')); ?>" />
                 <input type="hidden" name="file_search" value="<?php echo esc_attr(sanitize_text_field(isset($_GET['file_search']) ? wp_unslash($_GET['file_search']) : '')); ?>" />
+                <input type="hidden" name="file_year" value="<?php echo esc_attr($this->sanitize_year_filter(isset($_GET['file_year']) ? wp_unslash($_GET['file_year']) : '')); ?>" />
+                <input type="hidden" name="file_month" value="<?php echo esc_attr($this->sanitize_month_filter(isset($_GET['file_month']) ? wp_unslash($_GET['file_month']) : '')); ?>" />
             <?php else : ?>
                 <input type="hidden" name="attachment_kind" value="<?php echo esc_attr($this->sanitize_kind_filter(isset($_GET['attachment_kind']) ? wp_unslash($_GET['attachment_kind']) : 'all')); ?>" />
                 <input type="hidden" name="attachment_search" value="<?php echo esc_attr(sanitize_text_field(isset($_GET['attachment_search']) ? wp_unslash($_GET['attachment_search']) : '')); ?>" />
+                <input type="hidden" name="attachment_year" value="<?php echo esc_attr($this->sanitize_year_filter(isset($_GET['attachment_year']) ? wp_unslash($_GET['attachment_year']) : '')); ?>" />
+                <input type="hidden" name="attachment_month" value="<?php echo esc_attr($this->sanitize_month_filter(isset($_GET['attachment_month']) ? wp_unslash($_GET['attachment_month']) : '')); ?>" />
             <?php endif; ?>
             <label><span><?php esc_html_e('Filter', 'wp-unused-cleaner'); ?></span><select name="<?php echo esc_attr($kind_name); ?>"><?php foreach ($this->get_kind_options() as $value => $label) : ?><option value="<?php echo esc_attr($value); ?>" <?php selected($kind, $value); ?>><?php echo esc_html($label); ?></option><?php endforeach; ?></select></label>
             <label class="wpuc-search-field"><span><?php esc_html_e('Search', 'wp-unused-cleaner'); ?></span><input type="search" name="<?php echo esc_attr($search_name); ?>" value="<?php echo esc_attr($search); ?>" placeholder="<?php esc_attr_e('Search title, path, type…', 'wp-unused-cleaner'); ?>" /></label>
+            <label><span><?php esc_html_e('Year', 'wp-unused-cleaner'); ?></span><input type="number" name="<?php echo esc_attr($year_name); ?>" value="<?php echo esc_attr($year); ?>" min="1970" max="2100" placeholder="<?php esc_attr_e('Any year', 'wp-unused-cleaner'); ?>" /></label>
+            <label><span><?php esc_html_e('Month', 'wp-unused-cleaner'); ?></span><select name="<?php echo esc_attr($month_name); ?>"><option value=""><?php esc_html_e('Any month', 'wp-unused-cleaner'); ?></option><?php for ($m = 1; $m <= 12; $m++) : ?><option value="<?php echo esc_attr((string) $m); ?>" <?php selected((string) $month, (string) $m); ?>><?php echo esc_html(date_i18n('F', mktime(0, 0, 0, $m, 1))); ?></option><?php endfor; ?></select></label>
             <button type="submit" class="button"><?php esc_html_e('Apply', 'wp-unused-cleaner'); ?></button>
         </form>
         <?php
@@ -550,10 +581,25 @@ class WP_UC_Admin {
         $search_in = isset($args['search_in']) ? (array) $args['search_in'] : [];
         $sort = isset($args['sort']) ? (string) $args['sort'] : ('attachments' === $type ? 'title' : 'relative');
         $dir  = isset($args['dir']) ? (string) $args['dir'] : 'asc';
+        $year = isset($args['year']) ? (int) $args['year'] : 0;
+        $month = isset($args['month']) ? (int) $args['month'] : 0;
 
-        $items = array_values(array_filter((array) $items, function ($item) use ($kind, $search, $search_in) {
+        $items = array_values(array_filter((array) $items, function ($item) use ($kind, $search, $search_in, $year, $month, $type) {
             if ('all' !== $kind && ($item['kind'] ?? 'other') !== $kind) {
                 return false;
+            }
+            if ($year > 0 || $month > 0) {
+                $ts_key = ('attachments' === $type) ? 'date_ts' : 'modified_ts';
+                $ts = isset($item[$ts_key]) ? (int) $item[$ts_key] : 0;
+                if ($ts <= 0) {
+                    return false;
+                }
+                if ($year > 0 && (int) wp_date('Y', $ts) !== $year) {
+                    return false;
+                }
+                if ($month > 0 && (int) wp_date('n', $ts) !== $month) {
+                    return false;
+                }
             }
             if ($search !== '') {
                 $haystack = [];
@@ -572,10 +618,16 @@ class WP_UC_Admin {
         usort($items, function ($a, $b) use ($sort, $dir) {
             $va = $a[$sort] ?? '';
             $vb = $b[$sort] ?? '';
-            if (is_numeric($va) && is_numeric($vb)) {
+            $numeric_sorts = ['size_bytes', 'date_ts', 'modified_ts', 'id'];
+            if (in_array($sort, $numeric_sorts, true)) {
                 $cmp = (int) $va <=> (int) $vb;
+            } elseif (is_numeric($va) && is_numeric($vb)) {
+                $cmp = (float) $va <=> (float) $vb;
             } else {
-                $cmp = strcasecmp((string) $va, (string) $vb);
+                $cmp = strnatcasecmp((string) $va, (string) $vb);
+            }
+            if (0 === $cmp) {
+                $cmp = strnatcasecmp((string) ($a['title'] ?? $a['relative'] ?? ''), (string) ($b['title'] ?? $b['relative'] ?? ''));
             }
             return 'desc' === $dir ? -$cmp : $cmp;
         });
@@ -608,6 +660,35 @@ class WP_UC_Admin {
         $results['summary']['attachments_unused'] = count((array) ($results['attachments'] ?? []));
         $results['summary']['files_unused'] = count((array) ($results['files'] ?? []));
         return $results;
+    }
+
+
+    private function get_scan_modes() {
+        return WP_UC_Scanner::instance()->get_scan_modes();
+    }
+
+    private function sanitize_scan_mode($value) {
+        $value = sanitize_key((string) $value);
+        $modes = array_keys($this->get_scan_modes());
+        return in_array($value, $modes, true) ? $value : 'full';
+    }
+
+    private function sanitize_year_filter($value) {
+        $value = trim((string) $value);
+        if ('' === $value) {
+            return '';
+        }
+        $year = (int) $value;
+        return ($year >= 1970 && $year <= 2100) ? (string) $year : '';
+    }
+
+    private function sanitize_month_filter($value) {
+        $value = trim((string) $value);
+        if ('' === $value) {
+            return '';
+        }
+        $month = (int) $value;
+        return ($month >= 1 && $month <= 12) ? (string) $month : '';
     }
 
     private function get_kind_options() {

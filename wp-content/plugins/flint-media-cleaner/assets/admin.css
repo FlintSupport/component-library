@@ -65,3 +65,7 @@
 .wpuc-pill-completed { background:#0CCFF0; color:#fff; }
 .wpuc-pill-error { background:#ffcece; color:#B22E2F; }
 .wpuc-pill-started { background:#FFECA3; color:#202153; }
+.wpuc-scan-mode { display:block; margin: 14px 0; }
+.wpuc-scan-mode span { display:block; font-weight: 700; margin-bottom: 6px; }
+.wpuc-scan-mode select { width: 100%; min-height: 38px; border-radius: 10px; }
+.wpuc-filter-bar input[type="number"] { min-height: 36px; border-radius: 10px; width: 120px; }
