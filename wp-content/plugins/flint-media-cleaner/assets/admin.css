@@ -43,7 +43,9 @@
 .wpuc-pill { display:inline-block; padding:4px 10px; margin-top:8px; border-radius:999px; font-size:12px; font-weight:700; background: #F2F2ED; color: #424480; }
 .wpuc-empty { background: #f8fafc; border: 1px dashed #cbd5e1; color: var(--wpuc-muted); padding: 24px; border-radius: 14px; margin-top: 12px; }
 .wpuc-results-form code { display: inline-block; margin-top: 6px; white-space: normal; word-break: break-all; font-size: 12px; }
-.tablenav-pages .current-page { pointer-events:none; }
+.wpuc-tablenav-pages .pagination-links { display: inline-flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.wpuc-tablenav-pages .button { border-radius: 8px; min-width: 34px; text-align: center; }
+.wpuc-tablenav-pages .current-page { pointer-events:none; background: #202153; border-color: #202153; color: #fff; font-weight: 700; box-shadow: 0 0 0 2px rgba(32, 33, 83, 0.15); }
 .wpuc-ellipsis { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; color: var(--wpuc-muted); }
 .wpuc-page-jump { display:flex; align-items:center; gap:8px; }
 .wpuc-page-jump label { display:flex; align-items:center; gap:8px; color: var(--wpuc-muted); }

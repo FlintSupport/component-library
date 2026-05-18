@@ -2,7 +2,7 @@
 /**
  * Plugin Name: (ƒ) Flint Media Cleaner
  * Description: Scans uploads and the media library for unreferenced items, supports common custom-field patterns including ACF and The Events Calendar, and provides batch cleanup tools.
- * Version: 0.2.6
+ * Version: 0.2.7
  * Author: Flint Group
  */
 
@@ -10,7 +10,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-define('WPUC_VERSION', '0.2.6');
+define('WPUC_VERSION', '0.2.7');
 define('WPUC_FILE', __FILE__);
 define('WPUC_DIR', plugin_dir_path(__FILE__));
 define('WPUC_URL', plugin_dir_url(__FILE__));

@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function toggleGroup(targetName, forceChecked) {
-    var boxes = document.querySelectorAll('input[name="' + targetName + '"]');
+    var selector = targetName === 'all' ? 'input[name="attachment_ids[]"], input[name="file_paths[]"]' : 'input[name="' + targetName + '"]';
+    var boxes = document.querySelectorAll(selector);
     boxes.forEach(function (box) {
       box.checked = typeof forceChecked === 'boolean' ? forceChecked : !box.checked;
     });

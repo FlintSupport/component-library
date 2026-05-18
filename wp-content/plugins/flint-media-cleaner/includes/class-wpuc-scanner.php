@@ -17,6 +17,53 @@ class WP_UC_Scanner {
         return self::$instance;
     }
 
+
+    private function get_scannable_post_types() {
+        $excluded = [
+            'attachment',
+            'revision',
+            'nav_menu_item',
+            'custom_css',
+            'customize_changeset',
+            'oembed_cache',
+            'user_request',
+            'wp_block',
+            'wp_template',
+            'wp_template_part',
+            'wp_global_styles',
+            'wp_navigation',
+            'acf-field',
+            'acf-field-group',
+        ];
+
+        $post_types = [];
+        $objects = get_post_types([], 'objects');
+        foreach ((array) $objects as $name => $object) {
+            $name = (string) $name;
+            if ('' === $name || in_array($name, $excluded, true)) {
+                continue;
+            }
+
+            // Include every registered content post type except known WordPress/ACF
+            // infrastructure types. Some plugins store front-end lookup data in
+            // private/admin-only CPTs, and ACF file/image fields on those posts
+            // must still protect their media attachments from cleanup.
+            $post_types[] = $name;
+        }
+
+        /**
+         * Filter the post types scanned for media references.
+         *
+         * This is intentionally broad: all registered custom post types are
+         * included by default (public, private, admin-only, REST-only, etc.) so
+         * ACF file/image fields and plugin-generated lookup records can protect
+         * their attachments from cleanup.
+         */
+        $post_types = apply_filters('wpuc_scannable_post_types', $post_types);
+
+        return array_values(array_unique(array_filter(array_map('sanitize_key', (array) $post_types))));
+    }
+
     public function create_scan_state($args = []) {
         global $wpdb;
 
@@ -24,11 +71,7 @@ class WP_UC_Scanner {
         $baseurl     = isset($upload_info['baseurl']) ? (string) $upload_info['baseurl'] : '';
         $basedir     = isset($upload_info['basedir']) ? (string) $upload_info['basedir'] : '';
 
-        $post_types = get_post_types(['public' => true], 'names');
-        if (post_type_exists('tribe_events')) {
-            $post_types[] = 'tribe_events';
-        }
-        $post_types = array_values(array_unique(array_filter($post_types)));
+        $post_types = $this->get_scannable_post_types();
 
         $post_ids = get_posts([
             'post_type'              => $post_types,
@@ -161,6 +204,10 @@ class WP_UC_Scanner {
                         $state['phase'] = 'term_meta';
                         $state['cursor'] = 0;
                         break;
+                    }
+                    if (empty($state['sources']['acf_options_scanned'])) {
+                        $this->scan_acf_option_fields((string) $state['baseurl'], (string) $state['basedir']);
+                        $state['sources']['acf_options_scanned'] = true;
                     }
                     $limit = (int) ($state['batches']['options'] ?? 50);
                     $rows = $this->safe_get_option_rows($limit, (int) $state['cursor']);
@@ -346,6 +393,25 @@ class WP_UC_Scanner {
         return $rows;
     }
 
+
+    private function scan_acf_option_fields($baseurl, $basedir) {
+        if (! function_exists('get_fields')) {
+            return;
+        }
+
+        $selectors = ['option', 'options'];
+        foreach ($selectors as $selector) {
+            try {
+                $fields = get_fields($selector, false);
+                if (! empty($fields)) {
+                    $this->extract_references_from_mixed($fields, $baseurl, $basedir);
+                }
+            } catch (Throwable $e) {
+                // ACF option pages are optional; keep scanning if unavailable.
+            }
+        }
+    }
+
     private function process_option_row($row, $baseurl, $basedir, &$state) {
         $option_name = isset($row['option_name']) ? (string) $row['option_name'] : '';
         $option_id   = isset($row['option_id']) ? (int) $row['option_id'] : 0;
@@ -500,7 +566,7 @@ class WP_UC_Scanner {
     public function get_progress_data($state) {
         $phase = (string) ($state['phase'] ?? 'done');
         $map = [
-            'posts' => __('Scanning posts and events', 'wp-unused-cleaner'),
+            'posts' => __('Scanning posts, pages, and custom post types', 'wp-unused-cleaner'),
             'options' => __('Scanning options and settings', 'wp-unused-cleaner'),
             'term_meta' => __('Scanning term metadata', 'wp-unused-cleaner'),
             'user_meta' => __('Scanning user metadata', 'wp-unused-cleaner'),
@@ -564,6 +630,7 @@ class WP_UC_Scanner {
         }
         $this->extract_references_from_text((string) $post->post_content, $baseurl, $basedir);
         $this->extract_references_from_blocks((string) $post->post_content, $baseurl, $basedir);
+        $this->extract_references_from_rendered_post($post, $baseurl, $basedir);
         $this->extract_references_from_text((string) $post->post_excerpt, $baseurl, $basedir);
         $this->extract_references_from_text((string) $post->post_title, $baseurl, $basedir);
         $thumb_id = (int) get_post_thumbnail_id($post_id);
@@ -571,16 +638,7 @@ class WP_UC_Scanner {
             $this->referenced_attachment_ids[$thumb_id] = true;
         }
         $meta = get_post_meta($post_id);
-        if (function_exists('get_fields')) {
-            try {
-                $acf_fields = get_fields($post_id, false);
-                if (! empty($acf_fields)) {
-                    $this->extract_references_from_mixed($acf_fields, $baseurl, $basedir);
-                }
-            } catch (Throwable $e) {
-                // ACF may not be available for all post types.
-            }
-        }
+        $this->scan_acf_fields_for_object($post_id, $baseurl, $basedir);
 
         foreach ($meta as $meta_key => $meta_values) {
             if (0 === strpos((string) $meta_key, '_edit_')) {
@@ -592,6 +650,26 @@ class WP_UC_Scanner {
         }
     }
 
+
+
+    private function scan_acf_fields_for_object($selector, $baseurl, $basedir) {
+        if (! function_exists('get_fields')) {
+            return;
+        }
+
+        // Scan raw and formatted ACF values. Raw values catch attachment IDs;
+        // formatted values catch plugin/theme fields that output URLs or arrays.
+        foreach ([false, true] as $format_value) {
+            try {
+                $acf_fields = get_fields($selector, $format_value);
+                if (! empty($acf_fields)) {
+                    $this->extract_references_from_mixed($acf_fields, $baseurl, $basedir);
+                }
+            } catch (Throwable $e) {
+                // ACF may not be available for every object/type.
+            }
+        }
+    }
 
     private function extract_references_from_blocks($content, $baseurl, $basedir) {
         if (! function_exists('parse_blocks') || ! is_string($content) || false === strpos($content, '<!-- wp:')) {
@@ -647,6 +725,11 @@ class WP_UC_Scanner {
         if (! is_string($text) || '' === $text) {
             return;
         }
+
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, get_bloginfo('charset') ?: 'UTF-8');
+        $text = str_replace('\\/', '/', $text);
+        $text = wp_unslash($text);
+
         if (preg_match_all('/wp-image-([0-9]+)/', $text, $matches)) {
             foreach ((array) $matches[1] as $attachment_id) {
                 $attachment_id = (int) $attachment_id;
@@ -655,6 +738,23 @@ class WP_UC_Scanner {
                 }
             }
         }
+
+        // Match absolute upload URLs on any host, not only the current wp_get_upload_dir()
+        // base URL. This protects staging/production domain mismatches and serialized ACF
+        // block fields that store full URLs from a different environment.
+        if (preg_match_all('#https?://[^\s"\'\)<>]+/wp-content/uploads/[^\s"\'\)<>]+#i', $text, $absolute_upload_matches)) {
+            foreach ((array) $absolute_upload_matches[0] as $url) {
+                $this->mark_url_reference($url, $baseurl, $basedir);
+            }
+        }
+
+        // Match root-relative upload references such as /wp-content/uploads/2020/02/file.pdf.
+        if (preg_match_all('#(?<![A-Za-z0-9_\-])/?wp-content/uploads/[^\s"\'\)<>]+#i', $text, $relative_upload_matches)) {
+            foreach ((array) $relative_upload_matches[0] as $relative_url) {
+                $this->mark_url_reference($relative_url, $baseurl, $basedir);
+            }
+        }
+
         if ($baseurl && preg_match_all('/["\'](' . preg_quote($baseurl, '/') . '[^"\']+)["\']/', $text, $url_matches)) {
             foreach ((array) $url_matches[1] as $url) {
                 $this->mark_url_reference($url, $baseurl, $basedir);
@@ -675,18 +775,44 @@ class WP_UC_Scanner {
         }
     }
 
+    private function extract_references_from_rendered_post($post_obj, $baseurl, $basedir) {
+        static $rendering = false;
+
+        if ($rendering || ! $post_obj || ! isset($post_obj->post_content) || '' === (string) $post_obj->post_content) {
+            return;
+        }
+
+        $rendering = true;
+        try {
+            global $post;
+            $previous_post = $post;
+            $post = $post_obj;
+            setup_postdata($post_obj);
+            $rendered = apply_filters('the_content', (string) $post_obj->post_content);
+            wp_reset_postdata();
+            $post = $previous_post;
+            if (is_string($rendered) && '' !== $rendered) {
+                $this->extract_references_from_text($rendered, $baseurl, $basedir);
+            }
+        } catch (Throwable $e) {
+            wp_reset_postdata();
+        }
+        $rendering = false;
+    }
+
     private function mark_url_reference($url, $baseurl, $basedir) {
         $url = trim((string) $url);
         if ('' === $url) {
             return;
         }
+        $url = rtrim($url, ',.');
         $url = strtok($url, '?');
         $url = strtok($url, '#');
         $this->reference_urls[$url] = true;
 
-        $relative = wp_normalize_path(str_replace(wp_normalize_path(trailingslashit($baseurl)), '', wp_normalize_path($url)));
+        $relative = $this->get_upload_relative_path_from_url($url, $baseurl, $basedir);
         if ($relative) {
-            $this->referenced_relative_paths[ltrim($relative, '/')] = true;
+            $this->referenced_relative_paths[$relative] = true;
         }
 
         $attachment_id = attachment_url_to_postid($url);
@@ -694,13 +820,66 @@ class WP_UC_Scanner {
             $this->referenced_attachment_ids[$attachment_id] = true;
         }
 
-        $full_path = wp_normalize_path(str_replace(wp_normalize_path(trailingslashit($baseurl)), wp_normalize_path(trailingslashit($basedir)), wp_normalize_path($url)));
-        if ($full_path) {
-            $relative_full = wp_normalize_path(str_replace(wp_normalize_path(trailingslashit($basedir)), '', $full_path));
-            if ($relative_full) {
-                $this->referenced_relative_paths[ltrim($relative_full, '/')] = true;
+        if ($relative) {
+            $relative_attachment_id = $this->get_attachment_id_for_upload_relative_path($relative);
+            if ($relative_attachment_id > 0) {
+                $this->referenced_attachment_ids[$relative_attachment_id] = true;
             }
         }
+
+        // If content references a generated image size that is not registered in
+        // attachment metadata, protect the original attachment by stripping the
+        // -WIDTHxHEIGHT suffix and resolving that original upload path too.
+        $possible_original = $relative ? $this->maybe_get_original_relative_from_generated_size($relative) : '';
+        if ($possible_original) {
+            $this->referenced_relative_paths[$possible_original] = true;
+            $possible_attachment_id = $this->get_attachment_id_for_upload_relative_path($possible_original);
+            if ($possible_attachment_id > 0) {
+                $this->referenced_attachment_ids[$possible_attachment_id] = true;
+            }
+        }
+    }
+
+    private function get_upload_relative_path_from_url($url, $baseurl, $basedir) {
+        $url = trim((string) $url);
+        if ('' === $url) {
+            return '';
+        }
+
+        $url = str_replace('\\/', '/', $url);
+        $path = '';
+        $parsed = wp_parse_url($url);
+        if (is_array($parsed) && ! empty($parsed['path'])) {
+            $path = (string) $parsed['path'];
+        } elseif (0 === strpos($url, '/')) {
+            $path = $url;
+        } else {
+            $path = '/' . ltrim($url, '/');
+        }
+
+        $path = rawurldecode($path);
+        $marker = '/wp-content/uploads/';
+        $pos = stripos($path, $marker);
+        if (false !== $pos) {
+            return ltrim(wp_normalize_path(substr($path, $pos + strlen($marker))), '/');
+        }
+
+        if ($baseurl) {
+            $base_path = '';
+            $base_parts = wp_parse_url($baseurl);
+            if (is_array($base_parts) && ! empty($base_parts['path'])) {
+                $base_path = trailingslashit((string) $base_parts['path']);
+            }
+            if ($base_path && 0 === stripos(wp_normalize_path($path), wp_normalize_path($base_path))) {
+                return ltrim(wp_normalize_path(substr($path, strlen($base_path))), '/');
+            }
+        }
+
+        if ($basedir && 0 === stripos(wp_normalize_path($url), wp_normalize_path(trailingslashit($basedir)))) {
+            return ltrim(wp_normalize_path(str_replace(wp_normalize_path(trailingslashit($basedir)), '', wp_normalize_path($url))), '/');
+        }
+
+        return '';
     }
 
     private function build_unused_attachment_item($attachment_id, $baseurl, $basedir) {
@@ -721,6 +900,7 @@ class WP_UC_Scanner {
             'date' => get_the_date(get_option('date_format'), $attachment_id),
             'date_ts' => (int) get_post_time('U', true, $attachment_id),
             'kind' => $this->get_attachment_kind($mime_type),
+            'media_library_url' => get_edit_post_link($attachment_id, ''),
         ];
     }
 
@@ -860,6 +1040,15 @@ class WP_UC_Scanner {
         if (isset($this->referenced_attachment_ids[$attachment_id])) {
             return true;
         }
+
+        // If WordPress considers this media item uploaded/attached to any
+        // scannable post (including private custom post types), keep it. This
+        // covers ACF file fields and plugin importers that set post_parent but
+        // do not expose the media URL in post_content/rendered HTML.
+        if ($this->is_attachment_attached_to_scannable_post($attachment_id)) {
+            return true;
+        }
+
         if ($url) {
             $normalized_url = strtok((string) $url, '?');
             $normalized_url = strtok($normalized_url, '#');
@@ -896,6 +1085,25 @@ class WP_UC_Scanner {
             }
         }
         return false;
+    }
+
+    private function is_attachment_attached_to_scannable_post($attachment_id) {
+        $attachment = get_post((int) $attachment_id);
+        if (! $attachment || empty($attachment->post_parent)) {
+            return false;
+        }
+
+        $parent_id = (int) $attachment->post_parent;
+        if ($parent_id <= 0) {
+            return false;
+        }
+
+        $parent_type = get_post_type($parent_id);
+        if (! $parent_type) {
+            return false;
+        }
+
+        return in_array((string) $parent_type, $this->get_scannable_post_types(), true);
     }
 
     private function should_skip_file($path, $basedir) {
