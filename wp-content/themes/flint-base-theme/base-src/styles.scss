@@ -1,0 +1,167 @@
+/* =======================================
+   VARIABLES
+   ======================================= */
+
+$transition: all .2s ease;
+$fontbody: 'Source Sans Pro', 'Helvetica', 'Arial', sans-serif;
+$fontheader: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+
+
+/* =======================================
+   IMPORTS
+   ======================================= */
+
+@import "globals/_import.scss";
+@import "components/_import.scss";
+@import "templates/_import.scss";
+
+
+/* =======================================
+   GLOBAL STYLES
+   ======================================= */
+
+body {
+   font-family: $fontbody;
+   margin: 0;
+   font-size: 18px;
+   background: #ffffff;
+
+   &.active {
+      overflow-y: hidden;
+   }
+
+
+   /* --------- GLOBAL TEXT STYLES --------- */
+   h1, h2, h3 {
+      font-family: $fontheader;
+   }
+   h1 {
+      font-size: 50px;
+      text-transform: uppercase;
+   }
+   h2 {
+      font-size: 38px;
+   }
+   h3 {
+      font-size: 28px;
+   }
+
+
+   /* --------- LINKS --------- */
+   a {
+      color: $darkgray;
+      transition: $transition;
+   }
+
+   .button {
+      display: inline-block;
+      padding: $halfpadding $doublepadding;
+      text-decoration: none;
+      text-transform: uppercase;
+      border: 1px solid;
+
+      &.primary {
+         background: $gray;
+         color: $black;
+         border-color: $darkgray;
+
+         &:hover {
+            background: $darkgray;
+            border-color: $darkgray;
+            color: $white;
+         }
+      }
+
+      &.secondary {
+         background: $white;
+         color: $darkgray;
+         border-color: $darkgray;
+
+         &:hover {
+            background: $darkgray;
+            border-color: $darkgray;
+            color: $white;
+         }
+      }
+   }
+
+   hr.anchor {
+      border: none;
+      margin: 0;
+   }
+
+
+   /* --------- GLOBAL SECTION STYLES --------- */
+   section {
+      padding: 0 $padding;
+
+      *:first-child {
+         margin-top: 0;
+      }
+
+      *:last-child {
+         margin-bottom: 0;
+      }
+
+      &.gray {
+         background: $lightgray;
+      }
+
+      &.notop {
+         padding-top: 0;
+      }
+
+      &.nobottom {
+         padding-bottom: 0;
+      }
+
+      img {
+         display: block;
+      }
+   }
+
+
+   /* --------- LIST STYLES --------- */
+   .checklist {
+      padding: 0;
+      list-style: none;
+
+      li {
+         display: flex;
+         align-items: flex-start;
+         margin-bottom: $midpadding;
+         font-weight: 500;
+
+         &::before {
+            content: "";
+            display: inline-block;
+            background: url(../img/check.svg);
+            min-width: 24px;
+            min-height: 24px;
+            width: 24px;
+            height: 24px;
+            margin-right: $halfpadding;
+            margin-top: -2px;
+         }
+      }
+   }
+
+   ol, ul {
+      padding-left: 20px;
+
+      &.two {
+         columns: 2;
+      }
+      &.three {
+         columns: 3;
+      }
+   }
+
+   
+   /* --------- BREADCRUMBS --------- */
+   .breadcrumbWrapper {
+      @include container;
+   }
+}
+/* Accessibility baseline (WCAG-oriented) */
+.screen-reader-text{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.screen-reader-text:focus,.skip-link:focus{clip:auto!important;width:auto;height:auto;margin:0;overflow:visible;white-space:normal;position:fixed!important;top:8px;left:8px;z-index:100000;padding:12px 16px;background:#fff;color:#000;border:2px solid currentColor}.skip-link{z-index:100000}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid currentColor!important;outline-offset:3px!important}.accordionTitle,.tabTitle,.video-trigger,.mobileMenu,#searchButton{font:inherit;color:inherit}.accordionTitle,.tabTitle,.video-trigger{border:0;background:transparent;text-align:inherit}.accordionCopy[hidden],.popup[hidden]{display:none!important}@media (prefers-reduced-motion: reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.slick-track{transition:none!important}}

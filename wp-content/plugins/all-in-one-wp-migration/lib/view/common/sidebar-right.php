@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2014-2023 ServMask Inc.
+ * Copyright (C) 2014-2025 ServMask Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,6 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Attribution: This code is part of the All-in-One WP Migration plugin, developed by
  *
  * ███████╗███████╗██████╗ ██╗   ██╗███╗   ███╗ █████╗ ███████╗██╗  ██╗
  * ██╔════╝██╔════╝██╔══██╗██║   ██║████╗ ████║██╔══██╗██╔════╝██║ ██╔╝
@@ -33,11 +35,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="ai1wm-segment">
 
 			<?php if ( ! AI1WM_DEBUG ) : ?>
-				<?php include AI1WM_TEMPLATES_PATH . '/common/share-buttons.php'; ?>
+				<?php require_once AI1WM_TEMPLATES_PATH . '/common/share-buttons.php'; ?>
 			<?php endif; ?>
 
-			<h2><?php _e( 'Leave Feedback', AI1WM_PLUGIN_NAME ); ?></h2>
-			<?php include AI1WM_TEMPLATES_PATH . '/common/leave-feedback.php'; ?>
+			<h2><?php esc_html_e( 'Leave Feedback', 'all-in-one-wp-migration' ); ?></h2>
+			<?php require_once AI1WM_TEMPLATES_PATH . '/common/leave-feedback.php'; ?>
 
 			<?php do_action( 'ai1wm_sidebar_right_end' ); ?>
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2014-2023 ServMask Inc.
+ * Copyright (C) 2014-2025 ServMask Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,6 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Attribution: This code is part of the All-in-One WP Migration plugin, developed by
  *
  * ███████╗███████╗██████╗ ██╗   ██╗███╗   ███╗ █████╗ ███████╗██╗  ██╗
  * ██╔════╝██╔════╝██╔══██╗██║   ██║████╗ ████║██╔══██╗██╔════╝██║ ██╔╝
@@ -213,7 +215,7 @@ abstract class Ai1wm_Database {
 						'Your WordPress installation uses Microsoft SQL Server. ' .
 						'To use All-in-One WP Migration, please change your installation to MySQL and try again. ' .
 						'<a href="https://help.servmask.com/knowledgebase/microsoft-sql-server/" target="_blank">Technical details</a>',
-						AI1WM_PLUGIN_NAME
+						'all-in-one-wp-migration'
 					),
 					501
 				);
@@ -359,6 +361,22 @@ abstract class Ai1wm_Database {
 	 */
 	public function get_old_replace_values() {
 		return $this->old_replace_values;
+	}
+
+	/**
+	 * Get old replace values min length
+	 *
+	 * @return integer
+	 */
+	protected function get_old_replace_values_min_length() {
+		static $cached_result = null;
+
+		// Cache old replace values minimum length on first call
+		if ( $cached_result === null ) {
+			$cached_result = min( array_map( 'strlen', $this->get_old_replace_values() ) );
+		}
+
+		return $cached_result;
 	}
 
 	/**
@@ -857,17 +875,14 @@ abstract class Ai1wm_Database {
 						// Get create view statement
 						$create_view = $this->get_create_view( $table_name );
 
-						// Replace create view quotes
-						$create_view = $this->replace_view_quotes( $create_view );
-
 						// Replace create view name
 						$create_view = $this->replace_view_name( $create_view, $table_name, $new_table_name );
 
 						// Replace create view identifiers
 						$create_view = $this->replace_view_identifiers( $create_view );
 
-						// Replace create view options
-						$create_view = $this->replace_view_options( $create_view );
+						// Replace create view attributes
+						$create_view = $this->replace_view_attributes( $create_view );
 
 						// Write create view statement
 						ai1wm_write( $file_handler, $create_view );
@@ -896,23 +911,8 @@ abstract class Ai1wm_Database {
 						// Get create table statement
 						$create_table = $this->get_create_table( $table_name );
 
-						// Replace create table quotes
-						$create_table = $this->replace_table_quotes( $create_table );
-
 						// Replace create table name
 						$create_table = $this->replace_table_name( $create_table, $table_name, $new_table_name );
-
-						// Replace create table comments
-						$create_table = $this->replace_table_comments( $create_table );
-
-						// Replace create table constraints
-						$create_table = $this->replace_table_constraints( $create_table );
-
-						// Replace create table options
-						$create_table = $this->replace_table_options( $create_table );
-
-						// Replace create table defaults
-						$create_table = $this->replace_table_defaults( $create_table );
 
 						// Write create table statement
 						ai1wm_write( $file_handler, $create_table );
@@ -956,8 +956,11 @@ abstract class Ai1wm_Database {
 							$select_columns = implode( ', ', $select_columns );
 
 							// Set query with offset and rows count
-							$query = sprintf( 'SELECT %s FROM `%s` AS t1 JOIN (SELECT %s FROM `%s` WHERE %s ORDER BY %s LIMIT %d, %d) AS t2 USING (%s)', $select_columns, $table_name, $table_keys, $table_name, $table_where, $table_keys, $table_offset, AI1WM_MAX_SELECT_RECORDS, $table_keys );
-
+							if ( defined( 'AI1WM_DISABLE_LATE_ROW_LOOKUPS' ) ) {
+								$query = sprintf( 'SELECT %s FROM `%s` AS t1 WHERE %s ORDER BY %s LIMIT %d, %d', $select_columns, $table_name, $table_where, $table_keys, $table_offset, AI1WM_MAX_SELECT_RECORDS );
+							} else {
+								$query = sprintf( 'SELECT %s FROM `%s` AS t1 JOIN (SELECT %s FROM `%s` WHERE %s ORDER BY %s LIMIT %d, %d) AS t2 USING (%s)', $select_columns, $table_name, $table_keys, $table_name, $table_where, $table_keys, $table_offset, AI1WM_MAX_SELECT_RECORDS, $table_keys );
+							}
 						} else {
 
 							$table_keys = 1;
@@ -1119,14 +1122,35 @@ abstract class Ai1wm_Database {
 						// Skip table query
 						if ( $this->should_ignore_query( $query ) === false ) {
 
-							// Replace table collations
-							$query = $this->replace_table_collations( $query );
+							// Replace table parameters
+							if ( $this->is_create_table_query( $query ) ) {
 
-							// Replace table values
-							$query = $this->replace_table_values( $query );
+								// Replace create column types
+								$query = $this->replace_column_types( $query );
 
-							// Replace raw values
-							$query = $this->replace_raw_values( $query );
+								// Replace create column options
+								$query = $this->replace_column_options( $query );
+
+								// Replace create table comments
+								$query = $this->replace_table_comments( $query );
+
+								// Replace create table options
+								$query = $this->replace_table_options( $query );
+
+								// Replace create table constraints
+								$query = $this->replace_table_constraints( $query );
+
+								// Replace table collations
+								$query = $this->replace_table_collations( $query );
+
+							} else {
+
+								// Replace table values
+								$query = $this->replace_table_values( $query );
+
+								// Replace raw values
+								$query = $this->replace_raw_values( $query );
+							}
 
 							// Run SQL query
 							$this->query( $query );
@@ -1162,9 +1186,19 @@ abstract class Ai1wm_Database {
 								$this->query( $query );
 							}
 
+							// Replace table default values (MySQL <= 8.0.12)
+							if ( $this->errno() === 1101 ) {
+
+								// TEXT and BLOB columns can't have a default value
+								$query = $this->replace_column_defaults( $query );
+
+								// Run SQL query
+								$this->query( $query );
+							}
+
 							// Check tablespace exists
 							if ( $this->errno() === 1813 ) {
-								throw new Ai1wm_Database_Exception( __( 'Error importing database table. <a href="https://help.servmask.com/knowledgebase/mysql-error-importing-table/" target="_blank">Technical details</a>', AI1WM_PLUGIN_NAME ), 503 );
+								throw new Ai1wm_Database_Exception( __( 'Error importing database table. <a href="https://help.servmask.com/knowledgebase/mysql-error-importing-table/" target="_blank">Technical details</a>', 'all-in-one-wp-migration' ), 503 );
 							}
 
 							// Check max queries per hour
@@ -1175,7 +1209,7 @@ abstract class Ai1wm_Database {
 											'Your WordPress installation has reached the maximum allowed queries per hour set by your server admin or hosting provider. ' .
 											'To use All-in-One WP Migration, please increase MySQL max_queries_per_hour limit. ' .
 											'<a href="https://help.servmask.com/knowledgebase/mysql-error-codes/#max-queries-per-hour" target="_blank">Technical details</a>',
-											AI1WM_PLUGIN_NAME
+											'all-in-one-wp-migration'
 										),
 										503
 									);
@@ -1185,7 +1219,7 @@ abstract class Ai1wm_Database {
 											'Your WordPress installation has reached the maximum allowed updates per hour set by your server admin or hosting provider. ' .
 											'To use All-in-One WP Migration, please increase MySQL max_updates_per_hour limit. ' .
 											'<a href="https://help.servmask.com/knowledgebase/mysql-error-codes/#max-updates-per-hour" target="_blank">Technical details</a>',
-											AI1WM_PLUGIN_NAME
+											'all-in-one-wp-migration'
 										),
 										503
 									);
@@ -1195,7 +1229,7 @@ abstract class Ai1wm_Database {
 											'Your WordPress installation has reached the maximum allowed connections per hour set by your server admin or hosting provider. ' .
 											'To use All-in-One WP Migration, please increase MySQL max_connections_per_hour limit. ' .
 											'<a href="https://help.servmask.com/knowledgebase/mysql-error-codes/#max-connections-per-hour" target="_blank">Technical details</a>',
-											AI1WM_PLUGIN_NAME
+											'all-in-one-wp-migration'
 										),
 										503
 									);
@@ -1205,7 +1239,7 @@ abstract class Ai1wm_Database {
 											'Your WordPress installation has reached the maximum allowed user connections set by your server admin or hosting provider. ' .
 											'To use All-in-One WP Migration, please increase MySQL max_user_connections limit. ' .
 											'<a href="https://help.servmask.com/knowledgebase/mysql-error-codes/#max-user-connections" target="_blank">Technical details</a>',
-											AI1WM_PLUGIN_NAME
+											'all-in-one-wp-migration'
 										),
 										503
 									);
@@ -1455,16 +1489,6 @@ abstract class Ai1wm_Database {
 	}
 
 	/**
-	 * Replace table quotes
-	 *
-	 * @param  string $input Table value
-	 * @return string
-	 */
-	protected function replace_table_quotes( $input ) {
-		return $input;
-	}
-
-	/**
 	 * Replace table name
 	 *
 	 * @param  string $input          Table value
@@ -1478,16 +1502,6 @@ abstract class Ai1wm_Database {
 			$input = substr_replace( $input, "`$new_table_name`", $position, strlen( "`$old_table_name`" ) );
 		}
 
-		return $input;
-	}
-
-	/**
-	 * Replace view quotes
-	 *
-	 * @param  string $input View value
-	 * @return string
-	 */
-	protected function replace_view_quotes( $input ) {
 		return $input;
 	}
 
@@ -1526,12 +1540,12 @@ abstract class Ai1wm_Database {
 	}
 
 	/**
-	 * Replace view options
+	 * Replace view attributes
 	 *
 	 * @param  string $input Table value
 	 * @return string
 	 */
-	protected function replace_view_options( $input ) {
+	protected function replace_view_attributes( $input ) {
 		return preg_replace( '/CREATE(.+?)VIEW/i', 'CREATE VIEW', $input );
 	}
 
@@ -1620,7 +1634,7 @@ abstract class Ai1wm_Database {
 		// Replace serialized values
 		foreach ( $this->get_old_replace_values() as $old_value ) {
 			if ( strpos( $input, $this->escape( $old_value ) ) !== false ) {
-				$input = preg_replace_callback( "/'(.*?)(?<!\\\\)'/S", array( $this, 'replace_table_values_callback' ), $input );
+				$input = preg_replace_callback( "/'((?:[^'\\\\]++|\\\\.)*+)'/sS", array( $this, 'replace_table_values_callback' ), $input );
 				break;
 			}
 		}
@@ -1642,7 +1656,9 @@ abstract class Ai1wm_Database {
 			$matches[1] = Ai1wm_Database_Utility::base64_decode( $matches[1] );
 
 			// Replace values
-			$matches[1] = Ai1wm_Database_Utility::replace_values( $this->get_old_replace_values(), $this->get_new_replace_values(), $matches[1] );
+			if ( strlen( $matches[1] ) >= $this->get_old_replace_values_min_length() ) {
+				$matches[1] = Ai1wm_Database_Utility::replace_values( $matches[1], $this->get_old_replace_values(), $this->get_new_replace_values() );
+			}
 
 			// Encode base64 characters
 			$matches[1] = Ai1wm_Database_Utility::base64_encode( $matches[1] );
@@ -1665,7 +1681,9 @@ abstract class Ai1wm_Database {
 			$matches[2] = Ai1wm_Database_Utility::base64_decode( $matches[2] );
 
 			// Replace values
-			$matches[2] = Ai1wm_Database_Utility::replace_values( $this->get_old_replace_values(), $this->get_new_replace_values(), $matches[2] );
+			if ( strlen( $matches[2] ) >= $this->get_old_replace_values_min_length() ) {
+				$matches[2] = Ai1wm_Database_Utility::replace_values( $matches[2], $this->get_old_replace_values(), $this->get_new_replace_values() );
+			}
 
 			// Encode base64 characters
 			$matches[2] = Ai1wm_Database_Utility::base64_encode( $matches[2] );
@@ -1688,7 +1706,9 @@ abstract class Ai1wm_Database {
 			$matches[1] = Ai1wm_Database_Utility::base64_decode( $matches[1] );
 
 			// Replace serialized values
-			$matches[1] = Ai1wm_Database_Utility::replace_serialized_values( $this->get_old_replace_values(), $this->get_new_replace_values(), $matches[1] );
+			if ( strlen( $matches[1] ) >= $this->get_old_replace_values_min_length() ) {
+				$matches[1] = Ai1wm_Database_Utility::replace_serialized_values( $matches[1], $this->get_old_replace_values(), $this->get_new_replace_values() );
+			}
 
 			// Encode base64 characters
 			$matches[1] = Ai1wm_Database_Utility::base64_encode( $matches[1] );
@@ -1708,41 +1728,14 @@ abstract class Ai1wm_Database {
 		$matches[1] = Ai1wm_Database_Utility::unescape_mysql( $matches[1] );
 
 		// Replace serialized values
-		$matches[1] = Ai1wm_Database_Utility::replace_serialized_values( $this->get_old_replace_values(), $this->get_new_replace_values(), $matches[1] );
+		if ( strlen( $matches[1] ) >= $this->get_old_replace_values_min_length() ) {
+			$matches[1] = Ai1wm_Database_Utility::replace_serialized_values( $matches[1], $this->get_old_replace_values(), $this->get_new_replace_values() );
+		}
 
 		// Escape MySQL special characters
 		$matches[1] = Ai1wm_Database_Utility::escape_mysql( $matches[1] );
 
 		return "'" . $matches[1] . "'";
-	}
-
-	/**
-	 * Replace table collations
-	 *
-	 * @param  string $input SQL statement
-	 * @return string
-	 */
-	protected function replace_table_collations( $input ) {
-		static $search  = array();
-		static $replace = array();
-
-		// Replace table collations
-		if ( empty( $search ) || empty( $replace ) ) {
-			if ( ! $this->wpdb->has_cap( 'utf8mb4_520' ) ) {
-				if ( ! $this->wpdb->has_cap( 'utf8mb4' ) ) {
-					$search  = array( 'utf8mb4_0900_ai_ci', 'utf8mb4_unicode_520_ci', 'utf8mb4' );
-					$replace = array( 'utf8_unicode_ci', 'utf8_unicode_ci', 'utf8' );
-				} else {
-					$search  = array( 'utf8mb4_0900_ai_ci', 'utf8mb4_unicode_520_ci' );
-					$replace = array( 'utf8mb4_unicode_ci', 'utf8mb4_unicode_ci' );
-				}
-			} else {
-				$search  = array( 'utf8mb4_0900_ai_ci' );
-				$replace = array( 'utf8mb4_unicode_520_ci' );
-			}
-		}
-
-		return str_replace( $search, $replace, $input );
 	}
 
 	/**
@@ -1752,34 +1745,16 @@ abstract class Ai1wm_Database {
 	 * @return string
 	 */
 	protected function replace_raw_values( $input ) {
-		return Ai1wm_Database_Utility::replace_values( $this->get_old_replace_raw_values(), $this->get_new_replace_raw_values(), $input );
+		return Ai1wm_Database_Utility::replace_values( $input, $this->get_old_replace_raw_values(), $this->get_new_replace_raw_values() );
 	}
 
 	/**
-	 * Replace table comments
+	 * Get server version
 	 *
-	 * @param  string $input SQL statement
 	 * @return string
 	 */
-	protected function replace_table_comments( $input ) {
-		return preg_replace( '/\/\*(.+?)\*\//s', '', $input );
-	}
-
-	/**
-	 * Replace table constraints
-	 *
-	 * @param  string $input SQL statement
-	 * @return string
-	 */
-	protected function replace_table_constraints( $input ) {
-		$pattern = array(
-			'/\s+CONSTRAINT(.+)REFERENCES(.+),/i',
-			'/,\s+CONSTRAINT(.+)REFERENCES(.+)/i',
-			'/\s+ON(.+)CONFLICT(.+)(ROLLBACK|ABORT|FAIL|IGNORE|REPLACE)/i',
-			'/\s+COLLATE(.+)(BINARY|NOCASE|RTRIM)/i',
-		);
-
-		return preg_replace( $pattern, '', $input );
+	protected function server_version() {
+		return Ai1wm_Database_Utility::parse_server_version( $this->server_info() );
 	}
 
 	/**
@@ -1935,13 +1910,59 @@ abstract class Ai1wm_Database {
 	}
 
 	/**
-	 * Replace table definitions
+	 * Replace column types
+	 *
+	 * @param  string $input Column value
+	 * @return string
+	 */
+	protected function replace_column_types( $input ) {
+		$search  = array(
+			'/(?<!`)\bINET4\b(?!\s*\()/i',
+			'/(?<!`)\bINET6\b(?!\s*\()/i',
+			'/(?<!`)\bUUID\b(?!\s*\()/i',
+			'/(?<!`)\bXMLTYPE\b(?!\s*\()/i',
+			'/(?<!`)\bVECTOR\s*\(\s*\d+\s*\)/i',
+		);
+		$replace = array(
+			'VARCHAR(15)',
+			'VARCHAR(45)',
+			'CHAR(36)',
+			'LONGTEXT',
+			'BLOB',
+		);
+
+		return preg_replace( $search, $replace, $input );
+	}
+
+	/**
+	 * Replace column options
+	 *
+	 * @param  string $input Column value
+	 * @return string
+	 */
+	protected function replace_column_options( $input ) {
+		$search  = array(
+			'/AUTOINCREMENT/i',
+			'/ON\s+CONFLICT\s+(ROLLBACK|ABORT|FAIL|IGNORE|REPLACE)/i',
+			'/COLLATE\s+(BINARY|NOCASE|RTRIM)/i',
+		);
+		$replace = array(
+			'AUTO_INCREMENT',
+			'',
+			'',
+		);
+
+		return preg_replace( $search, $replace, $input );
+	}
+
+	/**
+	 * Replace table comments
 	 *
 	 * @param  string $input SQL statement
 	 * @return string
 	 */
-	protected function replace_table_defaults( $input ) {
-		return $input;
+	protected function replace_table_comments( $input ) {
+		return preg_replace( '/\/\*(.+?)\*\//s', '', $input );
 	}
 
 	/**
@@ -1952,24 +1973,23 @@ abstract class Ai1wm_Database {
 	 */
 	protected function replace_table_options( $input ) {
 		$search  = array(
-			'TYPE=InnoDB',
-			'TYPE=MyISAM',
-			'ENGINE=Aria',
-			'TRANSACTIONAL=0',
-			'TRANSACTIONAL=1',
-			'PAGE_CHECKSUM=0',
-			'PAGE_CHECKSUM=1',
-			'TABLE_CHECKSUM=0',
-			'TABLE_CHECKSUM=1',
-			'ROW_FORMAT=PAGE',
-			'ROW_FORMAT=FIXED',
-			'ROW_FORMAT=DYNAMIC',
-			'AUTOINCREMENT',
+			'/`?TYPE`?\s*=\s*\'?(\w+)\'?/i',
+			'/`?ENGINE`?\s*=\s*\'?Aria\'?/i',
+			'/`?TRANSACTIONAL`?\s*=\s*\'?\w+\'?/i',
+			'/`?PAGE_CHECKSUM`?\s*=\s*\'?\w+\'?/i',
+			'/`?TABLE_CHECKSUM`?\s*=\s*\'?\w+\'?/i',
+			'/`?ROW_FORMAT`?\s*=\s*\'?\w+\'?/i',
+			'/`?PAGE_COMPRESSED`?\s*=\s*\'?\w+\'?/i',
+			'/`?PAGE_COMPRESSION_LEVEL`?\s*=\s*\'?\w+\'?/i',
+			'/`?ENCRYPTED`?\s*=\s*\'?\w+\'?/i',
+			'/`?ENCRYPTION_KEY_ID`?\s*=\s*\'?\w+\'?/i',
+			'/(WITH|WITHOUT)\s+SYSTEM\s+VERSIONING/i',
+			'/,?\s*WITHOUT\s+ROWID/i',
+			'/,?\s*\bSTRICT\b(?=(?:\s*--[^\n]*)*\s*;?\s*$)/i',
 		);
 		$replace = array(
-			'ENGINE=InnoDB',
+			'ENGINE=$1',
 			'ENGINE=MyISAM',
-			'ENGINE=MyISAM',
 			'',
 			'',
 			'',
@@ -1979,8 +1999,105 @@ abstract class Ai1wm_Database {
 			'',
 			'',
 			'',
-			'AUTO_INCREMENT',
+			'',
+			'',
 		);
+
+		return preg_replace( $search, $replace, $input );
+	}
+
+	/**
+	 * Replace column default values
+	 *
+	 * MySQL < 8.0.13 rejects DEFAULT values on TEXT and BLOB columns (error 1101).
+	 *
+	 * @param  string $input SQL statement
+	 * @return string
+	 */
+	protected function replace_column_defaults( $input ) {
+		$pattern = array(
+			"/(\s+(?:TINYTEXT|TEXT|MEDIUMTEXT|LONGTEXT)[^,]*?)\s+DEFAULT\s+(?:'[^']*'|\S+)/i",
+			"/(\s+(?:TINYBLOB|BLOB|MEDIUMBLOB|LONGBLOB)[^,]*?)\s+DEFAULT\s+(?:'[^']*'|\S+)/i",
+		);
+
+		return (string) preg_replace( $pattern, '$1', $input );
+	}
+
+	/**
+	 * Replace table constraints
+	 *
+	 * @param  string $input SQL statement
+	 * @return string
+	 */
+	protected function replace_table_constraints( $input ) {
+		$pattern = array(
+			'/\s+CONSTRAINT(.+)REFERENCES(.+),/i',
+			'/,\s+CONSTRAINT(.+)REFERENCES(.+)/i',
+		);
+
+		return preg_replace( $pattern, '', $input );
+	}
+
+	/**
+	 * Replace table collations
+	 *
+	 * @param  string $input SQL statement
+	 * @return string
+	 */
+	protected function replace_table_collations( $input ) {
+		static $search  = null;
+		static $replace = null;
+
+		// Cache table collations on first call
+		if ( is_null( $search ) || is_null( $replace ) ) {
+			$search  = array();
+			$replace = array();
+
+			// Downgrade MySQL 8.0+ collations and charsets
+			if ( ! version_compare( $this->server_version(), '8.0', '>=' ) ) {
+				$search[]  = 'utf8mb4_0900_ai_ci';
+				$replace[] = 'utf8mb4_unicode_520_ci';
+
+				$search[]  = 'utf8mb4_0900_as_ci';
+				$replace[] = 'utf8mb4_unicode_520_ci';
+
+				$search[]  = 'utf8mb4_0900_as_cs';
+				$replace[] = 'utf8mb4_unicode_520_ci';
+
+				$search[]  = 'utf8mb3_unicode_ci';
+				$replace[] = 'utf8_unicode_ci';
+
+				$search[]  = 'utf8mb3_general_ci';
+				$replace[] = 'utf8_general_ci';
+
+				$search[]  = 'utf8mb3_bin';
+				$replace[] = 'utf8_bin';
+
+				$search[]  = 'utf8mb3';
+				$replace[] = 'utf8';
+			}
+
+			// Downgrade MySQL 5.6+ collations
+			if ( ! $this->wpdb->has_cap( 'utf8mb4_520' ) ) {
+				$search[]  = 'utf8mb4_unicode_520_ci';
+				$replace[] = 'utf8mb4_unicode_ci';
+			}
+
+			// Downgrade MySQL 5.5.3+ charsets
+			if ( ! $this->wpdb->has_cap( 'utf8mb4' ) ) {
+				$search[]  = 'utf8mb4_unicode_ci';
+				$replace[] = 'utf8_unicode_ci';
+
+				$search[]  = 'utf8mb4_general_ci';
+				$replace[] = 'utf8_general_ci';
+
+				$search[]  = 'utf8mb4_bin';
+				$replace[] = 'utf8_bin';
+
+				$search[]  = 'utf8mb4';
+				$replace[] = 'utf8';
+			}
+		}
 
 		return str_ireplace( $search, $replace, $input );
 	}
@@ -1995,8 +2112,18 @@ abstract class Ai1wm_Database {
 		$search  = array(
 			'ENGINE=MyISAM',
 			'ENGINE=Aria',
+			'ENGINE=S3',
+			'ENGINE=ColumnStore',
+			'ENGINE=Spider',
+			'ENGINE=CONNECT',
+			'ENGINE=Mroonga',
 		);
 		$replace = array(
+			'ENGINE=InnoDB',
+			'ENGINE=InnoDB',
+			'ENGINE=InnoDB',
+			'ENGINE=InnoDB',
+			'ENGINE=InnoDB',
 			'ENGINE=InnoDB',
 			'ENGINE=InnoDB',
 		);
@@ -2022,6 +2149,7 @@ abstract class Ai1wm_Database {
 
 		return str_ireplace( $search, $replace, $input );
 	}
+
 	/**
 	 * Replace table full-text indexes (MySQL <= 5.5)
 	 *
@@ -2089,6 +2217,11 @@ abstract class Ai1wm_Database {
 			case stripos( $column_type, 'mediumblob' ) === 0:
 			case stripos( $column_type, 'longblob' ) === 0:
 			case stripos( $column_type, 'blob' ) === 0:
+				// A bare "0x" is not valid SQL, so an empty binary value must be dumped as an empty string literal
+				if ( $input === '' ) {
+					return "''";
+				}
+
 				return '0x' . bin2hex( $input );
 
 			default:
@@ -2099,11 +2232,19 @@ abstract class Ai1wm_Database {
 	/**
 	 * Use MySQL transactions
 	 *
-	 * @return bolean
+	 * @return boolean
 	 */
 	protected function use_transactions() {
 		return true;
 	}
+
+	/**
+	 * Check whether table has auto increment attribute
+	 *
+	 * @param  string  $table_name Table name
+	 * @return boolean
+	 */
+	abstract public function has_auto_increment( $table_name );
 
 	/**
 	 * Run MySQL query

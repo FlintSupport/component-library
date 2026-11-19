@@ -1,10 +1,10 @@
 === Max Mega Menu ===
 Contributors: megamenu
 Tags: menu, responsive menu, mega menu, navigation, mobile menu
-Requires at least: 5.0
-Tested up to: 6.7
-Stable tag: 3.3.2
-Requires PHP: 5.6
+Requires at least: 6.2
+Tested up to: 7.1
+Stable tag: 3.10.9
+Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,81 +12,81 @@ An easy to use mega menu plugin. Written the WordPress way.
 
 == Description ==
 
-Max Mega Menu will automatically convert your existing menu into a mega menu. You can then add any WordPress widget to your menu, restyle your menu using the theme editor and change the menu behaviour using the built in settings. Max Mega Menu is a complete menu management plugin, perfect for taking control of your existing menu and turning it into a user-friendly, accessible and touch ready menu with just a few clicks.
+Max Mega Menu is a complete menu management plugin for WordPress, built for the block editor, page builders and classic themes.
 
-https://www.youtube.com/watch?v=44dJwP1AXT8
+Create new menus from scratch or enhance your existing ones. With Max Mega Menu you can add WordPress widgets, blocks or custom HTML to your sub menus, style everything with the built in theme editor, and fine tune behaviour with powerful settings.
+
+Place menus via a block, page builder element (Bricks, Breakdance, Divi & Elementor), shortcode, widget or `wp_nav_menu`. The result is a light weight, user friendly, accessible and touch ready mega menu with just a few clicks.
 
 Documentation & Demo: [https://www.megamenu.com](https://www.megamenu.com)
 
 ###Mobile
 
-* Automatic support for native touch events
-* Off Canvas Mobile Menu option built in
-* Specify your own Responsive Breakpoint
-* For items with sub menus, choose between "First click opens sub menu, second click closes sub menu" or "First click opens sub menu, second click follows link"
-* Option to hide sub menus on mobile
-* Mobile Toggle Bar designer allows you to tailor the toggle bar elements to fit in with your site design
+* Native touch event support
+* Built-in off-canvas mobile menu option
+* Set your own responsive breakpoint
+* For items with sub-menus, control what happens on first and second tap - open/close or open/follow link
+* Option to hide sub-menus on mobile
+* Customisable mobile toggle bar - adjust elements to match your site design
 
 ###Features
 
-* Builds upon the standard WordPress menus system
-* Restores the *Appearance > Menus* screen in "full site editing" themes
-* Supports multiple menu locations each with their own configuration
-* Off canvas (slide in from left or right) or standard drop down mobile menu
-* Organise your sub menu content into rows and columns using the Grid Layout builder
-* Display WordPress Widgets in your menu
-* Fully customise the styling of your menus using the built in theme editor
-* Supports Flyout (traditional) or Mega Menu sub menu styles
-* Hover, Hover Intent or Click event to open sub menus
-* Fade, Fade Up, Slide Up or Slide sub menu transitions
+* Extends the native WordPress menu system
+* Restores the Appearance > Menus screen in full site editing themes
+* Supports multiple menu locations, each with its own configuration
+* Fully customise menu styling with the built in theme editor
+* Google Font support via integration with the WordPress 7.0 Font Library
+* Organise sub-menu content into rows and columns with the grid layout builder
+* Display any WordPress widget or Block Pattern in your menu
+* Traditional Flyout or Mega Menu sub-menu styles
+* Hover, hover intent, or click to open sub-menus
+* Sub-menu transitions: fade, fade up, slide up, or slide
 * Add icons to menu items
-* Menu item options including Hide Text, Disable Link, Hide on Mobile etc
-* Align menu items to the left or right of the menu bar
-* Align sub menus to left or right of parent menu item
-* Display your menu using Automatic Integration, Block, Widget or Shortcode.
+* Per item options: hide text, disable link, hide on mobile and more
+* Align items to the left or right of the menu bar
+* Align sub-menus to the left or right of their parent item
+* Off-canvas (slide in from left or right) or standard dropdown mobile menu
+* Place your menu via block, widget, shortcode, or automatic integration
+* Native modules for Bricks, Breakdance, Divi & Elementor
 
 ###Accessibility
 
 * Keyboard Navigation built in
-* `TAB` activates keyboard navigation and navigates through the menu
+* `TAB` activates keyboard navigation and navigates through the menu on both desktop and mobile
 * `ENTER` or `SPACE` on a sub menu arrow indicator shows/hides the sub menu
 * `ESC` closes all open sub menus
 
 Max Mega Menu is developed with a focus on code quality, performance and usability.
 
-* The only mega menu plugin with zero "!important", block or inline CSS styles
-* Menus are styled using a single, static CSS file
-* Less than 2kb JavaScript (when gzipped)
-* Responsive, touch & retina ready
-* Built with accessibility in mind - keyboard navigation supported
-* Extensively tested in all modern desktop and mobile browsers
-* Clean code with a low memory footprint
-* Supports all core nav_menu filters (prepend filter name with "mega_")
-* In depth documentation
-* Basic Support included with free version
+* No `!important`, inline or block CSS - menu locations are styled via a single static CSS file
+* Less than 2kb of JavaScript (gzipped)
+* Responsive, touch and retina ready
+* Keyboard navigation supported
+* Tested across all modern desktop and mobile browsers
+* Low memory footprint
+* Supports all core `nav_menu_*` filters (prefix with `mega_`)
+* In-depth documentation included
+* Basic support included with the free version
 
 ####Pro Features:
 
+> * Sliding Panels Mobile Menu
 > * Tabbed Mega Menus
 > * Sticky Menu
 > * Vertical & Accordion Menus
-> * FontAwesome, Genericon & Custom Icons
+> * Font Awesome & Custom Icons
 > * Custom Item Styling
 > * Menu Logo
 > * Search Box
 > * WooCommerce & EDD support
-> * Google Fonts
 > * Roles & Restrictions
-> * Mobile toggle blocks
+> * Extended mobile toggle blocks
 > * Automatic updates
 > * Priority Support
 >
 > Find out more: [https://www.megamenu.com/upgrade/](https://www.megamenu.com/upgrade/)
 
 == Frequently Asked Questions ==
-
-= Is it compatible with Elementor? =
-Yes! See: [https://www.megamenu.com/documentation/elementor/](https://www.megamenu.com/documentation/elementor/)
 
 = Where do I start? =
 [https://www.megamenu.com/documentation/installation/](https://www.megamenu.com/documentation/installation/)
@@ -131,6 +131,184 @@ See https://www.megamenu.com for more screenshots
 5. Back end: Use the theme editor to change the appearance of your menus
 
 == Changelog ==
+
+= 3.10.10 =
+
+* Fix: Menu item settings - HTML typed into a code editor (e.g. Max Mega Menu Pro's HTML replacement) was not saved by the footer Save button, which also stayed disabled while typing
+* Fix: Saving a tab in the menu item settings no longer strips backslashes from the item's other saved settings (e.g. an HTML replacement)
+
+= 3.10.9 =
+
+* Improvement: Updated plugin icon in the admin menu and on the settings pages
+* Improvement: WordPress 7.2 - use an outlined admin menu icon, and icons from the WordPress icon library throughout the plugin's admin screens, to match the new WordPress admin icons
+* Improvement: Menu item settings - a single Save button in a footer bar at the bottom of the dialog saves every tab, showing "Saving…" and then "Saved"
+* Improvement: Menu location block - support wide and full width alignment
+* Fix: Items within a mega menu with "Disable Link" enabled no longer show hover styling or a pointer cursor, as clicking them does nothing. Disabled items that open a tab or collapse their children keep the hover styling and pointer cursor
+* Fix: Mega menu grid - an item dragged into another column was placed below that column's "+" (add widget) button
+* Fix: Menu item icon position "Top" and "Right" had no effect when the "Use Flex CSS" theme option was enabled
+* Fix: Flex CSS - right aligned menu items lost their alignment when the first right aligned item was set to "Hide item on desktop"
+* Fix: Sticky menu - when "Panel Width (Outer)" was set to a selector (e.g. ".container") and the sticky "Expand Background" option was enabled, mega menu panels lined up with the left edge of the browser window once the menu became stuck, instead of with the selected element
+
+= 3.10.8 =
+
+* Improvement: Serve minified frontend JS (maxmegamenu.min.js) for a smaller page-load footprint
+* Fix: Reactivate save buttons when toggle bar blocks are dragged/reordered
+* Fix: HTML mobile toggle block was stripping all HTML tags on save
+* Fix: Guard nav_menu_locations cache invalidation to genuine save contexts
+
+= 3.10.7 =
+
+* Fix: Material Symbols icon picker: load font-face styles in wp-admin
+* Fix: WPML compatibility - menu item depth detection could fail on PHP 8 when a synced translation's parent ID was missing, breaking Mega Menu grid layouts for affected items
+* Fix: Menu item modal - lower z-index so third-party builders opened from within it (e.g. SiteOrigin Page Builder's "Layout Builder" widget) render above it instead of hidden underneath
+* Fix: Theme editor - saving could submit stale/empty content for CodeMirror-backed fields (e.g. Pro's toggle bar HTML block) if saved before the field's own change handler had run
+
+= 3.10.6 =
+
+* Improvement: Divi integration - set `overflow: visible;` on header row when Max Mega Menu is present within
+* Improvement: Divi integration - remove unnecessary file include
+* Improvement: Add filters to allow Pro users to choose Font Awesome icons in icon pickers
+* Improvement: Add debug option to show full menu scss
+* Fix: Gentle refactor of maxmegamenu.js, fix tab key navigation for sliding panels mobile menu
+
+= 3.10.5 =
+
+* Fix: Fatal error with Divi 5 in some shared environments
+* Fix: Close icon not appearing on mobile menu
+* New: Breakdance native module - add a Max Mega Menu Location module to your page layout via the Breakdance Builder
+
+= 3.10.4 =
+
+* Fix: Standard Menu Toggle not working when text is hidden and menu CSS has not been updated/regenerated since v3.5 (clearing the menu CSS Cache will also fix this issue)
+* Improvement: Re-enable location Save button when switching from Preview to Settings
+* Improvement: Color picker - If the alpha is at 0%, picking a new color automatically resets the alpha to 100%
+* Improvement: Icon picker - clicking a selected icon will deselect it
+
+= 3.10.3 =
+
+* Fix: Restore 3.9.2.1 prefix logic: fall back to global setting before per-location
+
+= 3.10.2 =
+
+* Fix: Restore 3.9.2.1 descriptions logic: fall back to global setting before per-location
+
+= 3.10.1 =
+
+* Fix: Fix fatal error in preview when location is not registered, Remove stale static cache from Mega_Menu_Location::get_all()
+* Fix: Descriptions defaulting to disabled after update from 3.9.2.1, if location settings has not previously been saved
+
+= 3.10 =
+
+* New: Divi 5 native module - add a Max Mega Menu Location module to your page layout via the Divi Theme Builder
+* New: Bricks Builder native element - add a Max Mega Menu Location element to your header template via the Bricks Template editor
+* New: Material Symbols icon support - install the Material Symbols font via the WordPress Font Library (WordPress 7+) to use it as an icon source for menu items, sub menu arrow indicators, close buttons, and mobile toggle buttons
+* New: SVG icons - choose from a built-in set of SVG chevrons, carets, arrows, hamburgers, and close icons for sub menu arrow indicators, close buttons, and mobile toggle buttons (no icon font required)
+* New (Admin): Location settings dialog - switch between Settings and Preview within the same window using the new mode toggle
+* New (Admin): "Scroll down" indicator button in the location settings dialog for browsers with hidden scrollbars
+* New (Admin): "Bricks" and "Divi" display option rows added to the Location Settings dialog when the respective builder is active
+* New (Admin): "Clean Up Menu Item Classes" option in the Advanced tab of the Location Settings dialog - removes WordPress default type, object, ID, and legacy page classes from menu items
+* New (Theme Editor): "Menu Font Family" setting - apply any font installed via the WordPress Font Library (WordPress 7+) to the entire menu, bringing Google Fonts support into the base plugin without requiring Pro
+* Fix (Block Editor): Update `maxmegamenu/location` block to API version 3, removing the "Block with API version 2 or lower is deprecated" warning in WordPress 6.9+
+* Fix (Block Editor): Enqueue menu stylesheet via `enqueue_block_assets` so it loads correctly inside the Gutenberg iframe editor, removing the "megamenu-css was added to the iframe incorrectly" warning and associated console errors in WordPress 6.9+
+* Improvement (Admin): CSS compatibility fixes for the Desktop Mode plugin
+* Improvement (CSS): Experimental Flex CSS layout mode updated and optimised - now outputs under 600 lines of CSS per menu location. The main change is replacing the large CSS reset block with `all: revert`. Note: if you use this option, any custom CSS targeting menu elements must use a selector with equal or greater specificity to the plugin's own selectors, otherwise `all: revert` will override it
+* Improvement (CSS): SVG arrow icons rendered via CSS `mask-image` data URI - no icon font required for arrow indicators when an SVG icon set is selected
+* Improvement (Polylang): Location cards now show the assigned menu for each language inline (e.g. [en] Main Menu · [fr] Mon Menu · [de] Not assigned)
+* Improvement (Polylang): Appearance > Menus meta box no longer shows duplicate location cards for Polylang language fork slugs - one card per theme location
+* Improvement (Polylang): Default language name suffix removed from location card labels
+* Improvement (Polylang): Location Preview renders the menu in the correct Polylang language
+* Improvement (WPML): Location cards now show the assigned menu for each language inline (e.g. [en] Main Menu · [fr] Mon Menu)
+* Improvement (CSS): megamenu.scss now uses flex styling for span.mega-indicator, to allow correct centering of SVG icons
+
+= 3.9.2.1 =
+
+* Fix: Editing widgets in Mega Menu - Standard Layout
+
+= 3.9.2 =
+
+* Reorganise the Menu Location settings tabs (split into Desktop / Mobile settings)
+* Remove the Location Description setting from the Menu Locations dialog, instead make the title directly editable on the Mega Menu > Menu Locations page
+* Fix: Ensure menu location checkbox settings can be disabled
+
+= 3.9.1 =
+
+* Fixed regression making it impossible to add Pro toggle blocks to toggle bar designer
+
+= 3.9 =
+
+This release aims to modernise and simplify all areas of the admin interface.
+
+* Admin related code refactored and hardened
+* Menu Locations are now shown as 'cards' and their appearance is now standardised across the plugin
+* Rename the "Sandbox" functionality to "Preview", expand its functionality and make it more prominent
+* Remove legacy code and scripts, fix all jQuery migrate issues
+
+= 3.8.1 =
+
+* Accessibility fix: Ensure IDs are applied to all necessary sub menus
+* Accessibility fix: Remove unnecessary instances of tabindex attribute
+
+= 3.8 =
+
+* Fix: PHP warning
+* Accessibility Improvement: Add aria-controls attribute to menu items with sub menus
+* Accessibility Improvement: Ensure any open sub menus are closed when the next top level menu item is tabbed to
+* Accessibility Improvement: Add aria-controls and aria-haspopup attributes to mobile toggle block
+* Accessibility Improvement: Apply focus to first item in mobile sub menu when opened
+* Accessibility Improvement: Trap focus within off canvas mobile menu when using keyboard navigation
+* Accessibility Improvement: Allow escape key to be used on the mobile close button to close menu
+* Accessibility Improvement: Restore focus to menu toggle block when closing mobile menu
+* Accessibility Improvement: Add aria-controls attribute to mobile menu close button
+* Accessibility Improvement: Add role, aria-modal and aria-hidden attributes to off canvas mobile menu
+* Improvement: Refactor Mobile Toggle (Standard) CSS to use flex styling
+
+= 3.7 =
+
+* Fix: CSS compilation error on WordPress.com accounts / JetPack conflict
+* Improve browser compatibility for flex right aligned items
+* Show warnings in console when non-existent elements have been used for dynamic widths
+* Update packages and rebuild Max Mega Menu block, set apiVersion to 3
+* Use background-color instead of background in CSS
+* Use calc to set column widths in sub menus
+
+= 3.6.2 =
+
+* Accessibility Fix: Windows Narrator ignores "Enter" keypress, preventing tab navigation working reliably
+* Fix: CSS generation fails when outdated versions of MMM Pro are installed (<= 2.3.1)
+* Fix: PHP notice
+* Change: Add css_type SCSS variable
+* Fix: Colorpicker z-index
+
+= 3.6.1 =
+
+* Fix: PHP Error when percentage sign used in HTML block in menu toggle bar
+
+= 3.6 =
+
+* New: Experimental 'Use Flex CSS' option added to theme editor for new installations of MMM (will become available to existing installations in future versions)
+* New: Color picker in theme editor updated to allow CSS variables to be entered
+* New: Allow 'wv' units to be used to define sub menu width (e.g. 100vw will make the sub menu full browser width)
+* Update: Reusable block widget renamed to Pattern widget (use this to show saved Block Patterns within your sub menus)
+* Fix: Double blue 'Mega Menu' button in Enfold theme
+* Fix: Mobile close button sometimes disappears (use options rather than transients to store CSS version and generation date)
+* Fix: Sub menu items in mega menus don't appear on mobile when flex styling is used
+* Fix: Do not apply collapse children class to tabbed menu items
+* Improvement: Use more reliable/cleaner method to add toggle bar html to menu output
+* Accessibility: Change standard menu toggle span to button, for NVDA screen readers
+
+= 3.5 =
+
+* New: Dedicated Elementor Widget
+* Accessibility Improvement: Add presentation role to grid layout containers to prevent NVDA from announcing them
+* Accessibility Improvement: Add aria-hidden attribute to arrow indicators
+* Accessibility Fix: Pressing Enter on standard mobile toggle button now opens/closes mobile sub menu
+* Improvement: Use style attributes on grid layout to define number of rows and columns, in preparation for using CSS Grid styling
+* Improvement: Refactor mobile CSS, remove usage of :has
+* Improvement: Refactor second and third level item styling so that it can be used within tab sub menus without being duplicated
+* Improvement: Refactor method for adding close button HTML to menu output
+* Improvement: Refactor JS: remove usage of data-has-click-event attribute
+* Fix: Fix styling of mobile menu as it transitions from open to closed
+* Fix: Error loading scss in some instances
 
 = 3.4.1 =
 

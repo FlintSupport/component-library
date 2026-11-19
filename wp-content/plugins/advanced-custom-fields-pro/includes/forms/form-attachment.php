@@ -1,13 +1,12 @@
 <?php
-
 /**
- * ACF Attachment Form Class
+ * @package ACF
+ * @author  WP Engine
  *
- * All the logic for adding fields to attachments
- *
- * @class       acf_form_attachment
- * @package     ACF
- * @subpackage  Forms
+ * © 2026 Advanced Custom Fields (ACF®). All rights reserved.
+ * "ACF" is a trademark of WP Engine.
+ * Licensed under the GNU General Public License v2 or later.
+ * https://www.gnu.org/licenses/gpl-2.0.html
  */
 
 if ( ! class_exists( 'acf_form_attachment' ) ) :
@@ -191,6 +190,9 @@ acf.unload.active = 0;
 			if ( ! acf_verify_nonce( 'attachment' ) ) {
 				return $post;
 			}
+
+			// Only accept fields rendered for this attachment, or from field groups located on it.
+			acf_restrict_save_input( _acf_get_attachment_save_args( $post['ID'] ) );
 
 			// bypass validation for ajax
 			if ( acf_is_ajax( 'save-attachment-compat' ) ) {

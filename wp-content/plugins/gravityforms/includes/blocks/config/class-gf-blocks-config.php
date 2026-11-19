@@ -91,6 +91,7 @@ class GF_Blocks_Config extends GF_Config {
 						'preview'        => GFCommon::get_base_url() . '/images/gf_block_preview.svg',
 						'orbitalDefault' => $orbital_default,
 						'block_docs_url' => 'https://docs.gravityforms.com/gravity-forms-gutenberg-block/',
+						'is_registered'  => \WP_Block_Type_Registry::get_instance()->is_registered( 'gravityforms/form' ),
 						'styles'     	 => array(
 							'defaults' => \GFForms::get_service_container()->get( \Gravity_Forms\Gravity_Forms\Form_Display\GF_Form_Display_Service_Provider::BLOCK_STYLES_DEFAULTS ),
 						),
@@ -136,6 +137,7 @@ class GF_Blocks_Config extends GF_Config {
 						'learn_more_orbital'                        => esc_html__( 'Learn more about configuring your form to use Orbital.', 'gravityforms' ),
 						'label_styles'                              => esc_html__( 'Label Styles', 'gravityforms' ),
 						'large'                                     => esc_html__( 'Large', 'gravityforms' ),
+						'large_mobile_friendly'                     => esc_html__( 'Large (mobile friendly)', 'gravityforms' ),
 						'medium'                                    => esc_html__( 'Medium', 'gravityforms' ),
 						'no_card'                                   => esc_html__( 'No Card', 'gravityforms' ),
 						'ok'                                        => esc_html__( 'OK', 'gravityforms' ),
@@ -164,6 +166,7 @@ class GF_Blocks_Config extends GF_Config {
 						'this_will_restore_defaults'                => esc_html__( 'This will restore your form styles back to their default values and cannot be undone. Are you sure you want to continue?', 'gravityforms' ),
 						'you_must_have_one_form'                    => esc_html__( 'You must have at least one form to use the block.', 'gravityforms' ),
 						'your_browser_no_permission_to_paste'       => __( 'Your browser does not have permission to paste from the clipboard. <p>Please navigate to <strong>about:config</strong> and change the preference <strong>dom.events.asyncClipboard.readText</strong> to <strong>true</strong>.', 'gravityforms' ),
+						'external_link_opens_in_new_tab'            => esc_html__( '(opens in a new tab)', 'gravityforms' ),
 					),
 				),
 

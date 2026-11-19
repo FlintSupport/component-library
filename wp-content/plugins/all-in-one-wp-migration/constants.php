@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2014-2023 ServMask Inc.
+ * Copyright (C) 2014-2025 ServMask Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,6 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Attribution: This code is part of the All-in-One WP Migration plugin, developed by
  *
  * ███████╗███████╗██████╗ ██╗   ██╗███╗   ███╗ █████╗ ███████╗██╗  ██╗
  * ██╔════╝██╔════╝██╔══██╗██║   ██║████╗ ████║██╔══██╗██╔════╝██║ ██╔╝
@@ -35,7 +37,7 @@ define( 'AI1WM_DEBUG', false );
 // ==================
 // = Plugin Version =
 // ==================
-define( 'AI1WM_VERSION', '7.87' );
+define( 'AI1WM_VERSION', '7.113' );
 
 // ===============
 // = Plugin Name =
@@ -71,16 +73,6 @@ define( 'AI1WM_CONTROLLER_PATH', AI1WM_LIB_PATH . DIRECTORY_SEPARATOR . 'control
 // = Model Path =
 // ==============
 define( 'AI1WM_MODEL_PATH', AI1WM_LIB_PATH . DIRECTORY_SEPARATOR . 'model' );
-
-// ===============
-// = Export Path =
-// ===============
-define( 'AI1WM_EXPORT_PATH', AI1WM_MODEL_PATH . DIRECTORY_SEPARATOR . 'export' );
-
-// ===============
-// = Import Path =
-// ===============
-define( 'AI1WM_IMPORT_PATH', AI1WM_MODEL_PATH . DIRECTORY_SEPARATOR . 'import' );
 
 // =============
 // = View Path =
@@ -217,10 +209,40 @@ define( 'AI1WM_LESS_CACHE_EXTENSION', '.less.cache' );
 // =============================
 define( 'AI1WM_SQLITE_DATABASE_EXTENSION', '.sqlite' );
 
+// =============================
+// = SQLite Database Path Name =
+// =============================
+define( 'AI1WM_SQLITE_DATABASE_PATH_NAME', 'database' . DIRECTORY_SEPARATOR . 'db-path.php' );
+
 // ============================
 // = Elementor CSS Cache Name =
 // ============================
 define( 'AI1WM_ELEMENTOR_CSS_NAME', 'uploads' . DIRECTORY_SEPARATOR . 'elementor' . DIRECTORY_SEPARATOR . 'css' );
+
+// =========================
+// = CiviCRM Settings Name =
+// =========================
+define( 'AI1WM_CIVICRM_SETTINGS_NAME', 'uploads' . DIRECTORY_SEPARATOR . 'civicrm' . DIRECTORY_SEPARATOR . 'civicrm.settings.php' );
+
+// ============================
+// = CiviCRM Templates C Name =
+// ============================
+define( 'AI1WM_CIVICRM_TEMPLATES_C_NAME', 'uploads' . DIRECTORY_SEPARATOR . 'civicrm' . DIRECTORY_SEPARATOR . 'templates_c' );
+
+// ===============================
+// = CiviCRM Config And Log Name =
+// ===============================
+define( 'AI1WM_CIVICRM_CONFIG_AND_LOG_NAME', 'uploads' . DIRECTORY_SEPARATOR . 'civicrm' . DIRECTORY_SEPARATOR . 'ConfigAndLog' );
+
+// =======================
+// = CiviCRM Upload Name =
+// =======================
+define( 'AI1WM_CIVICRM_UPLOAD_NAME', 'uploads' . DIRECTORY_SEPARATOR . 'civicrm' . DIRECTORY_SEPARATOR . 'upload' );
+
+// ========================
+// = CiviCRM Dynamic Name =
+// ========================
+define( 'AI1WM_CIVICRM_DYNAMIC_NAME', 'uploads' . DIRECTORY_SEPARATOR . 'civicrm' . DIRECTORY_SEPARATOR . 'dynamic' );
 
 // =========================
 // = Themes Functions Name =
@@ -291,6 +313,11 @@ define( 'AI1WM_WP_ENGINE_SECURITY_AUDITOR_NAME', 'wpengine-security-auditor.php'
 // = WP Cerber Security Name =
 // ===========================
 define( 'AI1WM_WP_CERBER_SECURITY_NAME', 'aaa-wp-cerber.php' );
+
+// =============================
+// = EOS Deactivate Plugins Name
+// =============================
+define( 'AI1WM_EOS_DEACTIVATE_PLUGINS_NAME', 'eos-deactivate-plugins.php' );
 
 // ===============================
 // = W3TC config file to exclude =
@@ -503,7 +530,7 @@ if ( ! defined( 'AI1WM_DEFAULT_BACKUPS_PATH' ) ) {
 // ================
 // = Backups Path =
 // ================
-define( 'AI1WM_BACKUPS_PATH', get_option( AI1WM_BACKUPS_PATH_OPTION, AI1WM_DEFAULT_BACKUPS_PATH ) );
+define( 'AI1WM_BACKUPS_PATH', ai1wm_resolve_backups_path() );
 
 // ==========================
 // = Storage index.php File =
@@ -514,6 +541,16 @@ define( 'AI1WM_STORAGE_INDEX_PHP', AI1WM_STORAGE_PATH . DIRECTORY_SEPARATOR . 'i
 // = Storage index.html File =
 // ===========================
 define( 'AI1WM_STORAGE_INDEX_HTML', AI1WM_STORAGE_PATH . DIRECTORY_SEPARATOR . 'index.html' );
+
+// ==========================
+// = Storage .htaccess File =
+// ==========================
+define( 'AI1WM_STORAGE_HTACCESS', AI1WM_STORAGE_PATH . DIRECTORY_SEPARATOR . '.htaccess' );
+
+// ===========================
+// = Storage web.config File =
+// ===========================
+define( 'AI1WM_STORAGE_WEBCONFIG', AI1WM_STORAGE_PATH . DIRECTORY_SEPARATOR . 'web.config' );
 
 // ==========================
 // = Backups index.php File =
@@ -1273,21 +1310,21 @@ if ( defined( 'AI1WMKE_PLUGIN_BASENAME' ) ) {
 // = Pro Plugin Title =
 // ====================
 if ( ! defined( 'AI1WMKE_PLUGIN_TITLE' ) ) {
-	define( 'AI1WMKE_PLUGIN_TITLE', 'Pro Plugin' );
+	define( 'AI1WMKE_PLUGIN_TITLE', 'All-in-One WP Migration Pro' );
 }
 
 // ====================
 // = Pro Plugin About =
 // ====================
 if ( ! defined( 'AI1WMKE_PLUGIN_ABOUT' ) ) {
-	define( 'AI1WMKE_PLUGIN_ABOUT', 'https://plugin-updates.wp-migration.com/pro-plugin.json' );
+	define( 'AI1WMKE_PLUGIN_ABOUT', 'https://plugin-updates.wp-migration.com/all-in-one-wp-migration-pro.json' );
 }
 
 // ====================
 // = Pro Plugin Check =
 // ====================
 if ( ! defined( 'AI1WMKE_PLUGIN_CHECK' ) ) {
-	define( 'AI1WMKE_PLUGIN_CHECK', 'https://redirect.wp-migration.com/v1/check/pro-plugin' );
+	define( 'AI1WMKE_PLUGIN_CHECK', 'https://redirect.wp-migration.com/v1/check/all-in-one-wp-migration-pro' );
 }
 
 // ==================

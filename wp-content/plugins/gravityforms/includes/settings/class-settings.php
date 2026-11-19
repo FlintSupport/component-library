@@ -340,7 +340,7 @@ class Settings {
 	 */
 	public function scripts() {
 
-		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
+		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		// Define base scripts.
 		$scripts = array(
@@ -447,8 +447,8 @@ class Settings {
 					return true;
 				}
 			} else {
-				$query_matches      = isset( $condition['query'] ) ? $this->script_request_condition_matches( $_GET, $condition['query'] ) : true;
-				$post_matches       = isset( $condition['post'] ) ? $this->script_request_condition_matches( $_POST, $condition['post'] ) : true;
+				$query_matches      = isset( $condition['query'] ) ? $this->script_request_condition_matches( $_GET, $condition['query'] ) : true; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$post_matches       = isset( $condition['post'] ) ? $this->script_request_condition_matches( $_POST, $condition['post'] ) : true;  // phpcs:ignore WordPress.Security.NonceVerification.Missing
 				$field_type_matches = isset( $condition['field_types'] ) ? $this->script_field_condition_matches( $condition['field_types'], $form ) : true;
 
 				if ( $query_matches && $post_matches && $field_type_matches ) {
@@ -600,7 +600,7 @@ class Settings {
 			printf(
 				'<div class="alert %s" role="alert">%s</div>',
 				empty( $field_errors ) ? 'gforms_note_success' : 'gforms_note_error',
-				$this->postback_message
+				$this->postback_message // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			);
 
 		}
@@ -618,7 +618,7 @@ class Settings {
 			<?php
 
 				if ( ! empty( $this->before_fields ) && is_callable( $this->before_fields ) ) {
-					echo call_user_func( $this->before_fields );
+					echo call_user_func( $this->before_fields ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				}
 
 				// If settings are tabbed, render tab navigation and tab content.
@@ -642,11 +642,11 @@ class Settings {
 				// Get save button.
 				$save = $this->render_save_button();
 				if ( ! empty( $save ) ) {
-					printf( '<div class="gform-settings-save-container">%s</div>', $save );
+					printf( '<div class="gform-settings-save-container">%s</div>', $save ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				}
 
 				if ( ! empty( $this->after_fields ) && is_callable( $this->after_fields ) ) {
-					echo call_user_func( $this->after_fields );
+					echo call_user_func( $this->after_fields ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				}
 
 				wp_nonce_field( 'gform_settings_save', 'gform_settings_save_nonce' );
@@ -801,7 +801,7 @@ class Settings {
 		printf(
 			'<fieldset id="%s" class="%s"%s>',
 			esc_attr( $this->get_section_id( $section ) ),
-			implode(' ', $class ),
+			esc_attr( implode(' ', $class ) ),
 			rgar( $section, 'style' ) ? sprintf( ' style="%s"', esc_attr( $section['style'] ) ) : ''
 		);
 
@@ -813,7 +813,7 @@ class Settings {
 				printf(
 					'<legend class="gform-settings-panel__title gform-settings-panel__title--header">%s %s</legend>',
 					esc_html( $section['title'] ),
-					self::maybe_get_tooltip( $section )
+					self::maybe_get_tooltip( $section ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				);
 			}
 
@@ -840,7 +840,7 @@ class Settings {
 
 		// Display section description.
 		if ( rgar( $section, 'description' ) ) {
-			printf( '<div class="gform-settings-description gform-kitchen-sink">%s</div>', $section['description'] );
+			printf( '<div class="gform-settings-description gform-kitchen-sink">%s</div>', $section['description'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		/**
@@ -888,8 +888,8 @@ class Settings {
 		printf(
 			'<div id="gform_setting_%s" class="gform-settings-field gform-settings-field__%s" %s>',
 			esc_attr( $field_name ),
-			$field->type,
-			$hidden
+			esc_attr( $field->type ),
+			$hidden // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		);
 
 		// Display field label.
@@ -897,15 +897,15 @@ class Settings {
 			printf(
 				'<div class="gform-settings-field__header"><label class="gform-settings-label" for="%s">%s%s</label>%s</div>',
 				esc_attr( $field->name ),
-				rgobj( $field, 'label' ),
-				$field->required ? '<span class="required">(' . __( 'Required', 'gravityforms' ) . ')</span>' : '',
-				self::maybe_get_tooltip( $field )
+				rgobj( $field, 'label' ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				$field->required ? '<span class="required">(' . esc_html__( 'Required', 'gravityforms' ) . ')</span>' : '',
+				self::maybe_get_tooltip( $field ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			);
 		}
 
 
 		// Display field input.
-		echo $field->prepare_markup();
+		echo $field->prepare_markup(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		echo '</div>';
 
@@ -924,7 +924,7 @@ class Settings {
 	 */
 	private static function is_section_collapsed( $props = array() ) {
 
-		return empty( $_POST ) ? rgar( $props, 'is_collapsed' ) : (bool) rgpost( 'gform_settings_section_collapsed_' . $props['id'] );
+		return empty( $_POST ) ? rgar( $props, 'is_collapsed' ) : (bool) rgpost( 'gform_settings_section_collapsed_' . $props['id'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 	}
 
@@ -1061,8 +1061,9 @@ class Settings {
 			foreach ( $dependency['fields'] as $f => $_field ) {
 
 				// Get field type.
-				$dependency_field                         = $this->get_field( $_field['field'] );
-				$dependency['fields'][ $f ]['field_type'] = rgobj( $dependency_field, 'type' );
+				$dependency_field                          = $this->get_field( $_field['field'] );
+				$dependency['fields'][ $f ]['field_type']  = rgobj( $dependency_field, 'type' );
+				$dependency['fields'][ $f ]['data_format'] = rgobj( $dependency_field, 'data_format' );
 
 				// If field is a checkbox, check options.
 				if ( rgar( $dependency_field, 'type' ) === 'checkbox' ) {
@@ -1150,8 +1151,9 @@ class Settings {
 			foreach ( $dependency['fields'] as $f => $_field ) {
 
 				// Get field type.
-				$dependency_field                         = $this->get_field( $_field['field'] );
-				$dependency['fields'][ $f ]['field_type'] = rgobj( $dependency_field, 'type' );
+				$dependency_field                          = $this->get_field( $_field['field'] );
+				$dependency['fields'][ $f ]['field_type']  = rgobj( $dependency_field, 'type' );
+				$dependency['fields'][ $f ]['data_format'] = rgobj( $dependency_field, 'data_format' );
 
 				// If field is a checkbox, check options.
 				if ( rgar( $dependency_field, 'type' ) === 'checkbox' ) {
@@ -1252,6 +1254,41 @@ class Settings {
 	}
 
 	/**
+	 * Determines whether an array-format checkbox includes one of the dependency values.
+	 *
+	 * Bool-format checkboxes store each choice as its own 1/0 setting. Array-format
+	 * checkboxes store the selected choice names on the checkbox field.
+	 *
+	 * @since 3.2.3
+	 *
+	 * @param mixed $selected Selected choice names.
+	 * @param array $values   Dependency values.
+	 *
+	 * @return bool
+	 */
+	private function is_array_checkbox_dependency_met( $selected, $values ) {
+
+		if ( ! is_array( $selected ) ) {
+			$selected = array();
+		}
+
+		$selected = array_map( 'strval', $selected );
+
+		foreach ( $values as $value ) {
+			if ( '_notempty_' === $value && ! empty( $selected ) ) {
+				return true;
+			}
+
+			if ( in_array( (string) $value, $selected, true ) ) {
+				return true;
+			}
+		}
+
+		return false;
+
+	}
+
+	/**
 	 * Determines if the conditions to display a field or section have been met.
 	 *
 	 * @since 2.5
@@ -1295,6 +1332,15 @@ class Settings {
 				if ( ! rgar( $rule, 'values' ) || ( rgar( $rule, 'values' ) && is_array( $rule['values'] ) && $rule['values'][0] == 1 ) ) {
 					$choices        = array_values( rgar( $field, 'choices', array() ) );
 					$rule['values'] = array( rgars( $choices, '0/name' ) );
+				}
+
+				// Array-format checkboxes store selected choice names on the field.
+				if ( rgar( $field, 'data_format' ) === 'array' ) {
+					if ( $this->is_array_checkbox_dependency_met( $this->get_value( $rule['field'] ), $rule['values'] ) ) {
+						$evaluated_rules++;
+					}
+
+					continue;
 				}
 
 				// Loop through values, check for checked checkbox.
@@ -1387,6 +1433,12 @@ class Settings {
 
 		// Get current field value.
 		$current_value = $this->get_value( $dependency_field );
+
+		// Array-format checkboxes store selected choice names on the field.
+		$dependency_field_object = $this->get_field( $dependency_field );
+		if ( rgar( $dependency_field_object, 'type' ) === 'checkbox' && rgar( $dependency_field_object, 'data_format' ) === 'array' ) {
+			return $this->is_array_checkbox_dependency_met( $current_value, $dependency_value );
+		}
 
 		// Loop through dependency values, look for match.
 		foreach ( $dependency_value as $value ) {
@@ -1626,7 +1678,7 @@ class Settings {
 
 			// Validate nested fields.
 			if ( rgar( $item, 'fields' ) ) {
-				$values = $this->filter_group_values( $values, array( $item ) );
+				$values = $this->filter_group_values( $values, $item );
 			}
 
 		}
@@ -1917,7 +1969,7 @@ class Settings {
 		$errors = $this->get_field_errors();
 
 		if ( empty( $errors ) ) {
-			return rgpost( 'gform_settings_tab' ) ? sanitize_text_field( $_POST['gform_settings_tab'] ) : rgars( $tabs, '0/id' );
+			return rgpost( 'gform_settings_tab' ) ? sanitize_text_field( $_POST['gform_settings_tab'] ) : rgars( $tabs, '0/id' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.NonceVerification.Missing
 		}
 
 		// Get failed field names.
@@ -2519,12 +2571,12 @@ class Settings {
 		$_gf_settings_posted_values = array();
 
 		// If no values have been posted, return.
-		if ( count( $_POST ) <= 0 ) {
+		if ( count( $_POST ) <= 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			return $_gf_settings_posted_values;
 		}
 
 		// Strip input name prefix from keys.
-		foreach ( $_POST as $key => $value ) {
+		foreach ( $_POST as $key => $value ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			if ( preg_match( '|' . $this->input_name_prefix . '_(.*)|', $key, $matches ) ) {
 				$_gf_settings_posted_values[ $matches[1] ] = GFCommon::maybe_decode_json( stripslashes_deep( $value ) );
 				if ( is_string( $_gf_settings_posted_values[ $matches[1] ] ) ) {
@@ -2730,5 +2782,40 @@ class Settings {
 
 		return ! rgempty( 'gform-settings-save' );
 
+	}
+
+	/**
+	 * Remove the "has published posts" query from the REST user query.
+	 *
+	 * This will make sure that the User Select field can find all users, not just users with published posts.
+	 *
+	 * @since 2.9.5
+	 *
+	 * @param array $prepared_args The prepared arguments for the REST user query.
+	 * @param \WP_REST_Request $request The current REST request.
+	 *
+	 * @return array The modified prepared arguments for the REST user query.
+	 */
+	public function remove_has_published_posts_from_api_user_query( $prepared_args, $request ) {
+		if ( ! current_user_can( 'list_users' ) ) {
+			return $prepared_args;
+		}
+
+		// check the referer and make an array of the query params
+		$referer = wp_parse_url( wp_get_referer() );
+
+		if ( ! rgar( $referer, 'query' ) ) {
+			return $prepared_args;
+		}
+
+		$query_params = array();
+		parse_str( $referer['query'], $query_params );
+		if ( 'gf_edit_forms' !== rgar( $query_params, 'page' ) && 'settings' !== rgar( $query_params, 'view' ) ) {
+			return $prepared_args;
+		}
+
+		unset( $prepared_args['has_published_posts'] );
+
+		return $prepared_args;
 	}
 }

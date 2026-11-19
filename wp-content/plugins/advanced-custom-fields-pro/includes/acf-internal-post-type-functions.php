@@ -1,15 +1,19 @@
 <?php
 /**
- * Generic functions for accessing ACF objects stored as WordPress post types which aren't handled by type specific functions.
- *
  * @package ACF
+ * @author  WP Engine
+ *
+ * © 2026 Advanced Custom Fields (ACF®). All rights reserved.
+ * "ACF" is a trademark of WP Engine.
+ * Licensed under the GNU General Public License v2 or later.
+ * https://www.gnu.org/licenses/gpl-2.0.html
  */
 
 /**
  * Gets an instance of an ACF_Internal_Post_Type.
  *
  * @param string $post_type The ACF internal post type to get the instance for.
- * @return ACF_Internal_Post_Type|bool The internal post type class instance, or false on failure.
+ * @return ACF_Internal_Post_Type|boolean The internal post type class instance, or false on failure.
  */
 function acf_get_internal_post_type_instance( $post_type = 'acf-field-group' ) {
 	$store = acf_get_store( 'internal-post-types' );
@@ -322,7 +326,8 @@ function acf_duplicate_internal_post_type( $id = 0, $new_post_id = 0, $post_type
 	$instance = acf_get_internal_post_type_instance( $post_type );
 
 	if ( $instance ) {
-		return $instance->duplicate_post( $id, $new_post_id );
+		// The settings are copied from the database, so skip sanitization.
+		return acf_skip_internal_post_sanitization( array( $instance, 'duplicate_post' ), $id, $new_post_id );
 	}
 
 	return false;
@@ -340,7 +345,8 @@ function acf_update_internal_post_type_active_status( $id, $activate = true, $po
 	$instance = acf_get_internal_post_type_instance( $post_type );
 
 	if ( $instance ) {
-		return $instance->update_post_active_status( $id, $activate );
+		// Only the status changes and the settings come from the database, so skip sanitization.
+		return acf_skip_internal_post_sanitization( array( $instance, 'update_post_active_status' ), $id, $activate );
 	}
 
 	return false;

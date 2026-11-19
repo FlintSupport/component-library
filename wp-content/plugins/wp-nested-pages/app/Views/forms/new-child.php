@@ -37,7 +37,7 @@
 			<?php if ( $can_publish ) : ?>
 				<option value="publish"><?php _e( 'Published' ); ?></option>
 			<?php endif; ?>
-				<option value="draft"><?php _e( 'Draft' ); ?></option>
+				<option value="draft" selected><?php _e( 'Draft' ); ?></option>
 			</select>
 		</div>
 
@@ -72,7 +72,13 @@
 			<label><?php _e( 'Template' ); ?></label>
 			<select name="page_template" class="np_template">
 				<option value="default"><?php _e( 'Default Template' ); ?></option>
-				<?php page_template_dropdown() ?>
+				<?php
+				if ( is_page() ){
+					page_template_dropdown();
+				} else {
+					page_template_dropdown('', $this->post_type->name);
+				}
+				?>
 			</select>
 		</div>
 		<?php endif; ?>

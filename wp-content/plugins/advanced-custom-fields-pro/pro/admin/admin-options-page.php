@@ -1,4 +1,13 @@
 <?php
+/**
+ * @package ACF
+ * @author  WP Engine
+ *
+ * © 2026 Advanced Custom Fields (ACF®). All rights reserved.
+ * "ACF" is a trademark of WP Engine.
+ * Licensed under the GNU General Public License v2 or later.
+ * https://www.gnu.org/licenses/gpl-2.0.html
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -81,6 +90,9 @@ if ( ! class_exists( 'acf_admin_options_page' ) ) :
 			// verify and remove nonce
 			if ( acf_verify_nonce( 'options' ) ) {
 
+				// Restrict submitted values to fields rendered for the current options page, or belonging to field groups assigned to it.
+				acf_restrict_save_input( $this->get_options_page_save_args() );
+
 				// save data
 				if ( acf_validate_save_post( true ) ) {
 
@@ -108,6 +120,9 @@ if ( ! class_exists( 'acf_admin_options_page' ) ) :
 
 			// load acf scripts
 			acf_enqueue_scripts();
+
+			// Localize options page slug for repeater pagination capability checks.
+			acf_localize_data( array( 'options_page_slug' => $this->page['menu_slug'] ) );
 
 			// actions
 			add_action( 'acf/input/admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
@@ -162,10 +177,7 @@ if ( ! class_exists( 'acf_admin_options_page' ) ) :
 				acf_add_admin_notice( sprintf( __( 'No Custom Field Groups found for this options page. <a href="%s">Create a Custom Field Group</a>', 'acf' ), admin_url( 'post-new.php?post_type=acf-field-group' ) ), 'warning' );
 			} else {
 				foreach ( $field_groups as $i => $field_group ) {
-
-					// vars
 					$id       = "acf-{$field_group['key']}";
-					$title    = $field_group['title'];
 					$context  = $field_group['position'];
 					$priority = 'high';
 					$args     = array( 'field_group' => $field_group );
@@ -181,7 +193,15 @@ if ( ! class_exists( 'acf_admin_options_page' ) ) :
 					$priority = apply_filters( 'acf/input/meta_box_priority', $priority, $field_group );
 
 					// add meta box
-					add_meta_box( $id, acf_esc_html( $title ), array( $this, 'postbox_acf' ), 'acf_options_page', $context, $priority, $args );
+					add_meta_box(
+						$id,
+						acf_esc_html( acf_get_field_group_title( $field_group ) ),
+						array( $this, 'postbox_acf' ),
+						'acf_options_page',
+						$context,
+						$priority,
+						$args
+					);
 				}
 				// foreach
 			}
@@ -268,7 +288,7 @@ if ( ! class_exists( 'acf_admin_options_page' ) ) :
 			$fields = acf_get_fields( $field_group );
 
 			// render
-			acf_render_fields( $fields, $this->page['post_id'], 'div', $field_group['instruction_placement'] );
+			acf_render_fields( $fields, $this->page['post_id'], 'div', $field_group['instruction_placement'], array( 'render_id' => $this->get_options_page_render_id() ) );
 
 			?>
 <script type="text/javascript">
@@ -281,6 +301,121 @@ if( typeof acf !== 'undefined' ) {
 			<?php
 		}
 
+
+		/**
+		 * Returns the field groups assigned to the current options page.
+		 *
+		 * Used to derive the set of $_POST['acf'] keys the current save is allowed
+		 * to accept — see get_options_page_allowed_field_keys().
+		 *
+		 * @since 6.8.7
+		 *
+		 * @return array
+		 */
+		protected function get_options_page_field_groups() {
+			return acf_get_field_groups(
+				array(
+					'options_page' => $this->page['menu_slug'],
+				)
+			);
+		}
+
+		/**
+		 * Returns the top-level $_POST['acf'] keys of the fields in the field groups assigned to the current options page.
+		 *
+		 * Since 6.8.11, saves also accept keys in the page's verified field lists; see get_options_page_save_args().
+		 *
+		 * @since 6.8.7
+		 *
+		 * @return array
+		 */
+		protected function get_options_page_allowed_field_keys() {
+			$keys = array();
+
+			foreach ( $this->get_options_page_field_groups() as $field_group ) {
+				foreach ( (array) acf_get_fields( $field_group ) as $field ) {
+					$keys[] = acf_get_field_root_key( $field );
+				}
+			}
+
+			$keys = array_values( array_unique( array_filter( $keys ) ) );
+
+			/**
+			 * Filters the list of $_POST['acf'] keys an options page save is allowed to save.
+			 *
+			 * Use this to permit additional field keys when a developer dynamically injects fields
+			 * into an options page via JavaScript that aren't part of any field group assigned to
+			 * the page.
+			 *
+			 * @since 6.8.7
+			 *
+			 * @param array $keys The allowed top-level $_POST['acf'] keys.
+			 * @param array $page The current options page configuration.
+			 */
+			$keys = apply_filters( 'acf/options_page/allowed_field_keys', $keys, $this->page );
+
+			// Re-normalize after the filter so a misbehaving callback can't break array_flip() with non-scalar or empty values.
+			return acf_normalize_field_keys( $keys );
+		}
+
+		/**
+		 * Filters submitted ACF values to the top-level keys accepted by the current options page:
+		 * fields rendered for the page, or belonging to field groups assigned to it.
+		 *
+		 * @since 6.8.7
+		 * @since 6.8.11 Also accepts fields in the page's verified field lists.
+		 *
+		 * @param array $values Submitted ACF values (typically $_POST['acf']).
+		 * @return array
+		 */
+		protected function filter_options_page_field_values( array $values ): array {
+			return acf_filter_save_values( $values, $this->get_options_page_save_args() );
+		}
+
+		/**
+		 * Returns the render ID fields on the current options page are rendered for.
+		 *
+		 * Options pages can share a post ID, so fields are rendered for the page rather than the post ID.
+		 *
+		 * @since 6.8.11
+		 *
+		 * @return string
+		 */
+		protected function get_options_page_render_id() {
+			return 'options/' . $this->page['menu_slug'];
+		}
+
+		/**
+		 * Returns the args the current options page restricts submitted values with.
+		 *
+		 * @since 6.8.11
+		 *
+		 * @return array
+		 */
+		protected function get_options_page_save_args() {
+			return array(
+				'context'    => 'options_page',
+				'post_id'    => $this->page['post_id'],
+				'render_ids' => array( $this->get_options_page_render_id() ),
+				'screen'     => array( 'options_page' => $this->page['menu_slug'] ),
+				'filter_arg' => $this->page,
+			);
+		}
+
+		/**
+		 * Applies the options page's own allowed keys filter, which predates the shared
+		 * `acf/form/options_page/allowed_field_keys` filter, after it.
+		 *
+		 * @since 6.8.11
+		 *
+		 * @param array $keys The allowed top-level keys.
+		 * @param array $page The current options page configuration.
+		 * @return array
+		 */
+		public static function apply_legacy_allowed_field_keys_filter( $keys, $page ) {
+			/** This filter is documented in get_options_page_allowed_field_keys(). */
+			return apply_filters( 'acf/options_page/allowed_field_keys', acf_normalize_field_keys( $keys ), $page );
+		}
 
 		/**
 		 * description
@@ -297,6 +432,8 @@ if( typeof acf !== 'undefined' ) {
 
 	// initialize
 	new acf_admin_options_page();
+
+	add_filter( 'acf/form/options_page/allowed_field_keys', array( 'acf_admin_options_page', 'apply_legacy_allowed_field_keys_filter' ), PHP_INT_MAX, 2 );
 endif;
 
 ?>

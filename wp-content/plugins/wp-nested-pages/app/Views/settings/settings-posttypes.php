@@ -7,11 +7,16 @@ settings_fields( 'nestedpages-posttypes' );
 <h3><?php _e('Enable Post Types:', 'wp-nested-pages'); ?></h3>
 
 <div class="nestedpages-settings-table">
-	<?php foreach ($types as $type) : ?>
+	<?php 
+	foreach ($types as $type) : 
+	if ( str_contains($type->name, 'acf-ui-options') ) continue;
+	if ( str_contains($type->name, 'acf-post-type') ) continue;
+	if ( str_contains($type->name, 'acf-taxonomy') ) continue;
+	?>
 	<div class="row-container">
 		<div class="head">
 			<div class="checkbox">
-				<input type="checkbox" name="nestedpages_posttypes[<?php echo esc_attr($type->name); ?>]" value="<?php echo esc_attr($type->name); ?>" <?php if ( $type->np_enabled ) echo 'checked'; ?> data-nestedpages-settings-row-checkbox id="post-type-<?php echo esc_attr($type->name); ?>" />
+				<input type="checkbox" name="nestedpages_posttypes[<?php echo esc_attr($type->name); ?>]" value="<?php echo esc_attr($type->name); ?>" <?php checked($type->np_enabled); ?> data-nestedpages-settings-row-checkbox id="post-type-<?php echo esc_attr($type->name); ?>" />
 			</div>
 			<label for="post-type-<?php echo $type->name; ?>">
 				<?php 
@@ -20,7 +25,9 @@ settings_fields( 'nestedpages-posttypes' );
 						: esc_html($type->label); 
 				?>
 			</label>
-			<a href="#" class="button" data-toggle-nestedpages-pt-settings><?php _e('Settings', 'wp-nested-pages'); ?></a>
+			<div class="settings-button">
+				<a href="#" class="button" data-toggle-nestedpages-pt-settings><?php _e('Settings', 'wp-nested-pages'); ?></a>
+			</div>
 		</div><!-- .head -->
 		<div class="body">
 			<ul class="settings-details">
@@ -310,10 +317,10 @@ settings_fields( 'nestedpages-posttypes' );
 								<label><?php _e('Initial Order By:', 'wp-nested-pages'); ?></label>
 								<select name="nestedpages_posttypes[<?php echo esc_attr($type->name); ?>][sort_options][orderby][initial]">
 									<?php
-										$options = array(
+										$options = [
 											'date' => __('Date', 'wp-nested-pages'),
 											'title' => __('Title', 'wp-nested-pages')
-										);
+										];
 										$out = '<option value="">' . __('Default (Menu Order)', 'wp-nested-pages') . '</option>';
 										foreach ( $options as $key => $option ){
 											$out .= '<option value="' . $key . '"';
@@ -333,14 +340,14 @@ settings_fields( 'nestedpages-posttypes' );
 								<label><?php _e('Initial Order:', 'wp-nested-pages'); ?></label>
 								<select name="nestedpages_posttypes[<?php echo esc_attr($type->name); ?>][sort_options][order][initial]">
 									<?php
-										$options = array(
+										$options = [
 											'ASC' => __('Ascending', 'wp-nested-pages'),
 											'DESC' => __('Descending', 'wp-nested-pages')
-										);
+										];
 										$out = '';
 										foreach ( $options as $key => $option ){
 											$out .= '<option value="' . $key . '"';
-											if ( $this->post_type_repo->defaultSortOption($type->name, 'initial_order') == $key) $out .= ' selected';
+											if ( $this->post_type_repo->defaultSortOption($type->name, 'order') == $key) $out .= ' selected';
 											$out .= '>' . esc_html($option) . '</option>';
 										}
 										echo $out;

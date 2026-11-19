@@ -94,6 +94,13 @@ class GF_Results_Cache {
 	 */
 	public function update_entry_status( $entry_id ) {
 		$entry    = GFAPI::get_entry( $entry_id );
+
+		// Prevent fatal error if entry can't be retrieved.
+		if ( is_wp_error( $entry ) ) {
+			GFCommon::log_error( __METHOD__ . sprintf( '(): Entry retrieval failed; %s: %s', $entry->get_error_code(), $entry->get_error_message() ) );
+			return;
+		}
+
 		$form_id = $entry['form_id'];
 		$form    = GFFormsModel::get_form_meta( $form_id );
 		$this->maybe_update_results_cache_meta( $form );
@@ -289,9 +296,7 @@ class GF_Results_Cache {
 
 		$key = '%' . GFCommon::esc_like( $key ) . '%';
 
-		$sql = $wpdb->prepare( "SELECT count(option_id) FROM $wpdb->options WHERE option_name LIKE %s", $key );
-
-		$result = $wpdb->get_var( $sql );
+		$result = $wpdb->get_var( $wpdb->prepare( "SELECT count(option_id) FROM $wpdb->options WHERE option_name LIKE %s", $key ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		return $result > 0;
 
@@ -318,9 +323,7 @@ class GF_Results_Cache {
 
 		$key = '%' . GFCommon::esc_like( $key ) . '%';
 
-		$sql = $wpdb->prepare( "DELETE FROM $wpdb->options WHERE option_name LIKE %s", $key );
-
-		$result = $wpdb->query( $sql );
+		$result = $wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->options WHERE option_name LIKE %s", $key ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		return $result;
 	}

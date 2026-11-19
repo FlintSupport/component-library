@@ -1,4 +1,13 @@
 <?php
+/**
+ * @package ACF
+ * @author  WP Engine
+ *
+ * © 2026 Advanced Custom Fields (ACF®). All rights reserved.
+ * "ACF" is a trademark of WP Engine.
+ * Licensed under the GNU General Public License v2 or later.
+ * https://www.gnu.org/licenses/gpl-2.0.html
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -48,6 +57,7 @@ if ( ! class_exists( 'ACF_Local_Meta' ) ) :
 		 * @return  array
 		 */
 		function add( $meta = array(), $post_id = 0, $is_main = false ) {
+			$post_id = $post_id ?? '';
 
 			// Capture meta if supplied meta is from a REQUEST.
 			if ( $this->is_request( $meta ) ) {
@@ -78,6 +88,9 @@ if ( ! class_exists( 'ACF_Local_Meta' ) ) :
 		 * @return  boolean
 		 */
 		function is_request( $meta = array() ) {
+			if ( empty( $meta ) || ! is_array( $meta ) ) {
+				return false;
+			}
 			return acf_is_field_key( key( $meta ) );
 		}
 
@@ -149,6 +162,7 @@ if ( ! class_exists( 'ACF_Local_Meta' ) ) :
 		 * @return  void
 		 */
 		function remove( $post_id = 0 ) {
+			$post_id = $post_id ?? '';
 
 			// unset meta
 			unset( $this->meta[ $post_id ] );
@@ -172,6 +186,7 @@ if ( ! class_exists( 'ACF_Local_Meta' ) ) :
 		 * @return  mixed
 		 */
 		function pre_load_meta( $null, $post_id ) {
+			$post_id = $post_id ?? '';
 			if ( isset( $this->meta[ $post_id ] ) ) {
 				return $this->meta[ $post_id ];
 			}
@@ -193,7 +208,8 @@ if ( ! class_exists( 'ACF_Local_Meta' ) ) :
 		 * @return  mixed
 		 */
 		function pre_load_metadata( $null, $post_id, $name, $hidden ) {
-			$name = ( $hidden ? '_' : '' ) . $name;
+			$name    = ( $hidden ? '_' : '' ) . $name;
+			$post_id = $post_id ?? '';
 			if ( isset( $this->meta[ $post_id ] ) ) {
 				if ( isset( $this->meta[ $post_id ][ $name ] ) ) {
 					return $this->meta[ $post_id ][ $name ];

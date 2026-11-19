@@ -36,9 +36,9 @@ class ListingRepository
 	{
 		$meta = get_user_meta(get_current_user_id(), 'np_visible_posts', true);
 		if ( $meta == '1' ) return [];
-		$visible = unserialize($meta);
-		if ( !is_array($visible) ) $visible = [];
-		if ( !isset($visible[$post_type]) ) $visible[$post_type] = [];
+		if ( is_array($meta) ) return [];
+		$visible = unserialize($meta, ['allowed_classes' => false]);
+		if ( !$visible || !isset($visible[$post_type]) ) $visible = [$post_type => []];
 		return $visible[$post_type];
 	}
 

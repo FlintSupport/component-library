@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2014-2023 ServMask Inc.
+ * Copyright (C) 2014-2025 ServMask Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,6 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Attribution: This code is part of the All-in-One WP Migration plugin, developed by
  *
  * ███████╗███████╗██████╗ ██╗   ██╗███╗   ███╗ █████╗ ███████╗██╗  ██╗
  * ██╔════╝██╔════╝██╔══██╗██║   ██║████╗ ████║██╔══██╗██╔════╝██║ ██╔╝
@@ -30,6 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Ai1wm_Export_Database {
 
 	public static function execute( $params ) {
+
 		// Set exclude database
 		if ( isset( $params['options']['no_database'] ) ) {
 			return $params;
@@ -74,22 +77,24 @@ class Ai1wm_Export_Database {
 		$progress = (int) ( ( $table_index / $total_tables_count ) * 100 );
 
 		// Set progress
-		Ai1wm_Status::info( sprintf( __( 'Exporting database...<br />%d%% complete<br />%s records saved', AI1WM_PLUGIN_NAME ), $progress, number_format_i18n( $table_rows ) ) );
+		/* translators: 1: Progress, 2: Number of records. */
+		Ai1wm_Status::info( sprintf( __( 'Exporting database...<br />%1$d%% complete<br />%2$s records saved', 'all-in-one-wp-migration' ), $progress, number_format_i18n( $table_rows ) ) );
 
 		// Get tables list file
 		$tables_list = ai1wm_open( ai1wm_tables_list_path( $params ), 'r' );
 
 		// Loop over tables
 		$tables = array();
-		while ( list( $table_name ) = fgetcsv( $tables_list ) ) {
-			$tables[] = $table_name;
+		while ( ( $row = ai1wm_getcsv( $tables_list ) ) !== false ) {
+			list( $table_name ) = $row;
+			$tables[] = $table_name; // phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
 		}
 
 		// Close the tables list file
 		ai1wm_close( $tables_list );
 
 		// Get database client
-		$db_client = Ai1wm_Database_Utility::create_client();
+		$db_client = Ai1wm_Database_Utility::get_client();
 
 		// Exclude spam comments
 		if ( isset( $params['options']['no_spam_comments'] ) ) {
@@ -99,7 +104,8 @@ class Ai1wm_Export_Database {
 
 		// Exclude post revisions
 		if ( isset( $params['options']['no_post_revisions'] ) ) {
-			$db_client->set_table_where_query( ai1wm_table_prefix() . 'posts', "`post_type` != 'revision'" );
+			$db_client->set_table_where_query( ai1wm_table_prefix() . 'posts', "`post_type` != 'revision'" )
+				->set_table_where_query( ai1wm_table_prefix() . 'postmeta', sprintf( "`post_id` IN ( SELECT `ID` FROM `%s` WHERE `post_type` != 'revision' )", ai1wm_table_prefix() . 'posts' ) );
 		}
 
 		$old_table_prefixes = $old_column_prefixes = array();
@@ -134,7 +140,7 @@ class Ai1wm_Export_Database {
 			->set_new_column_prefixes( $new_column_prefixes );
 
 		// Exclude column prefixes
-		$db_client->set_reserved_column_prefixes( array( 'wp_force_deactivated_plugins', 'wp_page_for_privacy_policy' ) );
+		$db_client->set_reserved_column_prefixes( array( 'wp_force_deactivated_plugins', 'wp_page_for_privacy_policy', 'wp_rocket_settings', 'wp_rocket_dismiss_imagify_notice', 'wp_rocket_no_licence', 'wp_rocket_rocketcdn_old_url', 'wp_rocket_hide_deactivation_form' ) );
 
 		// Exclude site options
 		$db_client->set_table_where_query( ai1wm_table_prefix() . 'options', sprintf( "`option_name` NOT IN ('%s', '%s', '%s', '%s', '%s', '%s', '%s')", AI1WM_STATUS, AI1WM_SECRET_KEY, AI1WM_AUTH_USER, AI1WM_AUTH_PASSWORD, AI1WM_AUTH_HEADER, AI1WM_BACKUPS_LABELS, AI1WM_SITES_LINKS ) );
@@ -156,7 +162,7 @@ class Ai1wm_Export_Database {
 		if ( $db_client->export( ai1wm_database_path( $params ), $query_offset, $table_index, $table_offset, $table_rows ) ) {
 
 			// Set progress
-			Ai1wm_Status::info( __( 'Done exporting database.', AI1WM_PLUGIN_NAME ) );
+			Ai1wm_Status::info( __( 'Database exported.', 'all-in-one-wp-migration' ) );
 
 			// Unset query offset
 			unset( $params['query_offset'] );
@@ -182,7 +188,8 @@ class Ai1wm_Export_Database {
 			$progress = (int) ( ( $table_index / $total_tables_count ) * 100 );
 
 			// Set progress
-			Ai1wm_Status::info( sprintf( __( 'Exporting database...<br />%d%% complete<br />%s records saved', AI1WM_PLUGIN_NAME ), $progress, number_format_i18n( $table_rows ) ) );
+			/* translators: 1: Progress, 2: Number of records. */
+			Ai1wm_Status::info( sprintf( __( 'Exporting database...<br />%1$d%% complete<br />%2$s records saved', 'all-in-one-wp-migration' ), $progress, number_format_i18n( $table_rows ) ) );
 
 			// Set query offset
 			$params['query_offset'] = $query_offset;

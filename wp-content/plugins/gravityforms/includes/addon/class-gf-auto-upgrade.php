@@ -13,9 +13,25 @@ class GFAutoUpgrade {
 	protected $_path;
 	protected $_url;
 	protected $_is_gravityforms_supported;
+	protected $_inactive;
 
-
-	public function __construct( $slug, $version, $min_gravityforms_version, $title, $full_path, $path, $url, $is_gravityforms_supported ) {
+	/**
+	 * Constructor.
+	 *
+	 * @since Unknown
+	 * @since 3.2.3 Added $inactive param.
+	 *
+	 * @param string $slug                      The add-on slug.
+	 * @param string $version                   The add-on version.
+	 * @param string $min_gravityforms_version  The minimum Gravity Forms version required by the add-on.
+	 * @param string $title                     The add-on title.
+	 * @param string $full_path                 The full path to the add-on file.
+	 * @param string $path                      The relative path to the add-on file from the plugins folder.
+	 * @param string $url                       The Gravity Forms site URL.
+	 * @param bool   $is_gravityforms_supported Whether the minimum Gravity Forms version is met.
+	 * @param bool   $inactive                  Whether the add-on is inactive.
+	 */
+	public function __construct( $slug, $version, $min_gravityforms_version, $title, $full_path, $path, $url, $is_gravityforms_supported, $inactive = false ) {
 		$this->_slug                      = $slug;
 		$this->_version                   = $version;
 		$this->_min_gravityforms_version  = $min_gravityforms_version;
@@ -24,6 +40,7 @@ class GFAutoUpgrade {
 		$this->_path                      = $path;
 		$this->_url                       = $url;
 		$this->_is_gravityforms_supported = $is_gravityforms_supported;
+		$this->_inactive                  = $inactive;
 		add_action( 'init', array( $this, 'init' ) );
 	}
 
@@ -31,13 +48,10 @@ class GFAutoUpgrade {
 		if ( is_admin() ) {
 			GFCommon::load_gf_text_domain();
 			add_action( 'install_plugins_pre_plugin-information', array( $this, 'display_changelog' ), 9 );
-			add_action( 'gform_after_check_update', array( $this, 'flush_version_info' ) );
-			add_action( 'gform_updates', array( $this, 'display_updates' ) );
-
 			add_filter( 'gform_updates_list', array( $this, 'get_update_info' ) );
 
 			if ( RG_CURRENT_PAGE == 'plugins.php' ) {
-				add_action( 'after_plugin_row_' . $this->_path, array( $this, 'rg_plugin_row' ) );
+				add_action( 'after_plugin_row_' . $this->_path, array( $this, 'rg_plugin_row' ), 10, 2 );
 			} elseif ( in_array( RG_CURRENT_PAGE, array( 'admin-ajax.php' ) ) ) {
 				add_action( 'wp_ajax_gf_get_changelog', array( $this, 'ajax_display_changelog' ) );
 			}
@@ -46,6 +60,9 @@ class GFAutoUpgrade {
 		// Check for updates. The check might not run the admin context. E.g. from WP-CLI.
 		add_filter( 'transient_update_plugins', array( $this, 'check_update' ) );
 		add_filter( 'site_transient_update_plugins', array( $this, 'check_update' ) );
+		add_filter( 'auto_update_plugin', function ( $update, $item ) {
+			return GFForms::maybe_auto_update( $update, $item, $this->_slug, $this->_version );
+		}, 10, 2 );
 
 		// ManageWP premium update filters
 		add_filter( 'mwp_premium_update_notification', array( $this, 'premium_update_push' ) );
@@ -53,19 +70,66 @@ class GFAutoUpgrade {
 	}
 
 	/**
-	 * Displays messages for the Gravity Forms listing on the Plugins page.
+	 * Displays messages for the add-on listing on the Plugins page.
 	 *
 	 * Displays if Gravity Forms isn't supported.
 	 *
-	 * @since  Unknown
-	 * @since  2.4.15  Update to improve multisite updates.
+	 * @since Unknown
+	 * @since 2.4.15 Update to improve multisite updates.
+	 * @since 3.2.3 Moved API minimum requirements check from GFAddOn::plugin_row().
+	 *
+	 * @param string $plugin_name The plugin filename.
+	 * @param array  $plugin_data An array of plugin data.
 	 */
-	public function rg_plugin_row() {
+	public function rg_plugin_row( $plugin_name, $plugin_data ) {
+		GFForms::maybe_display_update_notification( $plugin_name, $plugin_data, $this->_slug, $this->_version );
 
-		if ( ! $this->_is_gravityforms_supported ) {
-			$message = sprintf( esc_html__( 'Gravity Forms %s is required. Activate it now or %spurchase it today!%s', 'gravityforms' ), $this->_min_gravityforms_version, "<a href='https://www.gravityforms.com'>", '</a>' );
-			GFAddOn::display_plugin_message( $message, true );
+		if ( ! rgar( $plugin_data, 'is_minimum_requirements_blocked' ) ) {
+			// Fallback to legacy check for add-ons that haven't had a release since the minimum requirements feature was implemented.
+			if ( ! $this->_is_gravityforms_supported ) {
+				// translators: %1$s: The add-on title. %2$s: The minimum Gravity Forms version required. %3$s: The installed Gravity Forms version.
+				$message = sprintf( esc_html__( 'The %1$s requires Gravity Forms version %2$s or higher for full compatibility. You are currently using version %3$s. Please update Gravity Forms.', 'gravityforms' ), $this->_title, $this->_min_gravityforms_version, GFForms::$version );
+				$this->display_plugin_message( $message, 'error' );
+			}
+
+			return;
 		}
+
+		$message = rgar( $plugin_data, 'minimum_requirements_message' );
+
+		if ( version_compare( $this->_version, rgar( $plugin_data, 'new_version' ), '<' ) ) {
+			$details_url = self_admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . urlencode( $this->_slug ) . '&section=changelog&TB_iframe=true&width=600&height=800' );
+			// translators: %s: new version.
+			$message_link_text = sprintf( esc_html__( 'View version %s details', 'gravityforms' ), rgar( $plugin_data, 'new_version' ) );
+			$message_link      = sprintf( '<a href="%s" class="thickbox" title="%s">%s</a>', esc_url( $details_url ), esc_attr( $this->_title ), $message_link_text );
+			// translators: %1$s: Add-on title. %2$s: View details message and link.
+			$message_new_version = sprintf( esc_html__( 'There is a new version of %1$s available. %2$s.', 'gravityforms' ), $this->_title, $message_link );
+			$message             = $message_new_version . ' ' . $message;
+		}
+
+		$this->display_plugin_message( $message, 'warning' );
+	}
+
+	/**
+	 * Formats and outputs a message for the plugin row.
+	 *
+	 * @since 3.2.3
+	 *
+	 * @param string $message The message to display.
+	 * @param string $style   The style to apply to the message. Should be 'error' or 'warning'.
+	 *
+	 * @return void
+	 */
+	private function display_plugin_message( $message, $style ) {
+		if ( empty( $message ) ) {
+			return;
+		}
+
+		if ( ! class_exists( 'GFAddOn' ) ) {
+			GFForms::include_addon_framework();
+		}
+
+		GFAddOn::display_plugin_message( $message, $style, $this->_inactive );
 	}
 
 	//Integration with ManageWP
@@ -76,7 +140,7 @@ class GFAutoUpgrade {
 		}
 
 		$update = $this->get_version_info( $this->_slug );
-		if ( rgar( $update, 'is_valid_key' ) == true && version_compare( $this->_version, $update['version'], '<' ) ) {
+		if ( ! rgar( $update, 'is_minimum_requirements_blocked' ) && rgar( $update, 'is_valid_key' ) && version_compare( $this->_version, $update['version'], '<' ) ) {
 			$plugin_data                = get_plugin_data( $this->_full_path );
 			$plugin_data['type']        = 'plugin';
 			$plugin_data['slug']        = $this->_path;
@@ -95,7 +159,7 @@ class GFAutoUpgrade {
 		}
 
 		$update = $this->get_version_info( $this->_slug );
-		if ( rgar( $update, 'is_valid_key' ) == true && version_compare( $this->_version, $update['version'], '<' ) ) {
+		if ( ! rgar( $update, 'is_minimum_requirements_blocked' ) && rgar( $update, 'is_valid_key' ) && version_compare( $this->_version, $update['version'], '<' ) ) {
 			$plugin_data         = get_plugin_data( $this->_full_path );
 			$plugin_data['slug'] = $this->_path;
 			$plugin_data['type'] = 'plugin';
@@ -119,35 +183,45 @@ class GFAutoUpgrade {
 		}
 	}
 
+	/**
+	 * Adds the add-on to the list of (un)available updates.
+	 *
+	 * @since Unknown
+	 * @since 2.9.23 Updated the add-on data to include `minimum_requirements`.
+	 * @since 3.2.3 Updated the add-on data to include `is_minimum_requirements_blocked` and `minimum_requirements_message`.
+	 *
+	 * @param object $option The update option.
+	 *
+	 * @return object
+	 */
 	public function check_update( $option ) {
 
-		if ( empty( $option ) ) {
+		if ( ! is_object( $option ) ) {
 			return $option;
 		}
-
-		$key = $this->get_key();
 
 		$version_info = $this->get_version_info( $this->_slug );
 
-		if ( rgar( $version_info, 'is_error' ) == '1' ) {
+		if ( rgar( $version_info, 'is_error' ) ) {
 			return $option;
 		}
 
-		if ( empty( $option->response[ $this->_path ] ) ) {
-			$option->response[ $this->_path ] = new stdClass();
-		}
+		$new_version = rgar( $version_info, 'version', '0' );
 
 		$plugin = array(
-			'plugin'      => $this->_path,
-			'url'         => $this->_url,
-			'slug'        => $this->_slug,
-			'package'     => $version_info['url'] ? str_replace( '{KEY}', $key, $version_info['url'] ) : '',
-			'new_version' => $version_info['version'],
-			'id'          => '0',
+			'plugin'                          => $this->_path,
+			'url'                             => $this->_url,
+			'slug'                            => $this->_slug,
+			'package'                         => $version_info['url'] ? str_replace( '{KEY}', $this->get_key(), $version_info['url'] ) : '',
+			'new_version'                     => $new_version,
+			'version_latest'                  => $version_info['version_latest'],
+			'id'                              => '0',
+			'minimum_requirements'            => $version_info['minimum_requirements'],
+			'is_minimum_requirements_blocked' => $version_info['is_minimum_requirements_blocked'],
+			'minimum_requirements_message'    => $version_info['minimum_requirements_message'],
 		);
 
-		//Empty response means that the key is invalid. Do not queue for upgrade
-		if ( ! rgar( $version_info, 'is_valid_key' ) || version_compare( $this->_version, $version_info['version'], '>=' ) ) {
+		if ( $version_info['is_minimum_requirements_blocked'] || ! rgar( $version_info, 'is_valid_key' ) || version_compare( $this->_version, $new_version, '>=' ) ) {
 			unset( $option->response[ $this->_path ] );
 			$option->no_update[ $this->_path ] = (object) $plugin;
 		} else {
@@ -155,18 +229,15 @@ class GFAutoUpgrade {
 		}
 
 		return $option;
-
 	}
-
-
 
 	// Displays current version details on plugins page and updates page
 	public function display_changelog() {
-		if ( $_REQUEST['plugin'] != $this->_slug ) {
+		if ( isset( $_REQUEST['plugin'] ) && $_REQUEST['plugin'] != $this->_slug ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return;
 		}
 		$change_log = $this->get_changelog();
-		echo $change_log;
+		echo $change_log; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		exit;
 	}
@@ -177,7 +248,7 @@ class GFAutoUpgrade {
 	 * @since 2.4.15
 	 */
 	public function ajax_display_changelog() {
-		check_admin_referer();
+		check_admin_referer( 'gf_get_changelog' );
 
 		$this->display_changelog();
 	}
@@ -206,14 +277,35 @@ class GFAutoUpgrade {
 		return stripslashes( $text );
 	}
 
-	private function get_version_info( $offering, $use_cache = true ) {
+	/**
+	 * Gets the version info for the add-on.
+	 *
+	 * @since Unknown
+	 * @since 2.9.23 Updated the returned array to include `minimum_requirements`.
+	 * @since 3.2.3 Updated the returned array to include `is_minimum_requirements_blocked` and `minimum_requirements_message`.
+	 *
+	 * @param string $slug      The slug of the add-on.
+	 * @param bool   $use_cache Whether to use the cache.
+	 *
+	 * @return array
+	 */
+	private function get_version_info( $slug, $use_cache = true ) {
+		$version_info            = GFCommon::get_version_info( $use_cache );
+		$offering                = rgars( $version_info, "offerings/{$slug}" );
+		$min_requirements        = rgar( $offering, 'minimum_requirements', array() );
+		$min_requirements_result = GFCommon::evaluate_minimum_requirements( $min_requirements );
 
-		$version_info = GFCommon::get_version_info( $use_cache );
-		$is_valid_key = rgar( $version_info, 'is_valid_key' ) && rgars( $version_info, "offerings/{$offering}/is_available" );
-
-		$info = array( 'is_valid_key' => $is_valid_key, 'version' => rgars( $version_info, "offerings/{$offering}/version" ), 'url' => rgars( $version_info, "offerings/{$offering}/url" ) );
-
-		return $info;
+		return array(
+			'is_error'                        => rgar( $version_info, 'is_error' ),
+			'is_valid_key'                    => rgar( $version_info, 'is_valid_key' ),
+			'is_available'                    => rgar( $offering, 'is_available' ),
+			'version'                         => rgar( $offering, 'version' ),
+			'version_latest'                  => rgar( $offering, 'version_latest' ),
+			'url'                             => rgar( $offering, 'url' ),
+			'minimum_requirements'            => $min_requirements,
+			'is_minimum_requirements_blocked' => $min_requirements_result['block'],
+			'minimum_requirements_message'    => $min_requirements_result['message'],
+		);
 	}
 
 	private function get_remote_request_params( $offering, $key, $version ) {
@@ -279,16 +371,22 @@ class GFAutoUpgrade {
 			'download_url'      => $version_info['url'],
 			'version_icon'      => $version_icon,
 			'version_message'   => $version_message,
+			'version_info'      => $version_info,
 		);
 
 		return $updates;
 
 	}
 
+	/**
+	 * @depecated 2.2 Was the callback for the gform_updates action, which was removed when the Forms > System Status > Updates page was implemented.
+	 * @remove-in 4.0
+	 */
 	public function display_updates() {
+		_deprecated_function( __METHOD__, '2.2' );
 
 		?>
-		<div class="wrap <?php echo GFCommon::get_browser_class() ?>">
+		<div class="wrap <?php echo esc_attr( GFCommon::get_browser_class() ); ?>">
 			<h2><?php esc_html_e( $this->_title ); ?></h2>
 			<?php
 			$force_check = rgget( 'force-check' ) == 1;
@@ -313,7 +411,7 @@ class GFAutoUpgrade {
 
 					?>
 					<div class="gf_update_outdated alert_yellow">
-						<?php echo $message . ' <p>' . sprintf( esc_html__( 'You can update to the latest version automatically or download the update and install it manually. %sUpdate Automatically%s %sDownload Update%s', 'gravityforms' ), "</p><a class='button-primary' href='{$upgrade_url}'>", '</a>', "&nbsp;<a class='button' href='{$version_info['url']}'>", '</a>' ); ?>
+						<?php echo $message . ' <p>' . sprintf( esc_html__( 'You can update to the latest version automatically or download the update and install it manually. %sUpdate Automatically%s %sDownload Update%s', 'gravityforms' ), "</p><a class='button-primary' href='{$upgrade_url}'>", '</a>', "&nbsp;<a class='button' href='{$version_info['url']}'>", '</a>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>
 					</div>
 				<?php
 				}
@@ -321,7 +419,7 @@ class GFAutoUpgrade {
 
 				?>
 				<div class="gf_update_current alert_green">
-					<?php printf( esc_html__( 'Your version of %s is up to date.', 'gravityforms' ), $this->_title ); ?>
+					<?php printf( esc_html__( 'Your version of %s is up to date.', 'gravityforms' ), esc_html( $this->_title ) ); ?>
 				</div>
 			<?php
 			}

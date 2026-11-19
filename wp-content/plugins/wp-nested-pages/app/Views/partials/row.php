@@ -5,6 +5,7 @@
 $wpml = $this->integrations->plugins->wpml->installed;
 $wpml_pages = ( $wpml && $this->integrations->plugins->wpml->isDefaultLanguage()) ? true : false;
 if ( !$wpml ) $wpml_pages = true;
+$yoast = $this->integrations->plugins->yoast->installed;
 ?>
 <div class="row <?php echo apply_filters('nestedpages_row_css_classes', $row_classes, $this->post, $this->post_type); ?>">
 	
@@ -29,7 +30,7 @@ if ( !$wpml ) $wpml_pages = true;
 			<span class="title">
 				<?php 
 					$title = apply_filters( 'the_title', $this->post->title, $this->post->id ); 
-					echo apply_filters('nestedpages_post_title', $title, $this->post);
+					echo apply_filters('nestedpages_post_title', esc_attr($title), $this->post);
 					echo $this->postStates($assigned_pt);
 				?>
 			</span>
@@ -94,7 +95,7 @@ if ( !$wpml ) $wpml_pages = true;
 		</div>
 		<?php endif; ?>
 
-		<?php if ( $this->integrations->plugins->yoast->installed ) echo $this->post->score; ?>
+		<?php if ( $yoast ) echo $this->post->score; ?>
 
 		<div class="action-buttons">
 			
@@ -143,7 +144,7 @@ if ( !$wpml ) $wpml_pages = true;
 			
 					<?php if ( in_array('add_child_page', $this->post_type_settings->row_actions) ) : ?>
 					<li>
-						<a href="#" class="add-new-child" data-id="<?php esc_attr_e(get_the_id()); ?>" data-parentname="<?php echo wp_kses_post($this->post->title); ?>">
+						<a href="#" class="add-new-child" data-id="<?php esc_attr_e(get_the_id()); ?>" data-parentname="<?php echo esc_attr($this->post->title); ?>">
 						<img src="<?php echo \NestedPages\Helpers::plugin_url(); ?>/assets/images/child-page.svg" alt="<?php _e('Child Page Icon', 'wp-nested-pages'); ?>">
 						<?php echo sprintf(__('Add Child %s', 'wp-nested-pages'), esc_attr($this->post_type->labels->singular_name)); ?></a>
 					</li>
@@ -155,7 +156,7 @@ if ( !$wpml ) $wpml_pages = true;
 
 					<?php if ( in_array('insert_before', $this->post_type_settings->row_actions) ) : ?>
 					<li>
-						<a href="#" data-insert-before="<?php esc_attr_e(get_the_id()); ?>" data-parentname="<?php wp_kses_post($this->post->title); ?>">
+						<a href="#" data-insert-before="<?php esc_attr_e(get_the_id()); ?>" data-parentname="<?php echo esc_attr($this->post->title); ?>">
 						<img src="<?php echo \NestedPages\Helpers::plugin_url(); ?>/assets/images/insert-before.svg" alt="<?php _e('Insert Before Icon', 'wp-nested-pages'); ?>">
 						<?php printf(esc_html__('Insert %s Before', 'wp-nested-pages'), $this->post_type->labels->singular_name); ?></a>
 					</li>
@@ -163,7 +164,7 @@ if ( !$wpml ) $wpml_pages = true;
 
 					<?php if ( in_array('insert_after', $this->post_type_settings->row_actions) ) : ?>
 					<li>
-						<a href="#" data-insert-after="<?php echo esc_attr(get_the_id()); ?>" data-parentname="<?php esc_attr($this->post->title); ?>">
+						<a href="#" data-insert-after="<?php echo esc_attr(get_the_id()); ?>" data-parentname="<?php echo esc_attr($this->post->title); ?>">
 						<img src="<?php echo \NestedPages\Helpers::plugin_url(); ?>/assets/images/insert-after.svg" alt="<?php _e('Insert After Icon', 'wp-nested-pages'); ?>">
 						<?php printf(esc_html__('Insert %s After', 'wp-nested-pages'), $this->post_type->labels->singular_name); ?></a>
 					</li>
@@ -322,7 +323,7 @@ if ( !$wpml ) $wpml_pages = true;
 
 	if ( $this->can_user_perform_bulk_actions ) : ?>
 	<div class="np-bulk-checkbox">
-		<input type="checkbox" name="nestedpages_bulk[]" value="<?php echo esc_attr($this->post->id); ?>" data-np-bulk-checkbox="<?php echo sanitize_text_field(wp_kses_post($this->post->title)); ?>" data-np-post-type="<?php echo esc_attr($this->post->post_type); ?>" />
+		<input type="checkbox" name="nestedpages_bulk[]" value="<?php echo esc_attr($this->post->id); ?>" data-np-bulk-checkbox="<?php echo sanitize_text_field(esc_attr($this->post->title)); ?>" data-np-post-type="<?php echo esc_attr($this->post->post_type); ?>" />
 	</div>
 	<?php endif ?>
 </div><!-- .row -->
